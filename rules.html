@@ -145,7 +145,7 @@
 
         .tab-btn:hover {
             transform: translateY(-5px);
-            --btn-color: #00bfff; /* Glows blue for the Trade Regs button on hover */
+            --btn-color: #00bfff; /* Glows blue on hover */
             background: color-mix(in srgb, var(--btn-color) 15%, rgba(42, 42, 53, 0.95));
             box-shadow: 0 15px 40px color-mix(in srgb, var(--btn-color) 30%, transparent);
             border-color: var(--btn-color);
@@ -155,7 +155,7 @@
             --btn-color: var(--f1-red); /* Keeps the active tab red on hover */
         }
 
-        /* PDF VIEWER */
+        /* PDF VIEWER - HIDDEN BY DEFAULT */
         .pdf-container {
             width: 100%;
             height: 75vh;
@@ -164,6 +164,9 @@
             box-shadow: 0 15px 40px rgba(0,0,0,0.6);
             border: 1px solid rgba(255,255,255,0.1);
             background: #fff; 
+            display: none; /* Keeps it collapsed initially */
+            opacity: 0;
+            transition: opacity 0.4s ease;
         }
         
         iframe {
@@ -198,7 +201,7 @@
     <div class="container">
         
         <div class="action-tabs">
-            <div class="tab-btn active">
+            <div class="tab-btn" id="guidelines-btn" style="--btn-color: #444;">
                 <span>📄</span> Season 5 Official Guidelines
             </div>
             <a href="https://trade.f1lads.com" target="_blank" class="tab-btn" style="--btn-color: #444;">
@@ -206,11 +209,44 @@
             </a>
         </div>
 
-        <div class="pdf-container">
-            <iframe src="https://docs.google.com/gview?url=https://raw.githubusercontent.com/f1ladsleague/landing-page/main/F1%20Lads%20League%20-%20Guidelines%20(Season%205).pdf&embedded=true"></iframe>
+        <div class="pdf-container" id="pdf-viewer">
+            <iframe id="pdf-iframe" data-src="https://docs.google.com/gview?url=https://raw.githubusercontent.com/f1ladsleague/landing-page/main/F1%20Lads%20League%20-%20Guidelines%20(Season%205).pdf&embedded=true"></iframe>
         </div>
 
     </div>
 
+    <script>
+        const guidelinesBtn = document.getElementById('guidelines-btn');
+        const pdfViewer = document.getElementById('pdf-viewer');
+        const pdfIframe = document.getElementById('pdf-iframe');
+
+        guidelinesBtn.addEventListener('click', function() {
+            // Toggle the active state of the button
+            this.classList.toggle('active');
+
+            if (this.classList.contains('active')) {
+                // If it's now active, show the PDF container
+                pdfViewer.style.display = 'block';
+                
+                // A tiny delay ensures the CSS fade-in animation triggers properly
+                setTimeout(() => {
+                    pdfViewer.style.opacity = '1';
+                }, 10);
+
+                // Load the PDF source ONLY if it hasn't been loaded yet
+                if (!pdfIframe.src || pdfIframe.src === window.location.href) {
+                    pdfIframe.src = pdfIframe.getAttribute('data-src');
+                }
+            } else {
+                // If clicked again to close, fade it out first
+                pdfViewer.style.opacity = '0';
+                
+                // Wait for the fade animation to finish before removing it from the page layout
+                setTimeout(() => {
+                    pdfViewer.style.display = 'none';
+                }, 400); // 400ms matches the CSS transition time
+            }
+        });
+    </script>
 </body>
 </html>
