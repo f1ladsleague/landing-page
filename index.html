@@ -110,10 +110,14 @@
             border-left: 1px solid color-mix(in srgb, var(--card-color) 30%, transparent); border-right: 1px solid color-mix(in srgb, var(--card-color) 30%, transparent);
         }
 
-        .card-icon { font-size: 45px; margin-bottom: 15px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4)); transition: transform 0.3s ease; }
+        .card-icon { font-size: 45px; margin-bottom: 15px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4)); transition: transform 0.3s ease; display: inline-block; }
         .link-card:hover .card-icon { transform: scale(1.15); }
         .link-card h2 { font-size: 26px; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; }
         .link-card p { color: #bbb; font-size: 16px; margin: 0; line-height: 1.5; font-weight: 600; }
+
+        /* LOADING ANIMATION FOR TELEMETRY PING */
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .spinning { animation: spin 1s linear infinite; }
 
         /* MOBILE OPTIMIZATION */
         @media (max-width: 768px) {
@@ -161,7 +165,7 @@
                 <h2>Rules & Regs</h2>
                 <p>Official Rules & Regulations for Season 5.</p>
             </a>
-            <a href="https://telemetry.f1lads.com" class="link-card" style="--card-color: #b388ff;">
+            <a href="https://telemetry.f1lads.com" onclick="checkTelemetry(event, this.href)" class="link-card" style="--card-color: #b388ff;">
                 <div class="card-icon">📊</div>
                 <h2>Telemetry</h2>
                 <p>Live Race Day Telemetry.</p>
@@ -174,5 +178,46 @@
         </div>
     </div>
 
+    <script>
+        function checkTelemetry(event, url) {
+            event.preventDefault(); // Stop immediate navigation
+            
+            // Grab the specific card elements we clicked on
+            const card = event.currentTarget;
+            const iconEl = card.querySelector('.card-icon');
+            const titleEl = card.querySelector('h2');
+            
+            // Save original text to reset later if it fails
+            const originalIcon = iconEl.innerText;
+            const originalTitle = titleEl.innerText;
+            
+            // Update to "Connecting..." state
+            iconEl.innerText = "⏳";
+            iconEl.classList.add("spinning");
+            titleEl.innerText = "Connecting...";
+
+            const img = new Image();
+
+            // SUCCESS: Server is live!
+            img.onload = function() {
+                window.location.href = url; // Send them to Telemetry
+            };
+
+            // FAIL: Server is offline (502 Bad Gateway)
+            img.onerror = function() {
+                // Reset the card back to normal
+                iconEl.innerText = originalIcon;
+                iconEl.classList.remove("spinning");
+                titleEl.innerText = originalTitle;
+                
+                // Show the alert
+                alert("🏎️ Telemetry is currently offline!\n\nThe live data feed only activates during the actual race sessions. Please check back later.");
+            };
+
+            // Force a cache-busting check on the server's favicon
+            let cleanUrl = url.endsWith('/') ? url.slice(0, -1) : url;
+            img.src = cleanUrl + "/favicon.ico?" + new Date().getTime();
+        }
+    </script>
 </body>
 </html>
