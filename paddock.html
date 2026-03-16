@@ -6,6 +6,11 @@
     <title>The Paddock | F1 Lads</title>
     <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
+        @font-face {
+            font-family: 'Formula1';
+            src: url('https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Formula1.ttf') format('truetype');
+        }
+
         :root { 
             --f1-red: #e10600; 
             --f1-dark: #15151e; 
@@ -18,24 +23,30 @@
             margin: 0; 
             padding: 0; 
             background-color: var(--f1-dark);
-            background-image: linear-gradient(rgba(21, 21, 30, 0.90), rgba(21, 21, 30, 0.95)), url('https://raw.githubusercontent.com/f1ladsleague/landing-page/6770fcc6c86dd4eaa46daa0af61a0c6293152c92/Team_Photos/background.jpg');
+            background-image: linear-gradient(rgba(21, 21, 30, 0.90), rgba(21, 21, 30, 0.95)), url('https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/background.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
         }
 
+        /* CONSISTENT CINEMATIC HEADER */
         .header {
             text-align: center;
-            padding: 30px 20px;
+            padding: 130px 20px 150px 20px;
+            background: linear-gradient(180deg, rgba(21, 21, 30, 0.4) 0%, rgba(21, 21, 30, 0.95) 100%), url('https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Drivers.png');
+            background-size: cover;
+            background-position: top center;
             border-bottom: 2px solid var(--f1-red);
-            background: rgba(0,0,0,0.5);
             position: relative;
         }
         
         .main-logo {
-            max-width: 200px;
-            margin-bottom: 10px;
+            max-width: 280px;
+            margin-bottom: 20px;
             filter: drop-shadow(0px 4px 10px rgba(0,0,0,0.5));
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
         
         .back-btn {
@@ -55,10 +66,12 @@
         .back-btn:hover { color: #fff; background: rgba(255,255,255,0.2); }
 
         .header h1 {
-            font-size: 36px;
+            font-family: 'Formula1', sans-serif;
+            font-size: 40px;
             text-transform: uppercase;
             margin: 0;
             letter-spacing: 2px;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.9);
         }
 
         /* FLEXBOX GRID FOR 5 TEAMS */
@@ -116,7 +129,6 @@
             border: 1px solid rgba(255,255,255,0.05);
         }
         
-        /* THE ZOOM WRAPPER MAGIC */
         .photo-wrapper {
             width: 60px;
             height: 60px;
@@ -136,8 +148,8 @@
             height: 100%;
             object-fit: cover;
             object-position: top center;
-            transform: scale(1.35); /* Zooms in by 35% */
-            transform-origin: top center; /* Focuses the zoom specifically on the face/top of image */
+            transform: scale(1.35); 
+            transform-origin: top center; 
         }
         
         .personnel-info h4 { margin: 0; font-size: 18px; }
@@ -148,11 +160,9 @@
 
     <header class="header">
         <a href="index.html" class="back-btn">&#8592; Back Home</a>
-        
         <a href="index.html">
-            <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/6770fcc6c86dd4eaa46daa0af61a0c6293152c92/Team_Photos/Logo.png" alt="F1 Lads Logo" class="main-logo">
+            <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Logo.png" alt="F1 Lads Logo" class="main-logo">
         </a>
-        
         <h1>The Paddock</h1>
     </header>
 
@@ -162,19 +172,19 @@
             <div class="team-card" style="--team-color: #ED1131;">
                 <div class="team-header">
                     <h3 class="team-name">Ferrari</h3>
-                    <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/6770fcc6c86dd4eaa46daa0af61a0c6293152c92/Team_Photos/FER.png" alt="Ferrari" class="team-logo">
+                    <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/FER.png" alt="Ferrari" class="team-logo">
                 </div>
                 <div class="team-body">
                     <div class="personnel-row">
-                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/6770fcc6c86dd4eaa46daa0af61a0c6293152c92/Team_Photos/Chad.png" alt="TP" class="personnel-photo"></div>
+                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Chad.png" alt="TP" class="personnel-photo"></div>
                         <div class="personnel-info"><span>Team Principal</span><h4>Chad Gamagedon</h4></div>
                     </div>
                     <div class="personnel-row">
-                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/6770fcc6c86dd4eaa46daa0af61a0c6293152c92/Team_Photos/Mapa.png" alt="Driver" class="personnel-photo"></div>
+                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Mapa.png" alt="Driver" class="personnel-photo"></div>
                         <div class="personnel-info"><span>Driver</span><h4>Mapa</h4></div>
                     </div>
                     <div class="personnel-row">
-                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/6770fcc6c86dd4eaa46daa0af61a0c6293152c92/Team_Photos/Shiyan.png" alt="Driver" class="personnel-photo"></div>
+                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Shiyan.png" alt="Driver" class="personnel-photo"></div>
                         <div class="personnel-info"><span>Driver</span><h4>Shiyan</h4></div>
                     </div>
                 </div>
@@ -183,19 +193,19 @@
             <div class="team-card" style="--team-color: #229971;">
                 <div class="team-header">
                     <h3 class="team-name">Aston Martin</h3>
-                    <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/6770fcc6c86dd4eaa46daa0af61a0c6293152c92/Team_Photos/AM.png" alt="Aston Martin" class="team-logo">
+                    <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/AM.png" alt="Aston Martin" class="team-logo">
                 </div>
                 <div class="team-body">
                     <div class="personnel-row">
-                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/6770fcc6c86dd4eaa46daa0af61a0c6293152c92/Team_Photos/Nippa2.png" alt="TP" class="personnel-photo"></div>
+                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Nippa2.png" alt="TP" class="personnel-photo"></div>
                         <div class="personnel-info"><span>Team Principal</span><h4>Mohammed bin Nippa</h4></div>
                     </div>
                     <div class="personnel-row">
-                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/6770fcc6c86dd4eaa46daa0af61a0c6293152c92/Team_Photos/NuwieG.png" alt="Driver" class="personnel-photo"></div>
+                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/NuwieG.png" alt="Driver" class="personnel-photo"></div>
                         <div class="personnel-info"><span>Driver</span><h4>Nuwie G</h4></div>
                     </div>
                     <div class="personnel-row">
-                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/6770fcc6c86dd4eaa46daa0af61a0c6293152c92/Team_Photos/Shahan.png" alt="Driver" class="personnel-photo"></div>
+                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Shahan.png" alt="Driver" class="personnel-photo"></div>
                         <div class="personnel-info"><span>Driver</span><h4>Shahan</h4></div>
                     </div>
                 </div>
@@ -204,19 +214,19 @@
             <div class="team-card" style="--team-color: #F47600;">
                 <div class="team-header">
                     <h3 class="team-name">McLaren</h3>
-                    <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/6770fcc6c86dd4eaa46daa0af61a0c6293152c92/Team_Photos/MCL.png" alt="McLaren" class="team-logo">
+                    <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/MCL.png" alt="McLaren" class="team-logo">
                 </div>
                 <div class="team-body">
                     <div class="personnel-row">
-                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/6770fcc6c86dd4eaa46daa0af61a0c6293152c92/Team_Photos/Malith.png" alt="TP" class="personnel-photo"></div>
+                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Malith.png" alt="TP" class="personnel-photo"></div>
                         <div class="personnel-info"><span>Team Principal</span><h4>Dr. Malith Ranatunga</h4></div>
                     </div>
                     <div class="personnel-row">
-                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/6770fcc6c86dd4eaa46daa0af61a0c6293152c92/Team_Photos/Sahan.png" alt="Driver" class="personnel-photo"></div>
+                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Sahan.png" alt="Driver" class="personnel-photo"></div>
                         <div class="personnel-info"><span>Driver</span><h4>Sahan</h4></div>
                     </div>
                     <div class="personnel-row">
-                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/6770fcc6c86dd4eaa46daa0af61a0c6293152c92/Team_Photos/Sameera.png" alt="Driver" class="personnel-photo"></div>
+                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Sameera.png" alt="Driver" class="personnel-photo"></div>
                         <div class="personnel-info"><span>Driver</span><h4>Sameera</h4></div>
                     </div>
                 </div>
@@ -225,19 +235,19 @@
             <div class="team-card" style="--team-color: #00D7B6;">
                 <div class="team-header">
                     <h3 class="team-name">Mercedes</h3>
-                    <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/6770fcc6c86dd4eaa46daa0af61a0c6293152c92/Team_Photos/MER.png" alt="Mercedes" class="team-logo">
+                    <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/MER.png" alt="Mercedes" class="team-logo">
                 </div>
                 <div class="team-body">
                     <div class="personnel-row">
-                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/6770fcc6c86dd4eaa46daa0af61a0c6293152c92/Team_Photos/Nuwan.png" alt="TP" class="personnel-photo"></div>
+                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Nuwan.png" alt="TP" class="personnel-photo"></div>
                         <div class="personnel-info"><span>Team Principal</span><h4>Nuwan De Silva</h4></div>
                     </div>
                     <div class="personnel-row">
-                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/6770fcc6c86dd4eaa46daa0af61a0c6293152c92/Team_Photos/Kalpa.png" alt="Driver" class="personnel-photo"></div>
+                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Kalpa.png" alt="Driver" class="personnel-photo"></div>
                         <div class="personnel-info"><span>Driver</span><h4>Kalpa</h4></div>
                     </div>
                     <div class="personnel-row">
-                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/6770fcc6c86dd4eaa46daa0af61a0c6293152c92/Team_Photos/Rodda.png" alt="Driver" class="personnel-photo"></div>
+                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Rodda.png" alt="Driver" class="personnel-photo"></div>
                         <div class="personnel-info"><span>Driver</span><h4>Rodda</h4></div>
                     </div>
                 </div>
@@ -246,19 +256,19 @@
             <div class="team-card" style="--team-color: #4781D7;">
                 <div class="team-header">
                     <h3 class="team-name">Red Bull Racing</h3>
-                    <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/6770fcc6c86dd4eaa46daa0af61a0c6293152c92/Team_Photos/RB.png" alt="Red Bull Racing" class="team-logo">
+                    <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/RB.png" alt="Red Bull Racing" class="team-logo">
                 </div>
                 <div class="team-body">
                     <div class="personnel-row">
-                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/6770fcc6c86dd4eaa46daa0af61a0c6293152c92/Team_Photos/Ray.png" alt="TP" class="personnel-photo"></div>
+                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Ray.png" alt="TP" class="personnel-photo"></div>
                         <div class="personnel-info"><span>Team Principal</span><h4>Raymond Khoo</h4></div>
                     </div>
                     <div class="personnel-row">
-                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/6770fcc6c86dd4eaa46daa0af61a0c6293152c92/Team_Photos/Eranga.png" alt="Driver" class="personnel-photo"></div>
+                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Eranga.png" alt="Driver" class="personnel-photo"></div>
                         <div class="personnel-info"><span>Driver</span><h4>Eranga</h4></div>
                     </div>
                     <div class="personnel-row">
-                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/6770fcc6c86dd4eaa46daa0af61a0c6293152c92/Team_Photos/NippaE.png" alt="Driver" class="personnel-photo"></div>
+                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/NippaE.png" alt="Driver" class="personnel-photo"></div>
                         <div class="personnel-info"><span>Driver</span><h4>Nippa E</h4></div>
                     </div>
                 </div>
