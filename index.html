@@ -196,27 +196,39 @@
             iconEl.classList.add("spinning");
             titleEl.innerText = "Connecting...";
 
-            const img = new Image();
+            // SAFETY FALLBACK: If the check takes longer than 3 seconds, just let them through.
+            let safetyTimeout = setTimeout(() => {
+                window.location.href = url;
+            }, 3000);
 
-            // SUCCESS: Server is live!
-            img.onload = function() {
-                window.location.href = url; // Send them to Telemetry
-            };
+            // Using AllOrigins to safely check the actual HTML status code, bypassing CORS restrictions.
+            // We append a timestamp so the proxy fetches a fresh check every single time.
+            const checkUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url + "?nocache=" + Date.now())}`;
 
-            // FAIL: Server is offline (502 Bad Gateway)
-            img.onerror = function() {
-                // Reset the card back to normal
-                iconEl.innerText = originalIcon;
-                iconEl.classList.remove("spinning");
-                titleEl.innerText = originalTitle;
-                
-                // Show the alert
-                alert("🏎️ Telemetry is currently offline!\n\nThe live data feed only activates during the actual race sessions. Please check back later.");
-            };
-
-            // Force a cache-busting check on the server's favicon
-            let cleanUrl = url.endsWith('/') ? url.slice(0, -1) : url;
-            img.src = cleanUrl + "/favicon.ico?" + new Date().getTime();
+            fetch(checkUrl)
+                .then(response => response.json())
+                .then(data => {
+                    clearTimeout(safetyTimeout); // Stop the 3-second fallback timer
+                    
+                    // If the proxy confirms the telemetry server is throwing a 502 or 503
+                    if (data.status && (data.status.http_code === 502 || data.status.http_code === 503)) {
+                        // Reset the card back to normal
+                        iconEl.innerText = originalIcon;
+                        iconEl.classList.remove("spinning");
+                        titleEl.innerText = originalTitle;
+                        
+                        // Show the alert
+                        alert("🏎️ Telemetry is currently offline!\n\nThe live data feed only activates during the actual race sessions. Please check back later.");
+                    } else {
+                        // Server is live (returns 200 OK), let them in!
+                        window.location.href = url;
+                    }
+                })
+                .catch(error => {
+                    // If the check fails for any reason (like strict browser privacy settings), just let them through safely
+                    clearTimeout(safetyTimeout);
+                    window.location.href = url;
+                });
         }
     </script>
 </body>
