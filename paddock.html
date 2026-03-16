@@ -75,11 +75,12 @@
 
         .hero h1 { font-family: 'Formula1', sans-serif; font-size: 55px; text-transform: uppercase; margin: 0; text-shadow: 2px 2px 15px rgba(0,0,0,0.9); }
 
-        .container { max-width: 1200px; margin: 0 auto; padding: 50px 20px 80px 20px; }
+        /* WIDER CONTAINER FOR EVEN DISTRIBUTION */
+        .container { max-width: 1400px; margin: 0 auto; padding: 50px 20px 80px 20px; }
         
-        .teams-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; }
+        .teams-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 35px; }
 
-        /* TEAM CARDS */
+        /* WIDER TEAM CARDS */
         .team-card {
             background: rgba(31, 31, 39, 0.7);
             backdrop-filter: blur(10px);
@@ -90,9 +91,11 @@
             border-bottom: 1px solid rgba(255,255,255,0.05);
             box-shadow: 0 10px 30px rgba(0,0,0,0.4);
             transition: all 0.3s ease;
-            width: calc(33.333% - 20px); 
-            min-width: 320px; 
-            max-width: 380px;
+            width: calc(33.333% - 35px); 
+            min-width: 350px; 
+            max-width: 420px; /* Allows them to spread out nicely on 1080p+ monitors */
+            display: flex;
+            flex-direction: column;
         }
 
         /* CHAMPION GLOW EFFECT */
@@ -136,7 +139,7 @@
             border-color: #aaa;
         }
 
-        .team-body { padding: 25px 20px; border-radius: 0 0 16px 16px; }
+        .team-body { padding: 25px 20px; flex-grow: 1; display: flex; flex-direction: column; }
         
         .personnel-row {
             display: flex;
@@ -148,7 +151,7 @@
             border: 1px solid rgba(255,255,255,0.05);
             transition: 0.2s;
             cursor: pointer;
-            position: relative; /* CRITICAL FOR HOVER CARD */
+            position: relative;
         }
 
         .personnel-row:hover { background: rgba(0,0,0,0.5); border-color: rgba(255,255,255,0.2); }
@@ -174,20 +177,32 @@
         .personnel-info h4 { margin: 0; font-size: 19px; font-weight: 700; }
         .personnel-info span { color: #aaa; font-size: 12px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
 
+        .co-constructors {
+            margin-top: auto; /* Pushes to bottom */
+            padding-top: 15px;
+            border-top: 1px dashed rgba(255,255,255,0.1);
+            font-size: 13px;
+            color: #aaa;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .co-constructors strong { color: #fff; }
+
         /* =========================================
-           FLOATING HOVER PROFILE CARDS
+           FLOATING HOVER PROFILE CARDS (WIDER/BIGGER)
            ========================================= */
         .hover-card {
             position: absolute;
-            bottom: 110%; /* Pops up ABOVE the row */
+            bottom: 110%; 
             left: 50%;
             transform: translateX(-50%) translateY(15px);
-            width: 250px;
+            width: 300px; /* Made wider for longer bios */
             background: rgba(20, 20, 25, 0.98);
             backdrop-filter: blur(15px);
             border: 2px solid var(--team-color);
             border-radius: 12px;
-            padding: 20px;
+            padding: 25px;
             z-index: 100;
             opacity: 0;
             visibility: hidden;
@@ -197,7 +212,6 @@
             text-align: center;
         }
 
-        /* The Triangle Pointer */
         .hover-card::after {
             content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
             border-width: 10px; border-style: solid;
@@ -207,16 +221,17 @@
         .personnel-row:hover .hover-card { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
 
         .hover-photo-wrap {
-            width: 100px; height: 100px; border-radius: 50%; overflow: hidden;
+            width: 130px; /* BIGGER HOVER PHOTO */
+            height: 130px; 
+            border-radius: 50%; overflow: hidden;
             margin: 0 auto 15px auto; border: 3px solid var(--team-color);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
         }
-        .hover-card h4 { margin: 0; font-size: 22px; font-weight: 900; }
+        .hover-card h4 { margin: 0; font-size: 24px; font-weight: 900; }
         .hover-card .role { color: var(--f1-red); font-weight: 700; font-size: 13px; text-transform: uppercase; margin: 5px 0 10px 0; }
-        .hover-card .bio { color: #bbb; font-size: 14px; margin: 0; line-height: 1.5; }
+        .hover-card .bio { color: #ccc; font-size: 15px; margin: 0; line-height: 1.5; }
 
-        /* =========================================
-           MOBILE OPTIMIZATION (Tap-to-Modal)
-           ========================================= */
+        /* MOBILE OPTIMIZATION */
         @media (max-width: 768px) {
             .hero { padding: 90px 15px 100px 15px; }
             .hero h1 { font-size: 35px; }
@@ -225,18 +240,18 @@
             .teams-grid { flex-direction: column; align-items: center; gap: 25px; }
             .team-card { width: 100%; max-width: 100%; }
 
-            /* Transforms the tooltip into a centered screen overlay on tap */
+            /* Transforms the tooltip into a centered modal on tap */
             .hover-card {
                 position: fixed;
                 top: 50%; left: 50%; bottom: auto;
                 transform: translate(-50%, -40%) scale(0.9);
                 width: 85%;
+                max-width: 350px;
                 z-index: 99999;
-                /* Massive dark shadow creates the background blackout effect */
                 box-shadow: 0 15px 40px rgba(0,0,0,0.8), 0 0 0 2000px rgba(0,0,0,0.8);
             }
             .personnel-row:hover .hover-card { transform: translate(-50%, -50%) scale(1); }
-            .hover-card::after { display: none; } /* Hides the triangle on mobile */
+            .hover-card::after { display: none; } 
         }
     </style>
 </head>
@@ -255,7 +270,7 @@
                 <div class="team-header">
                     <div>
                         <h3 class="team-name">Red Bull</h3>
-                        <div class="champ-badge">🏆 3x Constructors' Champion</div>
+                        <div class="champ-badge">🏆 3x Constructors' Champ (S1, S2, S4)</div>
                     </div>
                     <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/RB.png" alt="Red Bull Racing" class="team-logo">
                 </div>
@@ -266,7 +281,7 @@
                         <div class="hover-card">
                             <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Ray.png" class="personnel-photo"></div>
                             <h4>Raymond Khoo</h4><div class="role">Team Principal</div>
-                            <p class="bio">The relentless mastermind behind Red Bull's S1, S2, and S4 championship dominance.</p>
+                            <p class="bio">Inaugural season was S4, which he won. Known for strategy, attention to detail, and tactics. Endured a very poor start to Season 5 due to major issues on Deadline Day, securing two Tier 3 drivers.</p>
                         </div>
                     </div>
                     <div class="personnel-row">
@@ -275,7 +290,7 @@
                         <div class="hover-card">
                             <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Eranga.png" class="personnel-photo"></div>
                             <h4>Eranga</h4><div class="role">Driver</div>
-                            <p class="bio">A clinical and incredibly fast driver, vital to Red Bull's current championship defense.</p>
+                            <p class="bio">Driven since Season 2. Traditionally known as an erratic and unpredictable driver who attracted penalties, but has shown significant improvement towards the end of S4 and start of S5.</p>
                         </div>
                     </div>
                     <div class="personnel-row">
@@ -284,8 +299,11 @@
                         <div class="hover-card">
                             <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/NippaE.png" class="personnel-photo"></div>
                             <h4>Nippa E</h4><div class="role">Driver</div>
-                            <p class="bio">Brings dynamic race craft and unwavering consistency to the reigning champions.</p>
+                            <p class="bio">The rookie of S5 on a steep learning curve. Expected to struggle this season, especially with a newborn consuming his time off the track.</p>
                         </div>
+                    </div>
+                    <div class="co-constructors">
+                        <strong>Co-Constructor:</strong> Hari
                     </div>
                 </div>
             </div>
@@ -294,7 +312,7 @@
                 <div class="team-header">
                     <div>
                         <h3 class="team-name">Ferrari</h3>
-                        <div class="champ-badge silver-badge">🏆 1x Constructors' Champion</div>
+                        <div class="champ-badge silver-badge">🏆 1x Constructors' Champ (S3)</div>
                     </div>
                     <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/FER.png" alt="Ferrari" class="team-logo">
                 </div>
@@ -305,16 +323,16 @@
                         <div class="hover-card">
                             <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Chad.png" class="personnel-photo"></div>
                             <h4>Chad Gamagedon</h4><div class="role">Team Principal</div>
-                            <p class="bio">The strategic architect of the Prancing Horse. Steered Ferrari to their first Constructors' title in Season 3.</p>
+                            <p class="bio">One of the most passionate TPs, but with a history of overpaying. Relying on his star driver to bring home the championship after failing in S4 following a mid-season trade that poached Mapa.</p>
                         </div>
                     </div>
                     <div class="personnel-row">
                         <div class="photo-wrapper defending-driver-photo"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Mapa.png" class="personnel-photo"></div>
-                        <div class="personnel-info"><span>Driver</span><h4>Mapa</h4><div class="champ-badge" style="margin: 0; margin-top: 3px;">🏆 4x World Champion</div></div>
+                        <div class="personnel-info"><span>Driver</span><h4>Mapa</h4><div class="champ-badge" style="margin: 0; margin-top: 3px;">🏆 4x World Champ</div></div>
                         <div class="hover-card" style="border-color: var(--gold);">
                             <div class="hover-photo-wrap defending-driver-photo"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Mapa.png" class="personnel-photo"></div>
                             <h4 style="color: var(--gold);">Mapa</h4><div class="role">Defending Champion</div>
-                            <p class="bio">The undisputed king of the grid. Mapa has won all four Driver's World Championships (S1, S2, S3, S4).</p>
+                            <p class="bio">The star driver, most experienced and consistent (won S1, S2, S3, S4). Facing intense competition in S5 from improved rivals. Moving to Abu Dhabi imminently, presenting opportunities for others to capitalize on his disruption.</p>
                         </div>
                     </div>
                     <div class="personnel-row">
@@ -323,8 +341,11 @@
                         <div class="hover-card">
                             <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Shiyan.png" class="personnel-photo"></div>
                             <h4>Shiyan</h4><div class="role">Driver</div>
-                            <p class="bio">A fiercely competitive driver aiming to push Ferrari back to the absolute top of the Constructors' standings.</p>
+                            <p class="bio">Improved the most since S4. Once known as the worst driver with the most expensive setup, he had a stellar off-season and is expected to excel. Performed very well in S4—arguably a steal for Ferrari.</p>
                         </div>
+                    </div>
+                    <div class="co-constructors">
+                        <strong>Co-Constructors:</strong> Dulith & Dylan G
                     </div>
                 </div>
             </div>
@@ -341,7 +362,7 @@
                         <div class="hover-card">
                             <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Nippa2.png" class="personnel-photo"></div>
                             <h4>Mohammed Nippa</h4><div class="role">Team Principal</div>
-                            <p class="bio">The ambitious leader of Aston Martin, determined to disrupt the top teams and secure consistent podiums.</p>
+                            <p class="bio">A new constructor in S5 who absolutely nailed Deadline Day, out-strategizing everyone to secure a dominant lineup. Tricked and deceived others, leaving a massive, unethical target on his back.</p>
                         </div>
                     </div>
                     <div class="personnel-row">
@@ -350,7 +371,7 @@
                         <div class="hover-card">
                             <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/NuwieG.png" class="personnel-photo"></div>
                             <h4>Nuwie G</h4><div class="role">Driver</div>
-                            <p class="bio">A rapid and highly calculative racer, spearheading the charge for the green machines.</p>
+                            <p class="bio">Boasts massive potential and was once the strongest challenger to Mapa. After penalty issues and a drop-off in S4, he's back stronger than ever with one goal: beat his nemesis.</p>
                         </div>
                     </div>
                     <div class="personnel-row">
@@ -359,8 +380,11 @@
                         <div class="hover-card">
                             <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Shahan.png" class="personnel-photo"></div>
                             <h4>Shahan</h4><div class="role">Driver</div>
-                            <p class="bio">Consistent and methodical. Known for maximizing the car's ultimate potential on race day.</p>
+                            <p class="bio">Had a compelling rookie season in S3 and improved significantly. Now better than Shiyan and Eranga despite joining later. Often struggles to convert potential into results, but looking to change that.</p>
                         </div>
+                    </div>
+                    <div class="co-constructors">
+                        <strong>Co-Constructor:</strong> Manith
                     </div>
                 </div>
             </div>
@@ -377,7 +401,7 @@
                         <div class="hover-card">
                             <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Malith.png" class="personnel-photo"></div>
                             <h4>Dr. Malith Ranatunga</h4><div class="role">Team Principal</div>
-                            <p class="bio">Orchestrating the Papaya squad with clinical precision and brilliant strategic calls from the pit wall.</p>
+                            <p class="bio">New to S5 and highly underrated. Went under the radar on Deadline Day to pick up arguably the strongest lineup. Built a highly intelligent squad exclusively from Melbourne High School alumni. Title favorites alongside Aston Martin.</p>
                         </div>
                     </div>
                     <div class="personnel-row">
@@ -386,7 +410,7 @@
                         <div class="hover-card">
                             <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Sahan.png" class="personnel-photo"></div>
                             <h4>Sahan</h4><div class="role">Driver</div>
-                            <p class="bio">Quick to adapt and fearless on track, constantly pushing the McLaren to its absolute limits.</p>
+                            <p class="bio">A vastly improved driver entering S5 with incredible momentum. As part of the highly intelligent all-MHS squad, his adaptable pace makes him a serious championship contender.</p>
                         </div>
                     </div>
                     <div class="personnel-row">
@@ -395,8 +419,11 @@
                         <div class="hover-card">
                             <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Sameera.png" class="personnel-photo"></div>
                             <h4>Sameera</h4><div class="role">Driver</div>
-                            <p class="bio">Brings undeniable speed and highly aggressive race craft to the papaya garage.</p>
+                            <p class="bio">A highly anticipated rookie who has already shown massive improvement. Part of McLaren's intelligent all-MHS lineup, looking to instantly challenge the established grid and pressure the veterans.</p>
                         </div>
+                    </div>
+                    <div class="co-constructors">
+                        <strong>Co-Constructors:</strong> Chamila & Charith
                     </div>
                 </div>
             </div>
@@ -413,16 +440,7 @@
                         <div class="hover-card">
                             <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Nuwan.png" class="personnel-photo"></div>
                             <h4>Nuwan De Silva</h4><div class="role">Team Principal</div>
-                            <p class="bio">A calculating Team Principal who demands perfection, leaving absolutely nothing to chance.</p>
-                        </div>
-                    </div>
-                    <div class="personnel-row">
-                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Kalpa.png" class="personnel-photo"></div>
-                        <div class="personnel-info"><span>Driver</span><h4>Kalpa</h4></div>
-                        <div class="hover-card">
-                            <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Kalpa.png" class="personnel-photo"></div>
-                            <h4>Kalpa</h4><div class="role">Driver</div>
-                            <p class="bio">An analytical driver who excels heavily in tire management and long-run race strategy.</p>
+                            <p class="bio">Dedicated and popular. Lost S4 narrowly in Abu Dhabi. Stuck loyally with his drivers, but a disappointing off-season means they currently aren't contending. Will he break his loyalty and trade?</p>
                         </div>
                     </div>
                     <div class="personnel-row">
@@ -431,8 +449,20 @@
                         <div class="hover-card">
                             <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Rodda.png" class="personnel-photo"></div>
                             <h4>Rodda</h4><div class="role">Driver</div>
-                            <p class="bio">Brings pure, unfiltered aggression and devastating qualifying pace to the Silver Arrows.</p>
+                            <p class="bio">Expecting a newborn imminently. Disappointing off-season adjusting to a new handicap (no driving lines). Consistent and underestimated—slow and steady might just win the race.</p>
                         </div>
+                    </div>
+                    <div class="personnel-row">
+                        <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Kalpa.png" class="personnel-photo"></div>
+                        <div class="personnel-info"><span>Driver</span><h4>Kalpa</h4></div>
+                        <div class="hover-card">
+                            <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Kalpa.png" class="personnel-photo"></div>
+                            <h4>Kalpa</h4><div class="role">Driver</div>
+                            <p class="bio">Traditionally raced high and drunk, but improved massively in S4 after driving sober. Disappointing off-season testing, but highly consistent. A solid driver with strong pace to lead the midfield.</p>
+                        </div>
+                    </div>
+                    <div class="co-constructors">
+                        <strong>Co-Constructors:</strong> Kasun & Kush
                     </div>
                 </div>
             </div>
