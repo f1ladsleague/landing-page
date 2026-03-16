@@ -13,6 +13,10 @@
             font-family: 'Formula1';
             src: url('https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Formula1.ttf') format('truetype');
         }
+        @font-face {
+            font-family: 'Formula1-Bold';
+            src: url('https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Formula1-Bold.ttf') format('truetype');
+        }
 
         :root { 
             --f1-red: #e10600; 
@@ -119,19 +123,33 @@
         }
         
         .team-logo { height: 40px; max-width: 110px; object-fit: contain; }
-        .team-name { font-size: 26px; font-weight: 900; margin: 0; color: var(--team-color); letter-spacing: 1px; }
+        
+        /* Forces standard height regardless of whether team has badges */
+        .team-title-wrapper { display: flex; flex-direction: column; justify-content: flex-start; }
+        
+        .team-name { font-size: 26px; font-weight: 900; margin: 0; color: var(--team-color); letter-spacing: 1px; line-height: 1; }
+        
+        /* Unified spacing box so empty spaces maintain alignment */
+        .badge-space {
+            height: 25px; /* Fixed height reservation */
+            display: flex;
+            align-items: flex-start;
+            margin-top: 4px;
+        }
         
         .champ-badge {
-            display: inline-block;
+            position: relative; /* Anchor for the hover card */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             background: rgba(255, 215, 0, 0.15);
             color: var(--gold);
             padding: 3px 8px;
             border-radius: 6px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
-            margin-top: 5px;
             border: 1px solid rgba(255, 215, 0, 0.5);
-            cursor: help; /* Adds a question mark cursor on hover */
+            cursor: pointer;
         }
         
         .silver-badge {
@@ -175,8 +193,9 @@
             transform: scale(1.35); transform-origin: top center; 
         }
         
-        .personnel-info h4 { margin: 0; font-size: 19px; font-weight: 700; }
-        .personnel-info span { color: #aaa; font-size: 12px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
+        .personnel-info { display: flex; flex-direction: column; justify-content: center; }
+        .personnel-info h4 { margin: 0; font-size: 19px; font-weight: 700; line-height: 1; margin-top: 2px; }
+        .personnel-info span { color: #aaa; font-size: 12px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; line-height: 1;}
 
         .co-constructors {
             margin-top: auto; /* Pushes to bottom */
@@ -228,9 +247,52 @@
             margin: 0 auto 15px auto; border: 3px solid var(--team-color);
             box-shadow: 0 10px 20px rgba(0,0,0,0.5);
         }
-        .hover-card h4 { margin: 0; font-size: 24px; font-weight: 900; }
+        .hover-card h4 { 
+            margin: 0; 
+            font-size: 24px; 
+            font-family: 'Formula1-Bold', sans-serif;
+            font-weight: normal; 
+        }
         .hover-card .role { color: var(--f1-red); font-weight: 700; font-size: 13px; text-transform: uppercase; margin: 5px 0 10px 0; }
         .hover-card .bio { color: #ccc; font-size: 15px; margin: 0; line-height: 1.5; }
+
+        /* =========================================
+           NEW: TROPHY HOVER CARDS (GOLD & COMPACT)
+           ========================================= */
+        .trophy-hover-card {
+            position: absolute;
+            bottom: 140%; 
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            width: max-content;
+            max-width: 220px; 
+            background: rgba(20, 20, 25, 0.98);
+            backdrop-filter: blur(15px);
+            border: 2px solid var(--gold);
+            border-radius: 8px;
+            padding: 10px 14px;
+            z-index: 101;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8), 0 0 15px rgba(255, 215, 0, 0.2);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            color: var(--gold);
+            font-size: 13px;
+            font-weight: 700;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .trophy-hover-card::after {
+            content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+            border-width: 6px; border-style: solid;
+            border-color: var(--gold) transparent transparent transparent;
+        }
+
+        .champ-badge:hover .trophy-hover-card {
+            opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0);
+        }
 
         /* MOBILE OPTIMIZATION */
         @media (max-width: 768px) {
@@ -253,6 +315,19 @@
             }
             .personnel-row:hover .hover-card { transform: translate(-50%, -50%) scale(1); }
             .hover-card::after { display: none; } 
+            
+            /* Trophy popup adaptations for mobile */
+            .trophy-hover-card {
+                position: fixed;
+                top: 50%; left: 50%; bottom: auto;
+                transform: translate(-50%, -40%) scale(0.9);
+                width: 80%;
+                max-width: 250px;
+                z-index: 99999;
+                box-shadow: 0 15px 40px rgba(0,0,0,0.8), 0 0 0 2000px rgba(0,0,0,0.6);
+            }
+            .champ-badge:hover .trophy-hover-card { transform: translate(-50%, -50%) scale(1); }
+            .trophy-hover-card::after { display: none; }
         }
     </style>
 </head>
@@ -269,16 +344,24 @@
             
             <div class="team-card defending-champ" style="--team-color: #4781D7;">
                 <div class="team-header">
-                    <div>
+                    <div class="team-title-wrapper">
                         <h3 class="team-name">Red Bull</h3>
-                        <div class="champ-badge" title="World Constructors Champion S1, S2 & S4">🏆🏆🏆</div>
+                        <div class="badge-space">
+                            <div class="champ-badge">🏆🏆🏆
+                                <div class="trophy-hover-card">World Constructors Champion<br>S1, S2 & S4</div>
+                            </div>
+                        </div>
                     </div>
                     <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/RB.png" alt="Red Bull Racing" class="team-logo">
                 </div>
                 <div class="team-body">
                     <div class="personnel-row">
                         <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Ray.png" class="personnel-photo"></div>
-                        <div class="personnel-info"><span>Team Principal</span><h4>Raymond Khoo</h4></div>
+                        <div class="personnel-info">
+                            <span>Team Principal</span>
+                            <h4>Raymond Khoo</h4>
+                            <div class="badge-space"></div>
+                        </div>
                         <div class="hover-card">
                             <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Ray.png" class="personnel-photo"></div>
                             <h4>Raymond Khoo</h4><div class="role">Team Principal</div>
@@ -287,7 +370,11 @@
                     </div>
                     <div class="personnel-row">
                         <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Eranga.png" class="personnel-photo"></div>
-                        <div class="personnel-info"><span>Driver</span><h4>Eranga</h4></div>
+                        <div class="personnel-info">
+                            <span>Driver</span>
+                            <h4>Eranga</h4>
+                            <div class="badge-space"></div>
+                        </div>
                         <div class="hover-card">
                             <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Eranga.png" class="personnel-photo"></div>
                             <h4>Eranga</h4><div class="role">Driver</div>
@@ -296,7 +383,11 @@
                     </div>
                     <div class="personnel-row">
                         <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/NippaE.png" class="personnel-photo"></div>
-                        <div class="personnel-info"><span>Driver</span><h4>Nippa E</h4></div>
+                        <div class="personnel-info">
+                            <span>Driver</span>
+                            <h4>Nippa E</h4>
+                            <div class="badge-space"></div>
+                        </div>
                         <div class="hover-card">
                             <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/NippaE.png" class="personnel-photo"></div>
                             <h4>Nippa E</h4><div class="role">Driver</div>
@@ -311,16 +402,24 @@
 
             <div class="team-card" style="--team-color: #ED1131;">
                 <div class="team-header">
-                    <div>
+                    <div class="team-title-wrapper">
                         <h3 class="team-name">Ferrari</h3>
-                        <div class="champ-badge silver-badge" title="World Constructors Champion S3">🏆</div>
+                        <div class="badge-space">
+                            <div class="champ-badge silver-badge">🏆
+                                <div class="trophy-hover-card">World Constructors Champion<br>S3</div>
+                            </div>
+                        </div>
                     </div>
                     <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/FER.png" alt="Ferrari" class="team-logo">
                 </div>
                 <div class="team-body">
                     <div class="personnel-row">
                         <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Chad.png" class="personnel-photo"></div>
-                        <div class="personnel-info"><span>Team Principal</span><h4>Chad Gamagedon</h4></div>
+                        <div class="personnel-info">
+                            <span>Team Principal</span>
+                            <h4>Chad Gamagedon</h4>
+                            <div class="badge-space"></div>
+                        </div>
                         <div class="hover-card">
                             <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Chad.png" class="personnel-photo"></div>
                             <h4>Chad Gamagedon</h4><div class="role">Team Principal</div>
@@ -329,7 +428,15 @@
                     </div>
                     <div class="personnel-row">
                         <div class="photo-wrapper defending-driver-photo"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Mapa.png" class="personnel-photo"></div>
-                        <div class="personnel-info"><span>Driver</span><h4>Mapa</h4><div class="champ-badge" style="margin: 0; margin-top: 3px;" title="World Drivers Champion S1, S2, S3 & S4">🏆🏆🏆🏆</div></div>
+                        <div class="personnel-info">
+                            <span>Driver</span>
+                            <h4>Mapa</h4>
+                            <div class="badge-space">
+                                <div class="champ-badge">🏆🏆🏆🏆
+                                    <div class="trophy-hover-card">World Drivers Champion<br>S1, S2, S3 & S4</div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="hover-card" style="border-color: var(--gold);">
                             <div class="hover-photo-wrap defending-driver-photo"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Mapa.png" class="personnel-photo"></div>
                             <h4 style="color: var(--gold);">Mapa</h4><div class="role">Defending Champion</div>
@@ -338,7 +445,11 @@
                     </div>
                     <div class="personnel-row">
                         <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Shiyan.png" class="personnel-photo"></div>
-                        <div class="personnel-info"><span>Driver</span><h4>Shiyan</h4></div>
+                        <div class="personnel-info">
+                            <span>Driver</span>
+                            <h4>Shiyan</h4>
+                            <div class="badge-space"></div>
+                        </div>
                         <div class="hover-card">
                             <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Shiyan.png" class="personnel-photo"></div>
                             <h4>Shiyan</h4><div class="role">Driver</div>
@@ -353,13 +464,20 @@
 
             <div class="team-card" style="--team-color: #229971;">
                 <div class="team-header">
-                    <div><h3 class="team-name">Aston Martin</h3></div>
+                    <div class="team-title-wrapper">
+                        <h3 class="team-name">Aston Martin</h3>
+                        <div class="badge-space"></div>
+                    </div>
                     <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/AM.png" class="team-logo">
                 </div>
                 <div class="team-body">
                     <div class="personnel-row">
                         <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Nippa2.png" class="personnel-photo"></div>
-                        <div class="personnel-info"><span>Team Principal</span><h4>Mohammed bin Nippa</h4></div>
+                        <div class="personnel-info">
+                            <span>Team Principal</span>
+                            <h4>Mohammed bin Nippa</h4>
+                            <div class="badge-space"></div>
+                        </div>
                         <div class="hover-card">
                             <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Nippa2.png" class="personnel-photo"></div>
                             <h4>Mohammed Nippa</h4><div class="role">Team Principal</div>
@@ -368,7 +486,11 @@
                     </div>
                     <div class="personnel-row">
                         <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/NuwieG.png" class="personnel-photo"></div>
-                        <div class="personnel-info"><span>Driver</span><h4>Nuwie G</h4></div>
+                        <div class="personnel-info">
+                            <span>Driver</span>
+                            <h4>Nuwie G</h4>
+                            <div class="badge-space"></div>
+                        </div>
                         <div class="hover-card">
                             <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/NuwieG.png" class="personnel-photo"></div>
                             <h4>Nuwie G</h4><div class="role">Driver</div>
@@ -377,7 +499,11 @@
                     </div>
                     <div class="personnel-row">
                         <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Shahan.png" class="personnel-photo"></div>
-                        <div class="personnel-info"><span>Driver</span><h4>Shahan</h4></div>
+                        <div class="personnel-info">
+                            <span>Driver</span>
+                            <h4>Shahan</h4>
+                            <div class="badge-space"></div>
+                        </div>
                         <div class="hover-card">
                             <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Shahan.png" class="personnel-photo"></div>
                             <h4>Shahan</h4><div class="role">Driver</div>
@@ -392,13 +518,20 @@
 
             <div class="team-card" style="--team-color: #F47600;">
                 <div class="team-header">
-                    <div><h3 class="team-name">McLaren</h3></div>
+                    <div class="team-title-wrapper">
+                        <h3 class="team-name">McLaren</h3>
+                        <div class="badge-space"></div>
+                    </div>
                     <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/MCL.png" class="team-logo">
                 </div>
                 <div class="team-body">
                     <div class="personnel-row">
                         <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Malith.png" class="personnel-photo"></div>
-                        <div class="personnel-info"><span>Team Principal</span><h4>Dr. Malith Ranatunga</h4></div>
+                        <div class="personnel-info">
+                            <span>Team Principal</span>
+                            <h4>Dr. Malith Ranatunga</h4>
+                            <div class="badge-space"></div>
+                        </div>
                         <div class="hover-card">
                             <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Malith.png" class="personnel-photo"></div>
                             <h4>Dr. Malith Ranatunga</h4><div class="role">Team Principal</div>
@@ -407,7 +540,11 @@
                     </div>
                     <div class="personnel-row">
                         <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Sahan.png" class="personnel-photo"></div>
-                        <div class="personnel-info"><span>Driver</span><h4>Sahan</h4></div>
+                        <div class="personnel-info">
+                            <span>Driver</span>
+                            <h4>Sahan</h4>
+                            <div class="badge-space"></div>
+                        </div>
                         <div class="hover-card">
                             <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Sahan.png" class="personnel-photo"></div>
                             <h4>Sahan</h4><div class="role">Driver</div>
@@ -416,7 +553,11 @@
                     </div>
                     <div class="personnel-row">
                         <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Sameera.png" class="personnel-photo"></div>
-                        <div class="personnel-info"><span>Driver</span><h4>Sameera</h4></div>
+                        <div class="personnel-info">
+                            <span>Driver</span>
+                            <h4>Sameera</h4>
+                            <div class="badge-space"></div>
+                        </div>
                         <div class="hover-card">
                             <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Sameera.png" class="personnel-photo"></div>
                             <h4>Sameera</h4><div class="role">Driver</div>
@@ -431,13 +572,20 @@
 
             <div class="team-card" style="--team-color: #00D7B6;">
                 <div class="team-header">
-                    <div><h3 class="team-name">Mercedes</h3></div>
+                    <div class="team-title-wrapper">
+                        <h3 class="team-name">Mercedes</h3>
+                        <div class="badge-space"></div>
+                    </div>
                     <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/MER.png" class="team-logo">
                 </div>
                 <div class="team-body">
                     <div class="personnel-row">
                         <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Nuwan.png" class="personnel-photo"></div>
-                        <div class="personnel-info"><span>Team Principal</span><h4>Nuwan De Silva</h4></div>
+                        <div class="personnel-info">
+                            <span>Team Principal</span>
+                            <h4>Nuwan De Silva</h4>
+                            <div class="badge-space"></div>
+                        </div>
                         <div class="hover-card">
                             <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Nuwan.png" class="personnel-photo"></div>
                             <h4>Nuwan De Silva</h4><div class="role">Team Principal</div>
@@ -446,7 +594,11 @@
                     </div>
                     <div class="personnel-row">
                         <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Rodda.png" class="personnel-photo"></div>
-                        <div class="personnel-info"><span>Driver</span><h4>Rodda</h4></div>
+                        <div class="personnel-info">
+                            <span>Driver</span>
+                            <h4>Rodda</h4>
+                            <div class="badge-space"></div>
+                        </div>
                         <div class="hover-card">
                             <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Rodda.png" class="personnel-photo"></div>
                             <h4>Rodda</h4><div class="role">Driver</div>
@@ -455,7 +607,11 @@
                     </div>
                     <div class="personnel-row">
                         <div class="photo-wrapper"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Kalpa.png" class="personnel-photo"></div>
-                        <div class="personnel-info"><span>Driver</span><h4>Kalpa</h4></div>
+                        <div class="personnel-info">
+                            <span>Driver</span>
+                            <h4>Kalpa</h4>
+                            <div class="badge-space"></div>
+                        </div>
                         <div class="hover-card">
                             <div class="hover-photo-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Kalpa.png" class="personnel-photo"></div>
                             <h4>Kalpa</h4><div class="role">Driver</div>
