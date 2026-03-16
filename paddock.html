@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Paddock | F1 Lads</title>
+    
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Logo.png">
+    
     <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         @font-face {
@@ -23,17 +26,18 @@
             margin: 0; 
             padding: 0; 
             background-color: var(--f1-dark);
-            background-image: linear-gradient(rgba(21, 21, 30, 0.90), rgba(21, 21, 30, 0.95)), url('https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/background.jpg');
+            background-image: linear-gradient(rgba(21, 21, 30, 0.92), rgba(21, 21, 30, 0.96)), url('https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/background.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
+            overflow-x: hidden;
         }
 
-        /* CONSISTENT CINEMATIC HEADER */
-        .header {
+        /* CONSISTENT CINEMATIC HERO */
+        .hero {
             text-align: center;
-            padding: 130px 20px 150px 20px;
-            background: linear-gradient(180deg, rgba(21, 21, 30, 0.4) 0%, rgba(21, 21, 30, 0.95) 100%), url('https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Drivers.png');
+            padding: 120px 20px 140px 20px;
+            background: linear-gradient(180deg, rgba(21, 21, 30, 0.3) 0%, rgba(21, 21, 30, 0.98) 100%), url('https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Drivers.png');
             background-size: cover;
             background-position: top center;
             border-bottom: 2px solid var(--f1-red);
@@ -43,7 +47,7 @@
         .main-logo {
             max-width: 280px;
             margin-bottom: 20px;
-            filter: drop-shadow(0px 4px 10px rgba(0,0,0,0.5));
+            filter: drop-shadow(0px 4px 15px rgba(0,0,0,0.8));
             display: block;
             margin-left: auto;
             margin-right: auto;
@@ -51,34 +55,42 @@
         
         .back-btn {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            color: #aaa;
+            top: 25px;
+            left: 25px;
+            color: #ccc;
             text-decoration: none;
-            font-weight: 600;
-            font-size: 16px;
+            font-weight: 700;
+            font-size: 15px;
             text-transform: uppercase;
-            transition: 0.2s;
-            background: rgba(255,255,255,0.1);
-            padding: 8px 15px;
-            border-radius: 4px;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            background: rgba(255,255,255,0.05);
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(5px);
         }
-        .back-btn:hover { color: #fff; background: rgba(255,255,255,0.2); }
+        
+        .back-btn:hover { 
+            color: #fff; 
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
 
-        .header h1 {
+        .hero h1 {
             font-family: 'Formula1', sans-serif;
-            font-size: 40px;
+            font-size: 55px;
             text-transform: uppercase;
             margin: 0;
             letter-spacing: 2px;
-            text-shadow: 2px 2px 10px rgba(0,0,0,0.9);
+            text-shadow: 2px 2px 15px rgba(0,0,0,0.9);
         }
 
-        /* FLEXBOX GRID FOR 5 TEAMS */
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 50px 20px;
+            padding: 50px 20px 80px 20px;
         }
         
         .teams-grid {
@@ -88,59 +100,73 @@
             gap: 30px;
         }
 
+        /* MODERN APP-STYLE TEAM CARDS */
         .team-card {
-            background: rgba(31, 31, 39, 0.9);
-            backdrop-filter: blur(5px);
-            border-radius: 12px;
+            background: rgba(31, 31, 39, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
             overflow: hidden;
             border-top: 5px solid var(--team-color, #fff);
+            border-left: 1px solid rgba(255,255,255,0.05);
+            border-right: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
             box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            transition: 0.3s;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             width: calc(33.333% - 20px); 
             min-width: 320px; 
             max-width: 380px;
         }
         
         .team-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            transform: translateY(-8px);
+            background: color-mix(in srgb, var(--team-color) 8%, rgba(42, 42, 53, 0.95));
+            box-shadow: 0 15px 40px color-mix(in srgb, var(--team-color) 25%, transparent);
+            border-left: 1px solid color-mix(in srgb, var(--team-color) 30%, transparent);
+            border-right: 1px solid color-mix(in srgb, var(--team-color) 30%, transparent);
         }
         
         .team-header {
-            padding: 20px;
+            padding: 25px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(255,255,255,0.03);
-            border-bottom: 1px solid #333;
+            background: rgba(0,0,0,0.2);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         .team-logo { height: 40px; max-width: 120px; object-fit: contain; }
-        .team-name { font-size: 24px; font-weight: 700; margin: 0; color: var(--team-color); }
+        .team-name { font-size: 26px; font-weight: 900; margin: 0; color: var(--team-color); letter-spacing: 1px; }
 
-        .team-body { padding: 20px; }
+        .team-body { padding: 25px 20px; }
         
         .personnel-row {
             display: flex;
             align-items: center;
             margin-bottom: 15px;
             background: rgba(0,0,0,0.3);
-            padding: 10px;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: 10px;
             border: 1px solid rgba(255,255,255,0.05);
+            transition: 0.2s;
+        }
+
+        .personnel-row:hover {
+            background: rgba(0,0,0,0.5);
+            border-color: rgba(255,255,255,0.1);
         }
         
         .photo-wrapper {
-            width: 60px;
-            height: 60px;
+            width: 65px;
+            height: 65px;
             border-radius: 50%;
             overflow: hidden;
             border: 2px solid var(--team-color);
-            margin-right: 15px;
+            margin-right: 18px;
             flex-shrink: 0;
             background: #000;
             display: flex;
             justify-content: center;
             align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
 
         .personnel-photo {
@@ -152,14 +178,25 @@
             transform-origin: top center; 
         }
         
-        .personnel-info h4 { margin: 0; font-size: 18px; }
-        .personnel-info span { color: #888; font-size: 12px; text-transform: uppercase; font-weight: 700; }
+        .personnel-info h4 { margin: 0; font-size: 19px; font-weight: 700; }
+        .personnel-info span { color: #aaa; font-size: 12px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
+
+        /* MOBILE OPTIMIZATION */
+        @media (max-width: 768px) {
+            .hero { padding: 90px 15px 100px 15px; }
+            .hero h1 { font-size: 35px; }
+            .main-logo { max-width: 200px; }
+            .back-btn { top: 15px; left: 15px; padding: 8px 12px; font-size: 13px; }
+            .container { padding: 30px 15px 50px 15px; }
+            .teams-grid { flex-direction: column; align-items: center; gap: 25px; }
+            .team-card { width: 100%; max-width: 100%; min-width: unset; }
+        }
     </style>
 </head>
 <body>
 
-    <header class="header">
-        <a href="index.html" class="back-btn">&#8592; Back Home</a>
+    <header class="hero">
+        <a href="index.html" class="back-btn">&#8592; Back</a>
         <a href="index.html">
             <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Logo.png" alt="F1 Lads Logo" class="main-logo">
         </a>
