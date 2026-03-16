@@ -122,7 +122,13 @@
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         
-        .team-logo { height: 40px; max-width: 110px; object-fit: contain; }
+        .team-logo { 
+            height: 40px; 
+            max-width: 110px; 
+            object-fit: contain; 
+            align-self: flex-start; /* Aligns logo to the top with the text, ignoring the badge space */
+            margin-top: -7px; /* Perfectly centers the 40px logo against the 26px font */
+        }
         
         /* Forces standard height regardless of whether team has badges */
         .team-title-wrapper { display: flex; flex-direction: column; justify-content: flex-start; }
