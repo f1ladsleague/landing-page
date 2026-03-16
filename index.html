@@ -182,36 +182,46 @@
         function checkTelemetry(event, url) {
             event.preventDefault(); // Stop immediate navigation
             
-            // Grab the specific card elements we clicked on
             const card = event.currentTarget;
             const iconEl = card.querySelector('.card-icon');
             const titleEl = card.querySelector('h2');
             
-            // Save original text to reset later if it fails
             const originalIcon = iconEl.innerText;
             const originalTitle = titleEl.innerText;
             
-            // Update to "Connecting..." state
             iconEl.innerText = "⏳";
             iconEl.classList.add("spinning");
             titleEl.innerText = "Connecting...";
 
-            // SAFETY FALLBACK: If the check takes longer than 3 seconds, just let them through.
-            let safetyTimeout = setTimeout(() => {
-                window.location.href = url;
-            }, 3000);
+            let isDone = false;
 
-            // Using AllOrigins to safely check the actual HTML status code, bypassing CORS restrictions.
-            // We append a timestamp so the proxy fetches a fresh check every single time.
+            // Expanded timeout to 6 seconds to give the proxy enough time to read Cloudflare
+            let safetyTimeout = setTimeout(() => {
+                if (!isDone) {
+                    isDone = true;
+                    window.location.href = url; // Let them through if the proxy takes too long
+                }
+            }, 6000);
+
+            // Fetch the actual HTML of the telemetry page through a safe proxy
             const checkUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url + "?nocache=" + Date.now())}`;
 
             fetch(checkUrl)
                 .then(response => response.json())
                 .then(data => {
-                    clearTimeout(safetyTimeout); // Stop the 3-second fallback timer
+                    if (isDone) return; // Prevent double-execution if timeout already fired
+                    isDone = true;
+                    clearTimeout(safetyTimeout);
                     
-                    // If the proxy confirms the telemetry server is throwing a 502 or 503
-                    if (data.status && (data.status.http_code === 502 || data.status.http_code === 503)) {
+                    // Convert the entire webpage into lowercase text
+                    const html = (data.contents || "").toLowerCase();
+                    const httpCode = data.status ? data.status.http_code : 200;
+
+                    // STRICT CHECK: Does the webpage actually contain Cloudflare's 502 error message?
+                    const isCloudflareError = httpCode === 502 || 
+                                             (html.includes("bad gateway") && html.includes("cloudflare"));
+
+                    if (isCloudflareError) {
                         // Reset the card back to normal
                         iconEl.innerText = originalIcon;
                         iconEl.classList.remove("spinning");
@@ -220,12 +230,14 @@
                         // Show the alert
                         alert("🏎️ Telemetry is currently offline!\n\nThe live data feed only activates during the actual race sessions. Please check back later.");
                     } else {
-                        // Server is live (returns 200 OK), let them in!
+                        // Server is live, let them in!
                         window.location.href = url;
                     }
                 })
                 .catch(error => {
-                    // If the check fails for any reason (like strict browser privacy settings), just let them through safely
+                    // If the proxy fails (e.g., strict browser privacy settings), fail safely and let them through
+                    if (isDone) return;
+                    isDone = true;
                     clearTimeout(safetyTimeout);
                     window.location.href = url;
                 });
