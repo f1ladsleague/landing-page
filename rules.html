@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rules & Regulations | F1 Lads</title>
+    
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Logo.png">
+    
     <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         @font-face {
@@ -24,17 +27,18 @@
             margin: 0; 
             padding: 0; 
             background-color: var(--f1-dark);
-            background-image: linear-gradient(rgba(21, 21, 30, 0.90), rgba(21, 21, 30, 0.95)), url('https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/background.jpg');
+            background-image: linear-gradient(rgba(21, 21, 30, 0.92), rgba(21, 21, 30, 0.96)), url('https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/background.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
+            overflow-x: hidden;
         }
 
-        /* CONSISTENT CINEMATIC HEADER */
-        .header {
+        /* CONSISTENT CINEMATIC HERO */
+        .hero {
             text-align: center;
-            padding: 130px 20px 150px 20px;
-            background: linear-gradient(180deg, rgba(21, 21, 30, 0.4) 0%, rgba(21, 21, 30, 0.95) 100%), url('https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Drivers.png');
+            padding: 120px 20px 140px 20px;
+            background: linear-gradient(180deg, rgba(21, 21, 30, 0.3) 0%, rgba(21, 21, 30, 0.98) 100%), url('https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Drivers.png');
             background-size: cover;
             background-position: top center;
             border-bottom: 2px solid var(--f1-red);
@@ -44,7 +48,7 @@
         .main-logo {
             max-width: 280px;
             margin-bottom: 20px;
-            filter: drop-shadow(0px 4px 10px rgba(0,0,0,0.5));
+            filter: drop-shadow(0px 4px 15px rgba(0,0,0,0.8));
             display: block;
             margin-left: auto;
             margin-right: auto;
@@ -52,48 +56,53 @@
         
         .back-btn {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            color: #aaa;
+            top: 25px;
+            left: 25px;
+            color: #ccc;
             text-decoration: none;
-            font-weight: 600;
-            font-size: 16px;
+            font-weight: 700;
+            font-size: 15px;
             text-transform: uppercase;
-            transition: 0.2s;
-            background: rgba(255,255,255,0.1);
-            padding: 8px 15px;
-            border-radius: 4px;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            background: rgba(255,255,255,0.05);
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(5px);
         }
         
         .back-btn:hover { 
             color: #fff; 
-            background: rgba(255,255,255,0.2); 
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
         }
 
-        .header h1 {
+        .hero h1 {
             font-family: 'Formula1', sans-serif;
-            font-size: 40px;
+            font-size: 55px;
             text-transform: uppercase;
             margin: 0;
             letter-spacing: 2px;
-            text-shadow: 2px 2px 10px rgba(0,0,0,0.9);
+            text-shadow: 2px 2px 15px rgba(0,0,0,0.9);
         }
 
         .container {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 50px 20px 80px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        /* TAB / BUTTON SYSTEM */
+        /* MODERN TAB / BUTTON SYSTEM */
         .action-tabs {
             display: flex;
-            gap: 20px;
+            gap: 25px;
             width: 100%;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
             justify-content: center;
             flex-wrap: wrap;
         }
@@ -101,42 +110,59 @@
         .tab-btn {
             flex: 1;
             min-width: 280px;
-            max-width: 400px;
-            padding: 15px 20px;
+            max-width: 450px;
+            padding: 20px 25px;
             font-family: 'Titillium Web', sans-serif;
-            font-size: 16px;
-            font-weight: 700;
+            font-size: 18px;
+            font-weight: 900;
+            letter-spacing: 1px;
             text-transform: uppercase;
             color: #fff;
-            background: var(--f1-card);
-            border: 2px solid #444;
-            border-radius: 8px;
+            background: rgba(31, 31, 39, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
             cursor: pointer;
-            transition: 0.3s;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             text-align: center;
             text-decoration: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-top: 4px solid var(--btn-color, #444);
+            border-left: 1px solid rgba(255,255,255,0.05);
+            border-right: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
         .tab-btn.active {
-            background: var(--f1-red);
-            border-color: var(--f1-red);
-            box-shadow: 0 4px 20px rgba(225,6,0,0.4);
+            --btn-color: var(--f1-red);
+            background: color-mix(in srgb, var(--btn-color) 15%, rgba(42, 42, 53, 0.95));
+            box-shadow: 0 15px 40px color-mix(in srgb, var(--btn-color) 30%, transparent);
+            border-color: var(--btn-color);
         }
 
         .tab-btn:hover {
-            border-color: var(--f1-red);
-            transform: translateY(-2px);
+            transform: translateY(-5px);
+            --btn-color: #00bfff; /* Glows blue for the Trade Regs button on hover */
+            background: color-mix(in srgb, var(--btn-color) 15%, rgba(42, 42, 53, 0.95));
+            box-shadow: 0 15px 40px color-mix(in srgb, var(--btn-color) 30%, transparent);
+            border-color: var(--btn-color);
+        }
+        
+        .tab-btn.active:hover {
+            --btn-color: var(--f1-red); /* Keeps the active tab red on hover */
         }
 
         /* PDF VIEWER */
         .pdf-container {
             width: 100%;
             height: 75vh;
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            border: 1px solid #333;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.1);
             background: #fff; 
         }
         
@@ -145,12 +171,24 @@
             height: 100%;
             border: none;
         }
+
+        /* MOBILE OPTIMIZATION */
+        @media (max-width: 768px) {
+            .hero { padding: 90px 15px 100px 15px; }
+            .hero h1 { font-size: 35px; }
+            .main-logo { max-width: 200px; }
+            .back-btn { top: 15px; left: 15px; padding: 8px 12px; font-size: 13px; }
+            .container { padding: 30px 15px 50px 15px; }
+            .action-tabs { flex-direction: column; gap: 15px; align-items: center; }
+            .tab-btn { width: 100%; padding: 15px; font-size: 16px; }
+            .pdf-container { height: 65vh; }
+        }
     </style>
 </head>
 <body>
 
-    <header class="header">
-        <a href="index.html" class="back-btn">&#8592; Back Home</a>
+    <header class="hero">
+        <a href="index.html" class="back-btn">&#8592; Back</a>
         <a href="index.html">
             <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Logo.png" alt="F1 Lads Logo" class="main-logo">
         </a>
@@ -161,10 +199,10 @@
         
         <div class="action-tabs">
             <div class="tab-btn active">
-                📄 Season 5 Official Guidelines
+                <span>📄</span> Season 5 Official Guidelines
             </div>
-            <a href="https://trade.f1lads.com" target="_blank" class="tab-btn">
-                🔄 Mid-Season Trade Window
+            <a href="https://trade.f1lads.com" target="_blank" class="tab-btn" style="--btn-color: #444;">
+                <span>🔄</span> Mid-Season Trade Window
             </a>
         </div>
 
