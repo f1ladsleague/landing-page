@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>F1 Lads League | Season 5</title>
+    
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Logo.png">
+    
     <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         @font-face {
@@ -25,29 +28,26 @@
             padding: 0; 
             overflow-x: hidden;
             background-color: var(--f1-dark);
-            /* FIXED BACKGROUND IMAGE LINK */
-            background-image: linear-gradient(rgba(21, 21, 30, 0.90), rgba(21, 21, 30, 0.95)), url('https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/background.jpg');
+            background-image: linear-gradient(rgba(21, 21, 30, 0.92), rgba(21, 21, 30, 0.96)), url('https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/background.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
         }
 
-        /* HERO SECTION - TALLER TO REVEAL MORE DRIVERS */
+        /* HERO SECTION */
         .hero {
             text-align: center;
-            /* Increased padding from 60/80 to 130/150 to make the box much taller */
-            padding: 130px 20px 150px 20px;
-            /* FIXED DRIVERS BACKGROUND LINK */
-            background: linear-gradient(180deg, rgba(21, 21, 30, 0.4) 0%, rgba(21, 21, 30, 0.95) 100%), url('https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Drivers.png');
+            padding: 120px 20px 140px 20px;
+            background: linear-gradient(180deg, rgba(21, 21, 30, 0.3) 0%, rgba(21, 21, 30, 0.98) 100%), url('https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Drivers.png');
             background-size: cover;
             background-position: top center;
             border-bottom: 2px solid var(--f1-red);
         }
         
         .main-logo {
-            max-width: 280px; /* Made the logo slightly bigger to fill the new space */
+            max-width: 280px;
             margin-bottom: 20px;
-            filter: drop-shadow(0px 4px 10px rgba(0,0,0,0.5));
+            filter: drop-shadow(0px 4px 15px rgba(0,0,0,0.8));
         }
 
         .hero h1 {
@@ -57,13 +57,13 @@
             text-transform: uppercase;
             margin: 0;
             letter-spacing: 2px;
-            text-shadow: 2px 2px 10px rgba(0,0,0,0.9);
+            text-shadow: 2px 2px 15px rgba(0,0,0,0.9);
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 60px 20px 80px 20px;
+            padding: 50px 20px 80px 20px;
         }
         
         .links-grid {
@@ -72,41 +72,87 @@
             gap: 25px;
         }
 
+        /* MODERN APP-STYLE CARDS */
         .link-card {
-            background: rgba(31, 31, 39, 0.85);
-            backdrop-filter: blur(5px);
-            border-radius: 12px;
-            padding: 35px 25px;
+            background: rgba(31, 31, 39, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 40px 25px;
             text-align: center;
             text-decoration: none;
             color: #fff;
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            /* The dynamic color variable applied in the HTML will power this border */
+            border-top: 5px solid var(--card-color);
+            border-left: 1px solid rgba(255,255,255,0.05);
+            border-right: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         
         .link-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--f1-red);
-            background: rgba(42, 42, 53, 0.95);
-            box-shadow: 0 15px 40px rgba(225,6,0,0.2);
+            transform: translateY(-8px);
+            /* Mixes the card's specific color with the dark background on hover */
+            background: color-mix(in srgb, var(--card-color) 8%, rgba(42, 42, 53, 0.95));
+            box-shadow: 0 15px 40px color-mix(in srgb, var(--card-color) 25%, transparent);
+            border-left: 1px solid color-mix(in srgb, var(--card-color) 30%, transparent);
+            border-right: 1px solid color-mix(in srgb, var(--card-color) 30%, transparent);
+        }
+
+        .card-icon {
+            font-size: 45px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+            transition: transform 0.3s ease;
+        }
+
+        .link-card:hover .card-icon {
+            transform: scale(1.15);
         }
         
         .link-card h2 {
-            font-size: 24px;
+            font-size: 26px;
             margin: 0 0 12px 0;
             text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 900;
         }
         
         .link-card p {
             color: #bbb;
             font-size: 16px;
             margin: 0;
-            line-height: 1.4;
+            line-height: 1.5;
+            font-weight: 600;
+        }
+
+        /* =========================================
+           MOBILE OPTIMIZATION (Fires on screens smaller than 768px)
+           ========================================= */
+        @media (max-width: 768px) {
+            .hero {
+                padding: 80px 15px 100px 15px;
+            }
+            .hero h1 {
+                font-size: 35px; /* Shrinks huge F1 font to fit mobile width */
+            }
+            .main-logo {
+                max-width: 200px; /* Shrinks logo */
+            }
+            .container {
+                padding: 30px 15px 50px 15px;
+            }
+            .links-grid {
+                grid-template-columns: 1fr; /* Snaps grid to a perfect single vertical column */
+                gap: 20px;
+            }
+            .link-card {
+                padding: 30px 20px; /* Reduces chunky padding for mobile screens */
+            }
         }
     </style>
 </head>
@@ -119,30 +165,43 @@
 
     <div class="container">
         <div class="links-grid">
-            <a href="https://www.youtube.com/@f1lads/streams" target="_blank" class="link-card">
-                <h2>🔴 Live Stream</h2>
+            
+            <a href="https://www.youtube.com/@f1lads/streams" target="_blank" class="link-card" style="--card-color: #ff2a2a;">
+                <div class="card-icon">🔴</div>
+                <h2>Live Stream</h2>
                 <p>Watch the race day action live on YouTube.</p>
             </a>
-            <a href="https://standings.f1lads.com" class="link-card">
-                <h2>🏆 Standings</h2>
+            
+            <a href="https://standings.f1lads.com" class="link-card" style="--card-color: #ffd700;">
+                <div class="card-icon">🏆</div>
+                <h2>Standings</h2>
                 <p>Current Driver and Constructor Championship Standings.</p>
             </a>
-            <a href="https://bet.f1lads.com" class="link-card">
-                <h2>💰 Side Bets</h2>
+            
+            <a href="https://bet.f1lads.com" class="link-card" style="--card-color: #00e676;">
+                <div class="card-icon">💰</div>
+                <h2>Side Bets</h2>
                 <p>Constructor Dashboard & Side Betting.</p>
             </a>
-            <a href="rules.html" class="link-card">
-                <h2>📖 Rules & Regulations</h2>
+            
+            <a href="rules.html" class="link-card" style="--card-color: #00bfff;">
+                <div class="card-icon">📖</div>
+                <h2>Rules & Regs</h2>
                 <p>Official Rules & Regulations for Season 5.</p>
             </a>
-            <a href="https://telemetry.f1lads.com" class="link-card">
-                <h2>📊 Telemetry</h2>
+            
+            <a href="https://telemetry.f1lads.com" class="link-card" style="--card-color: #b388ff;">
+                <div class="card-icon">📊</div>
+                <h2>Telemetry</h2>
                 <p>Live Race Day Telemetry.</p>
             </a>
-            <a href="paddock.html" class="link-card">
-                <h2>🏎️ The Paddock</h2>
+            
+            <a href="paddock.html" class="link-card" style="--card-color: #ff9100;">
+                <div class="card-icon">🏎️</div>
+                <h2>The Paddock</h2>
                 <p>Meet the Season 5 Constructors, Principals, and Drivers.</p>
             </a>
+
         </div>
     </div>
 
