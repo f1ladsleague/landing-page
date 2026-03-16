@@ -21,7 +21,7 @@
             overflow-x: hidden;
             /* Static, subtle dark background */
             background-color: var(--f1-dark);
-            background-image: linear-gradient(rgba(21, 21, 30, 0.88), rgba(21, 21, 30, 0.95)), url('https://github.com/f1ladsleague/landing-page/blob/9f87dd4d2238e01409bfefce079cbc4fa42d9dc2/Team_Photos/background.jpg?raw=true');
+            background-image: linear-gradient(rgba(21, 21, 30, 0.90), rgba(21, 21, 30, 0.95)), url('https://raw.githubusercontent.com/f1ladsleague/landing-page/6770fcc6c86dd4eaa46daa0af61a0c6293152c92/Team_Photos/background.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -30,12 +30,9 @@
         /* HERO SECTION */
         .hero {
             text-align: center;
-            padding: 60px 20px 80px 20px;
-            /* Lighter gradient overlay, anchored to the top so drivers are visible */
-            background: linear-gradient(180deg, rgba(21, 21, 30, 0.2) 0%, rgba(21, 21, 30, 0.95) 100%), url('https://github.com/f1ladsleague/landing-page/blob/6770fcc6c86dd4eaa46daa0af61a0c6293152c92/Team_Photos/Drivers.png?raw=true');
-            background-size: cover;
-            background-position: top center;
+            padding: 60px 20px;
             border-bottom: 2px solid var(--f1-red);
+            background: rgba(0,0,0,0.3);
         }
         
         .main-logo {
@@ -64,7 +61,7 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 60px 20px;
+            padding: 60px 20px 40px 20px;
         }
         
         .links-grid {
@@ -74,7 +71,7 @@
         }
 
         .link-card {
-            background: rgba(31, 31, 39, 0.85); /* Slightly transparent to show background */
+            background: rgba(31, 31, 39, 0.85);
             backdrop-filter: blur(5px);
             border-radius: 12px;
             padding: 35px 25px;
@@ -109,12 +106,28 @@
             margin: 0;
             line-height: 1.4;
         }
+
+        /* BOTTOM DRIVERS BANNER */
+        .drivers-banner {
+            width: 100%;
+            text-align: center;
+            padding-bottom: 40px;
+        }
+        
+        .drivers-banner img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0px -10px 30px rgba(0,0,0,0.5);
+            max-height: 400px; /* Keeps it from being overwhelmingly massive on huge screens */
+            object-fit: cover;
+        }
     </style>
 </head>
 <body>
 
     <header class="hero">
-        <img src="https://github.com/f1ladsleague/landing-page/blob/9f87dd4d2238e01409bfefce079cbc4fa42d9dc2/Team_Photos/Logo.png?raw=true" alt="F1 Lads Logo" class="main-logo">
+        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/6770fcc6c86dd4eaa46daa0af61a0c6293152c92/Team_Photos/Logo.png" alt="F1 Lads Logo" class="main-logo">
         <h1>F1 Lads League</h1>
         <p>Season 5 | The Pinnacle of Sim Racing</p>
     </header>
@@ -146,6 +159,10 @@
                 <p>Meet the Season 5 Constructors, Principals, and Drivers.</p>
             </a>
         </div>
+    </div>
+
+    <div class="drivers-banner">
+        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/6770fcc6c86dd4eaa46daa0af61a0c6293152c92/Team_Photos/Drivers.png" alt="Season 5 Grid">
     </div>
 
 </body>
