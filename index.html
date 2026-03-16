@@ -45,16 +45,16 @@
             overflow: hidden; 
         }
         
-        /* Forces the video to anchor to the TOP instead of the center */
+        /* Forces the video to anchor at the 25% mark */
         .video-container {
             position: absolute;
-            top: 25%; 
+            top: 25%; /* Pushed down from the top */
             left: 50%;
             width: 100vw;
             height: 56.25vw; /* 16:9 Aspect Ratio */
             min-height: 100%;
             min-width: 177.77vh; 
-            transform: translateX(-50%, -50%); /* Only centers horizontally */
+            transform: translate(-50%, -25%); /* Perfectly aligns the 25% anchor */
             z-index: 1;
             pointer-events: none; 
         }
@@ -83,8 +83,8 @@
         }
         
         .main-logo {
-            max-width: 320px; /* Made the logo slightly bigger since it's the only thing here now */
-            margin-bottom: 0; /* Removed margin to center perfectly */
+            max-width: 320px;
+            margin-bottom: 0; 
             filter: drop-shadow(0px 4px 15px rgba(0,0,0,0.8));
         }
 
