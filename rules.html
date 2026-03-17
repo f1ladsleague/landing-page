@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rules & Regulations | F1 Lads</title>
+    <title>F1 Lads League | Rules & Regulations</title>
     
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Logo.png">
     
@@ -12,6 +12,10 @@
         @font-face {
             font-family: 'Formula1';
             src: url('https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Formula1.ttf') format('truetype');
+        }
+        @font-face {
+            font-family: 'Formula1-Bold';
+            src: url('https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Formula1-Bold.ttf') format('truetype');
         }
 
         :root { 
@@ -80,12 +84,13 @@
         }
 
         .hero h1 {
-            font-family: 'Formula1', sans-serif;
+            font-family: 'Formula1-Bold', sans-serif;
             font-size: 55px;
             text-transform: uppercase;
             margin: 0;
             letter-spacing: 2px;
             text-shadow: 2px 2px 15px rgba(0,0,0,0.9);
+            font-weight: normal;
         }
 
         .container {
@@ -145,7 +150,7 @@
 
         .tab-btn:hover {
             transform: translateY(-5px);
-            --btn-color: #00bfff; /* Glows blue on hover */
+            --btn-color: #00bfff; /* Glows blue on hover by default */
             background: color-mix(in srgb, var(--btn-color) 15%, rgba(42, 42, 53, 0.95));
             box-shadow: 0 15px 40px color-mix(in srgb, var(--btn-color) 30%, transparent);
             border-color: var(--btn-color);
@@ -153,6 +158,11 @@
         
         .tab-btn.active:hover {
             --btn-color: var(--f1-red); /* Keeps the active tab red on hover */
+        }
+
+        /* Unique hover color for the Discord button */
+        #discord-btn:hover {
+            --btn-color: #5865F2; /* Discord Blurple */
         }
 
         /* PDF VIEWER - HIDDEN BY DEFAULT */
@@ -183,7 +193,7 @@
             .back-btn { top: 15px; left: 15px; padding: 8px 12px; font-size: 13px; }
             .container { padding: 30px 15px 50px 15px; }
             .action-tabs { flex-direction: column; gap: 15px; align-items: center; }
-            .tab-btn { width: 100%; padding: 15px; font-size: 16px; }
+            .tab-btn { width: 100%; padding: 15px; font-size: 16px; box-sizing: border-box; }
             .pdf-container { height: 65vh; }
         }
     </style>
@@ -204,6 +214,11 @@
             <div class="tab-btn" id="guidelines-btn" style="--btn-color: #444;">
                 <span>📄</span> Season 5 Official Guidelines
             </div>
+            
+            <a href="https://discord.com/channels/1226575773649997934/1226575774748770305" target="_blank" class="tab-btn" id="discord-btn" style="--btn-color: #444;">
+                <span>⚖️</span> Stewards & Committee Decisions
+            </a>
+            
             <a href="https://trade.f1lads.com" target="_blank" class="tab-btn" style="--btn-color: #444;">
                 <span>🔄</span> Mid-Season Trade Window
             </a>
