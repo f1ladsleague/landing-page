@@ -54,7 +54,7 @@
         .team-logo-main { height: 45px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); margin-left: 5px; }
         .rookie-badge { background: #00d2be; color: #000; font-size: 12px; font-weight: 900; padding: 4px 10px; border-radius: 4px; letter-spacing: 1px; vertical-align: middle; }
         
-        .profile-meta { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px; color: #aaa; font-size: 15px; align-items: center;}
+        .profile-meta { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px; color: #aaa; font-size: 14px; align-items: center;}
         .meta-tag { background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 4px; font-weight: 700; text-transform: uppercase; font-size: 12px; border: 1px solid rgba(255,255,255,0.1); }
         
         .former-teams { display: flex; gap: 10px; align-items: center; margin-top: 15px; font-size: 12px; color: #888; text-transform: uppercase; font-weight: 700; letter-spacing: 1px;}
@@ -218,7 +218,6 @@
 
     <script>
         const photoBase = "https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/";
-        const flagsBase = "https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Flags/";
         const teamColors = { "Ferrari": "#ef1a2d", "McLaren": "#ff8000", "Mercedes": "#00d2be", "Aston Martin": "#006f62", "Red Bull": "#3671c6", "Alpine": "#0090ff", "Alfa Romeo": "#900000", "AlphaTauri": "#2b4562", "RB": "#1a3eb8", "Kick Sauber": "#00e701", "Williams": "#005aff", "Haas": "#ffffff" };
         
         let allEvents = [];
@@ -228,9 +227,9 @@
         let seasonStandings = {};
         let currentSeasonMax = 1;
         
-        let myChart1, myChart2;
+        let myChart1, myChart2, myChart3;
 
-        // HARDCODED DRIVERS JSON TO GUARANTEE FLAGS/NUMBERS/NAMES WORK
+        // HARDCODED DRIVERS JSON
         const staticDriverProfiles = [
           { "Name": "Mapa", "RealName": "Madhawa Mapa", "InGameName": "M. MAPA", "Nationality": "United Arab Emirates", "RaceNumber": 99, "GamePlatform": "PC" },
           { "Name": "Shiyan", "RealName": "Shiyan Kekulkotuwage", "InGameName": "shiyank88", "RaceNumber": 8, "GamePlatform": "PC" },
@@ -243,6 +242,12 @@
           { "Name": "Rodda", "RealName": "Nuwi Rodrigo", "InGameName": "NuwiRODDA", "Nationality": "Germany", "RaceNumber": 92, "GamePlatform": "PS5" },
           { "Name": "Kalpa", "RealName": "Kalpa Keragala", "InGameName": "PrODigY_v2", "Nationality": "Brazil", "RaceNumber": 88, "GamePlatform": "PS5" }
         ];
+
+        // AWARDS DICTIONARY
+        const driverAwards = {
+            "Rodda": ["Season 4 - Cleanest Driver", "Season 4 - Drivers MVP", "Season 4 - Overtake of the Season"],
+            "Kalpa": ["Season 4 - Most Improved Driver"]
+        };
 
         const archiveFiles = [
             "Season%201/results_silverstone_race.json", "Season%201/results_spielberg_race.json", "Season%201/results_bahrain_race.json", "Season%201/results_jeddah_race.json", "Season%201/results_melbourne_race.json", "Season%201/results_suzuka_race.json",
@@ -314,10 +319,10 @@
                 const results = await Promise.all(fetchPromises);
                 const validFiles = results.filter(r => r !== null);
                 
-                const races = validFiles.filter(f => f.data.SessionType === "Race");
-                const qualis = validFiles.filter(f => f.data.SessionType === "Qualification");
+                // Track all sessions (Race + Sprints)
+                const racesAndSprints = validFiles.filter(f => f.data.SessionType === "Race");
 
-                races.forEach(fileObj => {
+                racesAndSprints.forEach(fileObj => {
                     const race = fileObj.data; const path = fileObj.path;
                     let dateObj = new Date(race.Date);
                     
@@ -333,9 +338,10 @@
                     let label = "Feature"; 
                     if (seasonNum === 3 && maxPts <= 10) label = "Sprint";
                     else if (seasonNum !== 3 && maxPts <= 16) label = "Sprint";
+                    
+                    if (race.RaceType === "Sprint") label = "Sprint";
 
-                    const matchingQuali = qualis.find(q => q.data.TrackName === race.TrackName && q.data.Date === race.Date);
-                    allEvents.push({ season: seasonNum, trackName: race.TrackName, label: label, date: dateObj, raceData: race, qualiData: matchingQuali ? matchingQuali.data : null });
+                    allEvents.push({ season: seasonNum, trackName: race.TrackName, label: label, date: dateObj, raceData: race });
                 });
 
                 allEvents.sort((a, b) => a.date - b.date);
@@ -355,8 +361,20 @@
         function computeStatistics() {
             allEvents.forEach((ev) => {
                 let tNameStr = ev.trackName;
-                if (!trackStats[tNameStr]) trackStats[tNameStr] = { name: tNameStr, races: 0, winners: [], poles: {} };
+                
+                // Initialize Track Stats to hold ALL sessions
+                if (!trackStats[tNameStr]) trackStats[tNameStr] = { 
+                    name: tNameStr, 
+                    races: 0, 
+                    sessions: [],
+                    driverPoints: {},
+                    driverWins: {},
+                    lapRecord: { time: 999999999, driver: "-" }
+                };
+                
+                // Increment overall track race counter if it's a Feature race
                 if (ev.label === "Feature") trackStats[tNameStr].races++;
+                trackStats[tNameStr].sessions.push(ev);
 
                 if (!seasonStandings[ev.season]) seasonStandings[ev.season] = { drivers: {}, teams: {} };
                 
@@ -378,12 +396,22 @@
                     else if (d.TimeInt > 0 && winnerTime > 0) gapStr = formatGap(d.TimeInt - winnerTime);
                     else if (d.Status && d.Status.toLowerCase().includes("lap")) gapStr = d.Status;
 
+                    // Update Season Standings
                     if(!seasonStandings[ev.season].drivers[dName]) seasonStandings[ev.season].drivers[dName] = { points: 0, team: tName };
                     seasonStandings[ev.season].drivers[dName].points += pts;
                     seasonStandings[ev.season].drivers[dName].team = tName; 
                     if(!seasonStandings[ev.season].teams[tName]) seasonStandings[ev.season].teams[tName] = 0;
                     seasonStandings[ev.season].teams[tName] += pts;
 
+                    // Update Track Specific Aggregates
+                    if (pos === 1 && ev.label === "Feature") trackStats[tNameStr].driverWins[dName] = (trackStats[tNameStr].driverWins[dName] || 0) + 1;
+                    trackStats[tNameStr].driverPoints[dName] = (trackStats[tNameStr].driverPoints[dName] || 0) + pts;
+                    
+                    if (flTime > 0 && flTime < trackStats[tNameStr].lapRecord.time) {
+                        trackStats[tNameStr].lapRecord = { time: flTime, driver: dName };
+                    }
+
+                    // Setup Driver Profiles
                     if (!driverStats[dName]) {
                         driverStats[dName] = { 
                             name: dName, currentTeam: tName, starts: 0, wins: 0, podiums: 0, 
@@ -398,19 +426,10 @@
                     s.penPts += penPts;
                     s.totalPtsSort += pts; 
                     
-                    if (pos === 1) {
-                        s.wins++;
-                        if(ev.label === "Feature") trackStats[tNameStr].winners.push({ name: dName, season: ev.season });
-                    }
+                    if (pos === 1) s.wins++;
                     if (pos <= 3) s.podiums++;
                     if (isFL) s.fls++;
                     
-                    let qData = ev.qualiData ? ev.qualiData.Drivers.find(qd => qd.Driver.Name === dName) : null;
-                    if (qData && qData.Position === 1) {
-                        s.poles++;
-                        trackStats[tNameStr].poles[dName] = (trackStats[tNameStr].poles[dName] || 0) + 1;
-                    }
-
                     if (isDnf) s.dnfs++;
                     else {
                         s.sumPos += pos; 
@@ -436,7 +455,8 @@
 
         function formatFlagUrl(nat) {
             if (!nat) return "";
-            return `${flagsBase}${nat.toLowerCase().replace(/\s+/g, '_')}.png`;
+            // Maps to standard format: united_arab_emirates.png
+            return `${photoBase}${nat.toLowerCase().replace(/\s+/g, '_')}.png`;
         }
         
         function getTeamLogoUrl(teamName) {
@@ -461,7 +481,7 @@
             if (idx === -1) return "-";
             let p = idx + 1;
             
-            if (sNum === currentSeasonMax) return `Current Standing: ${p}${p===1?'st':p===2?'nd':p===3?'rd':'th'}`;
+            if (sNum === currentSeasonMax) return `${p}${p===1?'st':p===2?'nd':p===3?'rd':'th'} Overall`;
             return p === 1 ? "Champion 👑" : p === 2 ? "2nd Overall" : p === 3 ? "3rd Overall" : `${p}th Overall`;
         }
 
@@ -499,7 +519,7 @@
                 tDir.innerHTML += `
                     <div class="data-card" onclick="renderTrackProfile('${t.name}')">
                         <h3 class="data-card-title">${t.name}</h3>
-                        <div class="data-card-stat">Races Held: ${t.races}</div>
+                        <div class="data-card-stat">Features Hosted: ${t.races}</div>
                     </div>
                 `;
             });
@@ -532,6 +552,20 @@
                 formerTeamsHtml = `<div class="former-teams">Former Teams: ` + uniqueTeams.map(t => `<img src="${getTeamLogoUrl(t)}" class="former-team-logo" title="${t}" onerror="this.style.display='none'">`).join(' ') + `</div>`;
             }
 
+            // Awards Box
+            let awardsHtml = "";
+            if (driverAwards[dName]) {
+                let list = driverAwards[dName].map(aw => `<li>🏆 ${aw}</li>`).join('');
+                awardsHtml = `
+                    <div style="margin-top: 15px; background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); padding: 15px; border-radius: 8px; width: 100%;">
+                        <h4 style="color: gold; margin: 0 0 10px 0; text-transform: uppercase; font-size: 13px; letter-spacing: 1px;">Awards & Accolades</h4>
+                        <ul style="list-style: none; padding: 0; margin: 0; font-size: 14px; color: #ddd; display: flex; flex-direction: column; gap: 6px;">
+                            ${list}
+                        </ul>
+                    </div>
+                `;
+            }
+
             let html = `
                 <div class="profile-wrapper">
                     <div class="profile-header">
@@ -543,12 +577,13 @@
                                 <img src="${getTeamLogoUrl(s.currentTeam)}" class="team-logo-main" onerror="this.style.display='none'">
                             </h2>
                             <div class="profile-meta">
-                                ${p.RealName ? `<span class="meta-tag">👤 ${p.RealName}</span>` : ''}
-                                ${p.InGameName ? `<span class="meta-tag">🎮 ${p.InGameName}</span>` : ''}
-                                ${p.GamePlatform ? `<span class="meta-tag">💻 ${p.GamePlatform}</span>` : ''}
                                 ${p.RaceNumber ? `<span class="meta-tag" style="background:var(--f1-red); color:#fff; border:none;">#${p.RaceNumber}</span>` : ''}
+                                ${p.RealName ? `<span class="meta-tag">Real Name: ${p.RealName}</span>` : ''}
+                                ${p.InGameName ? `<span class="meta-tag">In-Game: ${p.InGameName}</span>` : ''}
+                                ${p.GamePlatform ? `<span class="meta-tag">Platform: ${p.GamePlatform}</span>` : ''}
                             </div>
                             ${formerTeamsHtml}
+                            ${awardsHtml}
                         </div>
                     </div>
 
@@ -589,18 +624,19 @@
                 let sGridSize = Object.keys(seasonStandings[sNum].drivers).length;
 
                 let rows = sData.races.map(r => {
-                    let rowStyle = "";
+                    let rowStyle = "color: #fff;"; // Default to white
                     if (r.pos === "DNF" || r.pos === "DSQ") rowStyle = "color: var(--f1-red); font-style: italic;";
                     else if (r.pos === 1) rowStyle = "color: gold; font-weight: 700;";
                     else if (r.pos === 2) rowStyle = "color: #C0C0C0; font-weight: 700;";
                     else if (r.pos === 3) rowStyle = "color: #CD7F32; font-weight: 700;";
 
-                    let flStyle = r.fl ? "color: var(--fastest-lap); font-weight: 900;" : "color: #aaa;";
+                    // Only the FL text goes purple if they got FL
+                    let flStyle = r.fl ? "color: var(--fastest-lap); font-weight: 900;" : "";
 
                     return `
                         <tr style="${rowStyle}">
                             <td style="width:50px; text-align:center; font-weight:900;">${r.pos}</td>
-                            <td>${r.track} <span style="color:#888; font-size:11px; font-weight: normal;">(${r.label})</span></td>
+                            <td>${r.track} <span style="opacity: 0.6; font-size:11px; font-weight: normal;">(${r.label})</span></td>
                             <td>${r.team}</td>
                             <td style="font-family:monospace;">${r.gap}</td>
                             <td style="font-family:monospace; ${flStyle}">${formatMs(r.flTime)}</td>
@@ -636,7 +672,6 @@
             if(myChart1) myChart1.destroy();
             if(myChart2) myChart2.destroy();
 
-            // Chart 1: Average Finish Pos By Season
             let labels = sortedSeasons.slice().reverse().map(num => `S${num}`);
             let avgData = sortedSeasons.slice().reverse().map(num => {
                 let races = s.seasons[num].races.filter(r => r.pos !== "DNF");
@@ -651,7 +686,6 @@
                 options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { reverse: true, min: 1, max: 10, ticks: { stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } }
             });
 
-            // Chart 2: Finish Distribution
             let p1=0, p2=0, p3=0, p4=0, p5=0, p6=0, p7_10=0;
             Object.values(s.seasons).forEach(season => {
                 season.races.forEach(r => {
@@ -675,7 +709,7 @@
             });
         }
 
-        // --- Track Profiles ---
+        // --- Track Profiles (Fully Built Out) ---
         function renderTrackProfile(tName) {
             document.getElementById('main-nav').style.display = "none";
             document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
@@ -684,13 +718,59 @@
 
             let t = trackStats[tName];
             
-            let winCounts = {};
-            t.winners.forEach(w => winCounts[w.name] = (winCounts[w.name] || 0) + 1);
-            let topWinner = Object.keys(winCounts).sort((a,b) => winCounts[b] - winCounts[a])[0] || "-";
+            // Get Top Winner
+            let topWinner = Object.keys(t.driverWins).sort((a,b) => t.driverWins[b] - t.driverWins[a])[0] || "-";
+            // Get Top Points Scorer
+            let topPointsDriver = Object.keys(t.driverPoints).sort((a,b) => t.driverPoints[b] - t.driverPoints[a])[0] || "-";
+            // Lap Record Data
+            let lapRecText = t.lapRecord.time < 999999999 ? `${formatMs(t.lapRecord.time)}<br><span style="font-size:12px;color:#888;">${t.lapRecord.driver}</span>` : "-";
 
-            let rows = t.winners.map((w, idx) => `
-                <tr><td>Season ${w.season}</td><td style="color: gold; font-weight: 900;">${w.name} 🏆</td></tr>
-            `).join('');
+            // Loop through every session held at this track
+            let sessionAccordions = t.sessions.map((ev, idx) => {
+                let sortedDrivers = ev.raceData.Drivers.sort((a, b) => a.Position - b.Position);
+                let winnerTime = sortedDrivers.find(d => d.Position === 1)?.TimeInt || 0;
+
+                let sessionRows = sortedDrivers.map(d => {
+                    let isFL = ev.raceData.FastestLapDriver && ev.raceData.FastestLapDriver.Name === d.Driver.Name;
+                    let isDnf = (d.Status !== "Ok" && d.Status !== "finished" && !d.Status.toLowerCase().includes("lap"));
+                    
+                    let gapStr = "-";
+                    if (isDnf) gapStr = "DNF";
+                    else if (d.Position === 1) gapStr = "Winner";
+                    else if (d.TimeInt > 0 && winnerTime > 0) gapStr = formatGap(d.TimeInt - winnerTime);
+                    else if (d.Status && d.Status.toLowerCase().includes("lap")) gapStr = d.Status;
+
+                    return `
+                        <tr class="${isFL ? 'fl-row' : ''}">
+                            <td style="text-align:center; font-weight:900;">${d.Position}</td>
+                            <td>${d.Driver.Name}</td>
+                            <td>${d.Team ? d.Team.Name : "Unknown"}</td>
+                            <td style="font-family:monospace;">${gapStr}</td>
+                            <td style="font-family:monospace;">${formatMs(d.FastestLapTimeInt || 0)}</td>
+                            <td style="text-align:center; color:var(--f1-red); font-weight:900;">${(d.DriverPointsRaw || 0) / 10}</td>
+                        </tr>
+                    `;
+                }).join('');
+
+                return `
+                    <details ${idx === t.sessions.length - 1 ? 'open' : ''}>
+                        <summary>Season ${ev.season} - ${ev.label} <span class="summary-stats">Grid Size: ${sortedDrivers.length}</span></summary>
+                        <div class="table-wrap">
+                            <table class="analysis-table">
+                                <thead><tr>
+                                    <th style="text-align:center;">Pos</th>
+                                    <th>Driver</th>
+                                    <th>Car</th>
+                                    <th>Time / Gap</th>
+                                    <th>Fastest Lap</th>
+                                    <th style="text-align:center;">Pts</th>
+                                </tr></thead>
+                                <tbody>${sessionRows}</tbody>
+                            </table>
+                        </div>
+                    </details>
+                `;
+            }).join('');
 
             let html = `
                 <div class="profile-wrapper">
@@ -698,23 +778,49 @@
                         <button class="back-btn" onclick="exitToDirectory('tracks')">Back</button>
                         <div>
                             <h2 class="profile-name">${tName} Circuit</h2>
-                            <div class="profile-meta"><span class="meta-tag">Grand Prix Hosted: ${t.races}</span></div>
+                            <div class="profile-meta"><span class="meta-tag">Total Sessions Hosted: ${t.sessions.length}</span></div>
                         </div>
                     </div>
-                    <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr);">
+                    
+                    <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr);">
                         <div class="stat-box"><div class="stat-value text-value">${topWinner}</div><div class="stat-label">Most Feature Wins</div></div>
-                        <div class="stat-box"><div class="stat-value">${t.races}</div><div class="stat-label">Total Races</div></div>
+                        <div class="stat-box"><div class="stat-value text-value">${topPointsDriver}</div><div class="stat-label">Most Points Scored</div></div>
+                        <div class="stat-box"><div class="stat-value text-value" style="font-family:monospace; line-height: 1.2;">${lapRecText}</div><div class="stat-label">All-Time Lap Record</div></div>
+                        <div class="stat-box"><div class="stat-value">${t.races}</div><div class="stat-label">Feature Races Held</div></div>
                     </div>
+
+                    <div class="charts-section" style="grid-template-columns: 1fr;">
+                        <div class="chart-container"><h4 class="chart-title">Top 5 Drivers by Points at ${tName}</h4><canvas id="trackPointsChart" style="max-height: 300px;"></canvas></div>
+                    </div>
+
                     <div class="history-section">
-                        <h3 class="history-title">Roll of Honour</h3>
-                        <table class="analysis-table">
-                            <thead><tr><th>Season</th><th>Race Winner</th></tr></thead>
-                            <tbody>${rows || '<tr><td colspan="2">No historical data</td></tr>'}</tbody>
-                        </table>
+                        <h3 class="history-title">Session History</h3>
+                        ${sessionAccordions || '<p>No historical data</p>'}
                     </div>
                 </div>
             `;
             container.innerHTML = html;
+
+            setTimeout(() => drawTrackChart(t), 100);
+        }
+
+        function drawTrackChart(t) {
+            if(myChart3) myChart3.destroy();
+
+            // Sort drivers by points at this track and take top 5
+            let topDrivers = Object.keys(t.driverPoints)
+                                   .sort((a, b) => t.driverPoints[b] - t.driverPoints[a])
+                                   .slice(0, 5);
+            let pointValues = topDrivers.map(d => t.driverPoints[d]);
+
+            myChart3 = new Chart(document.getElementById('trackPointsChart'), {
+                type: 'bar',
+                data: {
+                    labels: topDrivers,
+                    datasets: [{ label: 'Total Points', data: pointValues, backgroundColor: 'rgba(225, 6, 0, 0.8)', borderRadius: 4 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } }
+            });
         }
 
         function exitToDirectory(tabName) {
