@@ -64,10 +64,16 @@
         }
 
         /* HEADER & NAVIGATION */
-        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; border-bottom: 2px solid #333; padding-bottom: 20px; flex-wrap: nowrap; gap: 15px;}
-        .header-left { display: flex; align-items: center; min-width: 0; }
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; border-bottom: 2px solid #333; padding-bottom: 20px; flex-wrap: wrap; gap: 15px;}
+        .header-left { display: flex; align-items: center; min-width: 0; flex: 1; }
+        .header-right { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        
         .back-btn { background: #333; color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; transition: 0.3s; margin-right: 20px; text-transform: uppercase; white-space: nowrap;}
         .back-btn:hover { background: var(--f1-red); }
+        
+        .archive-btn { background: transparent; color: #aaa; border: 1px solid #555; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; transition: 0.3s; text-transform: uppercase; white-space: nowrap; }
+        .archive-btn:hover { background: #333; color: #fff; border-color: #888; }
+
         .title-wrapper h2 { margin: 0; font-size: 24px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; color: var(--f1-red); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         .title-wrapper p { margin: 5px 0 0 0; color: #aaa; font-size: 15px; }
 
@@ -136,9 +142,9 @@
         .driver-photo { 
             width: 100%; height: 100%; 
             object-fit: cover; 
-            object-position: center top; /* Anchors the top of the photo to the top of the circle */
-            transform-origin: top center; /* Scales from the top down */
-            transform: scale(1.6); /* Increased zoom */
+            object-position: center top; 
+            transform-origin: top center; 
+            transform: scale(1.6); 
         }
         
         .driver-col { font-size: 18px; font-weight: 700; text-transform: uppercase; margin: 0; }
@@ -156,9 +162,11 @@
         #loader { text-align: center; padding: 50px; color: #888; font-style: italic; }
 
         @media (max-width: 768px) {
-            .header { flex-direction: column; align-items: flex-start; flex-wrap: wrap; }
+            .header { flex-direction: column; align-items: flex-start; }
             .header-left { width: 100%; margin-bottom: 10px; }
+            .header-right { width: 100%; flex-direction: column; align-items: stretch; }
             .race-selector { width: 100%; max-width: 100%; }
+            .archive-btn { text-align: center; }
             th, td { padding: 10px 10px; font-size: 14px; }
             .hide-mobile { display: none; }
             .driver-col { font-size: 15px; }
@@ -185,7 +193,11 @@
                     <p id="race-subtitle">Fetching telemetry data.</p>
                 </div>
             </div>
-            <select id="race-selector" class="race-selector" style="display: none;"></select>
+            
+            <div class="header-right">
+                <select id="race-selector" class="race-selector" style="display: none;"></select>
+                <a href="archive.html" class="archive-btn">Previous Seasons 🗄️</a>
+            </div>
         </div>
 
         <div class="session-tabs" id="session-tabs" style="display: none;">
@@ -213,6 +225,13 @@
             "McLaren": "MCL.png",
             "Mercedes": "MER.png",
             "Red Bull": "RB.png"
+        };
+        const teamColors = {
+            "Ferrari": "var(--ferrari)",
+            "McLaren": "var(--mclaren)",
+            "Mercedes": "var(--mercedes)",
+            "Aston Martin": "var(--aston)",
+            "Red Bull": "var(--redbull)"
         };
 
         function formatMs(ms) {
@@ -283,7 +302,6 @@
                     let dateDiff = new Date(a.date) - new Date(b.date);
                     if (dateDiff !== 0) return dateDiff;
                     
-                    // Tie-breaker logic
                     let order = { "Sprint": 1, "Feature": 2 };
                     let aOrder = order[a.label] || 3;
                     let bOrder = order[b.label] || 3;
@@ -375,6 +393,7 @@
                 
                 const teamName = driver.Team ? driver.Team.Name : "Unknown";
                 const teamLogoUrl = teamLogos[teamName] ? `${photoBase}${teamLogos[teamName]}` : '';
+                const teamColor = teamColors[teamName] || '#222';
 
                 let timeDisplay = "";
                 
@@ -409,7 +428,7 @@
                     <td class="pos-col">${driver.Position}</td>
                     <td>
                         <div class="driver-cell">
-                            <div class="driver-photo-wrapper">
+                            <div class="driver-photo-wrapper" style="background-color: ${teamColor};">
                                 <img src="${driverPhotoUrl}" alt="${driver.Driver.Name}" class="driver-photo" onerror="this.parentElement.style.display='none'">
                             </div>
                             <span class="driver-col">${driver.Driver.Name}</span>
