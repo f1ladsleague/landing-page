@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>League Statistics | F1 Lads League</title>
+    <title>Statistics & Analysis | F1 Lads League</title>
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/f1ladsleague/sidebetting/6f14ca658f9c288fd8ca8a79df5c658c97c8ac92/favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -21,7 +21,7 @@
 
         /* Navigation Tabs */
         .stat-nav { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 15px; flex-wrap: wrap;}
-        .stat-tab { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #aaa; font-family: 'Titillium Web', sans-serif; font-size: 18px; font-weight: 700; text-transform: uppercase; padding: 12px 30px; cursor: pointer; transition: 0.3s; border-radius: 8px; }
+        .stat-tab { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #aaa; font-family: 'Titillium Web', sans-serif; font-size: 16px; font-weight: 700; text-transform: uppercase; padding: 10px 25px; cursor: pointer; transition: 0.3s; border-radius: 8px; }
         .stat-tab:hover { background: rgba(255,255,255,0.1); color: #fff; }
         .stat-tab.active { background: var(--f1-red); color: #fff; border-color: var(--f1-red); box-shadow: 0 4px 15px rgba(225, 6, 0, 0.4); }
 
@@ -29,40 +29,46 @@
         .view-section.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Directory UI */
-        .directory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
+        /* Directory UI (Enforced 5 Columns for Symmetry) */
+        .directory-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; }
         .directory-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: 0.3s; text-decoration: none; color: inherit; display: block; }
         .directory-card:hover { background: rgba(255,255,255,0.08); border-color: var(--f1-red); transform: translateY(-5px); }
-        .directory-photo { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; object-position: center top; border: 2px solid #555; margin-bottom: 15px; background: #222; }
-        .directory-name { font-size: 22px; font-weight: 900; text-transform: uppercase; margin: 0; }
-        .directory-sub { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
+        .directory-photo { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; object-position: center top; border: 3px solid #444; margin-bottom: 15px; transition: 0.3s; }
+        .directory-card:hover .directory-photo { border-color: #fff; }
+        .directory-name { font-size: 20px; font-weight: 900; text-transform: uppercase; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .directory-sub { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
+
+        /* Generic Card for Tracks/Seasons */
+        .data-card { background: rgba(0,0,0,0.4); border: 1px solid #333; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: 0.3s; }
+        .data-card:hover { border-color: var(--f1-red); background: rgba(225,6,0,0.1); }
+        .data-card-title { font-size: 22px; font-weight: 900; text-transform: uppercase; margin: 0 0 10px 0; color: #fff; }
+        .data-card-stat { font-size: 14px; color: #aaa; }
 
         /* Profile UI */
         .profile-wrapper { background: var(--f1-card); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .profile-header { display: flex; align-items: center; gap: 25px; padding: 30px; background: rgba(0,0,0,0.4); border-bottom: 1px solid #333; flex-wrap: wrap; position: relative;}
-        .profile-photo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; object-position: center top; border: 4px solid var(--f1-red); background: #222; }
+        .profile-photo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; object-position: center top; border: 4px solid #444; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         .profile-info { flex: 1; }
         .profile-name { font-size: 42px; font-weight: 900; text-transform: uppercase; margin: 0; letter-spacing: 1px; display: flex; align-items: center; gap: 15px; }
         .flag-icon { height: 28px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        .team-logo { height: 35px; object-fit: contain; margin-left: 10px; }
         .profile-meta { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 10px; color: #aaa; font-size: 15px; }
         .meta-tag { background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 4px; font-weight: 700; text-transform: uppercase; font-size: 12px; border: 1px solid rgba(255,255,255,0.1); }
         
-        .back-btn { position: absolute; top: 20px; right: 20px; background: #333; color: #fff; text-decoration: none; padding: 8px 15px; border-radius: 6px; font-weight: 700; border: none; cursor: pointer; transition: 0.3s; font-family: 'Titillium Web'; text-transform: uppercase;}
+        .back-btn { position: absolute; top: 20px; right: 20px; background: #333; color: #fff; text-decoration: none; padding: 8px 20px; border-radius: 6px; font-weight: 700; border: none; cursor: pointer; transition: 0.3s; font-family: 'Titillium Web'; text-transform: uppercase;}
         .back-btn:hover { background: var(--f1-red); }
 
-        /* Stats Grid */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: #333; border-bottom: 1px solid #333;}
+        /* Stats Grid (Enforced 5 Columns x 2 Rows = 10 Stats perfectly symmetrical) */
+        .stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: #333; border-bottom: 1px solid #333;}
         .stat-box { background: var(--f1-card); padding: 25px 15px; text-align: center; display: flex; flex-direction: column; justify-content: center;}
         .stat-value { font-size: 32px; font-weight: 900; color: #fff; line-height: 1; }
-        .stat-label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-top: 10px; }
-        
-        /* Advanced Layout fix for Best Track / Text Heavy Stats */
+        .stat-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-top: 10px; }
         .stat-value.text-value { font-size: 20px; word-break: break-word; color: #ddd; }
 
         /* Charts Section */
         .charts-section { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 30px; background: rgba(0,0,0,0.2); }
         .chart-container { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; }
-        .chart-title { font-size: 16px; color: #aaa; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; margin-top: 0; text-align: center; }
+        .chart-title { font-size: 16px; color: #aaa; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; margin-top: 0; text-align: center; margin-bottom: 15px; }
 
         /* Accordion Season History */
         .history-section { padding: 30px; }
@@ -79,11 +85,33 @@
         tr:last-child td { border-bottom: none; }
         .fl-row td { color: var(--fastest-lap) !important; }
 
+        /* Tables for Analysis Views */
+        .analysis-table th { background: var(--f1-red); color: #fff; }
+        .analysis-table td { background: rgba(0,0,0,0.2); }
+        .analysis-table tr:hover td { background: rgba(255,255,255,0.05); }
+
+        /* EA Racenet Modal */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: var(--f1-card); border: 1px solid #333; padding: 40px; border-radius: 12px; text-align: center; max-width: 500px; width: 90%; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
+        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #888; cursor: pointer; transition: 0.3s; }
+        .modal-close:hover { color: var(--f1-red); }
+        .modal-title { font-size: 28px; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; color: #fff; }
+        .modal-desc { color: #aaa; margin-bottom: 30px; font-size: 15px; }
+        .ea-btn { background: var(--f1-red); color: #fff; text-decoration: none; padding: 15px 30px; font-size: 18px; font-weight: 900; text-transform: uppercase; border-radius: 6px; display: inline-block; transition: 0.3s; }
+        .ea-btn:hover { background: #fff; color: var(--f1-red); transform: scale(1.05); }
+
         #loader { text-align: center; padding: 50px; font-size: 18px; color: #aaa; font-style: italic; }
 
+        @media (max-width: 1000px) {
+            .directory-grid { grid-template-columns: repeat(3, 1fr); }
+            .stats-grid { grid-template-columns: repeat(3, 1fr); }
+        }
         @media (max-width: 768px) {
+            .directory-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .profile-header { flex-direction: column; text-align: center; }
-            .profile-name { justify-content: center; font-size: 32px; }
+            .profile-name { justify-content: center; font-size: 32px; flex-wrap: wrap;}
             .profile-meta { justify-content: center; }
             .back-btn { position: relative; top: 0; right: 0; width: 100%; margin-bottom: 15px; }
             .charts-section { grid-template-columns: 1fr; }
@@ -95,14 +123,15 @@
     <div class="container">
         <div class="top-brand-header">
             <a href="index.html"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Logo.png" alt="F1 Lads Logo" class="page-logo"></a>
-            <h1 class="page-main-title">Statistical Hub</h1>
-            <p class="page-subtitle">Driver Analysis & Database</p>
+            <h1 class="page-main-title">Statistics & Analysis</h1>
+            <p class="page-subtitle">Driver Database & League History</p>
         </div>
 
         <div class="stat-nav" id="main-nav" style="display: none;">
-            <button class="stat-tab active" onclick="switchMainTab('drivers')">Drivers</button>
-            <button class="stat-tab" onclick="switchMainTab('tracks')">Tracks Database</button>
-            <button class="stat-tab" onclick="switchMainTab('seasons')">Season Summaries</button>
+            <button class="stat-tab active" onclick="switchMainTab('drivers')">Driver Profiles</button>
+            <button class="stat-tab" onclick="switchMainTab('tracks')">Track Analysis</button>
+            <button class="stat-tab" onclick="switchMainTab('seasons')">Season Analysis</button>
+            <button class="stat-tab" onclick="openEAModal()" style="border-color: #ff8000; color: #ff8000;">EA Racenet</button>
         </div>
 
         <div id="loader">Syncing telemetry and databases...</div>
@@ -111,48 +140,63 @@
             <div class="directory-grid" id="driver-directory"></div>
         </div>
 
-        <div id="view-tracks" class="view-section" style="text-align: center; padding: 50px; color: #888;">
-            <h2>Track Database Module</h2>
-            <p>Track-specific leaderboards and lap records will be implemented in the next major update.</p>
+        <div id="view-tracks" class="view-section">
+            <div class="directory-grid" id="track-directory"></div>
         </div>
 
-        <div id="view-seasons" class="view-section" style="text-align: center; padding: 50px; color: #888;">
-            <h2>Season Summaries Module</h2>
-            <p>Historical Constructor & Driver Championship standings will be implemented in the next major update.</p>
+        <div id="view-seasons" class="view-section">
+            <div class="directory-grid" id="season-directory"></div>
         </div>
 
         <div id="driver-profile-container" class="view-section"></div>
+        <div id="track-profile-container" class="view-section"></div>
+        <div id="season-profile-container" class="view-section"></div>
 
+    </div>
+
+    <div class="modal-overlay" id="eaModal">
+        <div class="modal-content">
+            <div class="modal-close" onclick="closeEAModal()">✖</div>
+            <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Logo.png" style="width: 120px; margin-bottom: 20px;">
+            <h2 class="modal-title">EA Racenet</h2>
+            <p class="modal-desc">Access official EA Racenet telemetry, league standings, and deep dive lap data directly via the EA portal.</p>
+            <a href="https://racenet.com/f1_24/leagues/league/265017" target="_blank" class="ea-btn">Launch Racenet ❯</a>
+        </div>
     </div>
 
     <script>
         const photoBase = "https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/";
         const flagsBase = "https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Flags/";
+        const teamColors = { "Ferrari": "#ef1a2d", "McLaren": "#ff8000", "Mercedes": "#00d2be", "Aston Martin": "#006f62", "Red Bull": "#3671c6", "Alpine": "#0090ff", "Alfa Romeo": "#900000", "AlphaTauri": "#2b4562" };
         
-        // Data Storage
         let allEvents = [];
-        let driverProfiles = {}; // From drivers.json
-        let driverStats = {};    // Computed from races
-        let myChart1, myChart2;
+        let driverProfiles = {}; 
+        let driverStats = {};    
+        let trackStats = {};
+        let seasonStandings = {};
+        let currentSeasonMax = 1;
+        
+        let myChart1, myChart2, myChart3;
 
         const archiveFiles = [
             "Season%201/results_silverstone_race.json", "Season%201/results_spielberg_race.json", "Season%201/results_bahrain_race.json", "Season%201/results_jeddah_race.json", "Season%201/results_melbourne_race.json", "Season%201/results_suzuka_race.json",
             "Season%202/results_miami_race.json", "Season%202/results_imola_race.json", "Season%202/results_monza_race.json", "Season%202/results_spa-francorchamps_race.json", "Season%202/results_barcelona_race.json", "Season%202/results_baku_race.json", "Season%202/results_losail_race.json", "Season%202/results_hungaroring_race.json", "Season%202/results_singapore_race.json",
             "Season%203/results_imola_race.json", "Season%203/results_shanghai_sprint.json", "Season%203/results_shanghai_race.json", "Season%203/results_austin_sprint.json", "Season%203/results_austin_race.json", "Season%203/results_zandvoort_race.json", "Season%203/results_mexico_race.json", "Season%203/results_interlagos_sprint.json", "Season%203/results_interlagos_race.json", "Season%203/results_las%20vegas_race.json", "Season%203/results_yas%20marina_race.json"
         ];
-
         const cacheBuster = `?v=${new Date().getTime()}`;
+
+        // EA Modal Functions
+        function openEAModal() { document.getElementById('eaModal').classList.add('active'); }
+        function closeEAModal() { document.getElementById('eaModal').classList.remove('active'); }
 
         async function initData() {
             try {
-                // 1. Fetch JSON Profiles
                 const dRes = await fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/drivers.json${cacheBuster}`);
                 if (dRes.ok) {
                     const dData = await dRes.json();
                     dData.forEach(d => driverProfiles[d.Name] = d);
                 }
 
-                // 2. Fetch Live Files List (Season 4/5)
                 let liveFiles = [];
                 const listRes = await fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/race_list.txt${cacheBuster}`);
                 if (listRes.ok) {
@@ -160,7 +204,6 @@
                     liveFiles = text.split('\n').map(f => f.trim()).filter(f => f.endsWith('.json'));
                 }
 
-                // 3. Fetch all Race Files
                 const allFilePaths = [...archiveFiles, ...liveFiles];
                 const fetchPromises = allFilePaths.map(file => fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/${file}${cacheBuster}`).then(r => r.ok ? r.json().then(data => ({ data, path: file })) : null));
                 
@@ -174,41 +217,31 @@
                     const race = fileObj.data; const path = fileObj.path;
                     let dateObj = new Date(race.Date);
                     
-                    // Determine Season dynamically based on folder or date
                     let seasonNum = 5; 
                     if (path.includes("Season%201")) seasonNum = 1;
                     else if (path.includes("Season%202")) seasonNum = 2;
                     else if (path.includes("Season%203")) seasonNum = 3;
-                    else if (dateObj.getFullYear() < 2026) seasonNum = 4; // Basic check for S4
+                    else if (dateObj.getFullYear() < 2026 && !path.includes("results_")) seasonNum = 4;
                     
+                    if (seasonNum > currentSeasonMax) currentSeasonMax = seasonNum;
+
                     let maxPts = Math.max(0, ...race.Drivers.map(d => (d.DriverPointsRaw || 0) / 10));
                     let label = "Feature"; 
                     if (seasonNum === 3 && maxPts <= 10) label = "Sprint";
                     else if (seasonNum !== 3 && maxPts <= 16) label = "Sprint";
 
                     const matchingQuali = qualis.find(q => q.data.TrackName === race.TrackName && q.data.Date === race.Date);
-                    
                     allEvents.push({ season: seasonNum, trackName: race.TrackName, label: label, date: dateObj, raceData: race, qualiData: matchingQuali ? matchingQuali.data : null });
                 });
 
-                // Sort Chronologically
                 allEvents.sort((a, b) => a.date - b.date);
-
-                // 4. Compute Driver Statistics
                 computeStatistics();
 
-                // Remove Loader & Setup UI
                 document.getElementById('loader').style.display = "none";
                 document.getElementById('main-nav').style.display = "flex";
 
-                // Routing Check
-                const urlParams = new URLSearchParams(window.location.search);
-                const requestedDriver = urlParams.get('driver');
-                if (requestedDriver && driverStats[requestedDriver]) {
-                    renderDriverProfile(requestedDriver);
-                } else {
-                    renderDirectory();
-                }
+                // Routing Setup
+                renderDirectory();
 
             } catch (err) {
                 console.error(err);
@@ -217,7 +250,13 @@
         }
 
         function computeStatistics() {
-            allEvents.forEach((ev, roundIdx) => {
+            allEvents.forEach((ev) => {
+                let tNameStr = ev.trackName;
+                if (!trackStats[tNameStr]) trackStats[tNameStr] = { name: tNameStr, races: 0, winners: [], poles: {} };
+                if (ev.label === "Feature") trackStats[tNameStr].races++;
+
+                if (!seasonStandings[ev.season]) seasonStandings[ev.season] = { drivers: {}, teams: {} };
+                
                 ev.raceData.Drivers.forEach(d => {
                     let dName = d.Driver.Name;
                     let tName = d.Team ? d.Team.Name : "Unknown";
@@ -227,94 +266,133 @@
                     let isFL = ev.raceData.FastestLapDriver && ev.raceData.FastestLapDriver.Name === dName;
                     let isDnf = (d.Status !== "Ok" && d.Status !== "finished" && !d.Status.toLowerCase().includes("lap"));
 
-                    // Initialize if missing
+                    // Season Points Engine
+                    if(!seasonStandings[ev.season].drivers[dName]) seasonStandings[ev.season].drivers[dName] = { points: 0, team: tName };
+                    seasonStandings[ev.season].drivers[dName].points += pts;
+                    seasonStandings[ev.season].drivers[dName].team = tName; 
+                    if(!seasonStandings[ev.season].teams[tName]) seasonStandings[ev.season].teams[tName] = 0;
+                    seasonStandings[ev.season].teams[tName] += pts;
+
+                    // Driver Profile Engine
                     if (!driverStats[dName]) {
                         driverStats[dName] = { 
                             name: dName, currentTeam: tName, starts: 0, wins: 0, podiums: 0, 
-                            pts: 0, fls: 0, poles: 0, dnfs: 0, penPts: 0,
-                            sumPos: 0, bestPos: 999, bestResultString: "-",
-                            teamsTracked: {}, tracksTracked: {}, seasons: {}
+                            fls: 0, poles: 0, dnfs: 0, penPts: 0, totalPtsSort: 0,
+                            sumPos: 0, bestPos: 999, teamsTracked: {}, tracksTracked: {}, seasons: {}
                         };
                     }
 
                     let s = driverStats[dName];
-                    s.currentTeam = tName; // Since array is sorted chronologically, the last processed event will set the most recent team.
+                    s.currentTeam = tName; 
                     s.starts++;
-                    s.pts += pts;
                     s.penPts += penPts;
+                    s.totalPtsSort += pts; // Used only for sorting directories
                     
-                    if (pos === 1) s.wins++;
+                    if (pos === 1) {
+                        s.wins++;
+                        if(ev.label === "Feature") trackStats[tNameStr].winners.push({ name: dName, season: ev.season });
+                    }
                     if (pos <= 3) s.podiums++;
                     if (isFL) s.fls++;
                     
                     let qData = ev.qualiData ? ev.qualiData.Drivers.find(qd => qd.Driver.Name === dName) : null;
-                    if (qData && qData.Position === 1) s.poles++;
+                    if (qData && qData.Position === 1) {
+                        s.poles++;
+                        trackStats[tNameStr].poles[dName] = (trackStats[tNameStr].poles[dName] || 0) + 1;
+                    }
 
                     if (isDnf) s.dnfs++;
                     else {
-                        s.sumPos += pos; // Only sum actual finishes for average calculation
-                        if (pos < s.bestPos) {
-                            s.bestPos = pos;
-                            s.bestResultString = `P${pos} (${ev.trackName}, S${ev.season})`;
-                        }
+                        s.sumPos += pos; 
+                        if (pos < s.bestPos) s.bestPos = pos;
                     }
 
-                    // Favourites Tracking
                     s.teamsTracked[tName] = (s.teamsTracked[tName] || 0) + 1;
-                    s.tracksTracked[ev.trackName] = (s.tracksTracked[ev.trackName] || 0) + pts;
+                    s.tracksTracked[tNameStr] = (s.tracksTracked[tNameStr] || 0) + pts;
 
-                    // Season History
-                    if (!s.seasons[ev.season]) s.seasons[ev.season] = { pts: 0, races: [] };
-                    s.seasons[ev.season].pts += pts;
-                    s.seasons[ev.season].races.push({ track: ev.trackName, label: ev.label, pos: isDnf ? "DNF" : pos, pts: pts, fl: isFL, team: tName });
+                    if (!s.seasons[ev.season]) s.seasons[ev.season] = { races: [] };
+                    s.seasons[ev.season].races.push({ track: tNameStr, label: ev.label, pos: isDnf ? "DNF" : pos, fl: isFL, team: tName });
                 });
             });
         }
 
+        // --- Helper Functions ---
         function formatFlagUrl(nat) {
             if (!nat) return "";
-            let formatted = nat.toLowerCase().replace(/\s+/g, '_');
-            return `${flagsBase}${formatted}.png`;
+            return `${flagsBase}${nat.toLowerCase().replace(/\s+/g, '_')}.png`;
+        }
+        function getTeamLogoUrl(teamName) {
+            return `${photoBase}Logos/${teamName.replace(/\s+/g, '')}.png`; // Assume generic logo path or use blank
+        }
+        function getWDC(sNum, dName) {
+            if (!seasonStandings[sNum] || !seasonStandings[sNum].drivers[dName]) return "-";
+            let sortedS = Object.keys(seasonStandings[sNum].drivers).map(k => ({name: k, pts: seasonStandings[sNum].drivers[k].points})).sort((a,b) => b.pts - a.pts);
+            let idx = sortedS.findIndex(x => x.name === dName);
+            if (idx === -1) return "-";
+            let p = idx + 1;
+            
+            if (sNum === currentSeasonMax) return `Current Standing: ${p}${p===1?'st':p===2?'nd':p===3?'rd':'th'}`;
+            return p === 1 ? "Champion 👑" : p === 2 ? "2nd Overall" : p === 3 ? "3rd Overall" : `${p}th Overall`;
         }
 
+        // --- Navigation ---
         function switchMainTab(tab) {
             document.querySelectorAll('.stat-tab').forEach(t => t.classList.remove('active'));
             event.target.classList.add('active');
             document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
             document.getElementById(`view-${tab}`).classList.add('active');
-            
-            // Clean URL if navigating back to directory
-            window.history.pushState({}, '', window.location.pathname);
         }
 
         function renderDirectory() {
-            document.querySelectorAll('.stat-tab').forEach(t => t.classList.remove('active'));
-            document.querySelector('.stat-tab').classList.add('active'); // First tab
+            document.getElementById('main-nav').style.display = "flex";
+            document.querySelectorAll('.stat-tab')[0].classList.add('active'); 
             document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
             document.getElementById('view-drivers').classList.add('active');
 
-            const dir = document.getElementById('driver-directory');
-            dir.innerHTML = "";
-
-            let sortedDrivers = Object.values(driverStats).sort((a,b) => b.pts - a.pts); // Sort by total points globally
-
+            // Render Drivers
+            const dDir = document.getElementById('driver-directory');
+            dDir.innerHTML = "";
+            let sortedDrivers = Object.values(driverStats).sort((a,b) => b.totalPtsSort - a.totalPtsSort);
             sortedDrivers.forEach(d => {
-                let photoUrl = `${photoBase}${d.name.replace(/\s+/g, '')}.png`;
-                dir.innerHTML += `
+                let bgHex = teamColors[d.currentTeam] || '#444';
+                dDir.innerHTML += `
                     <div class="directory-card" onclick="renderDriverProfile('${d.name}')">
-                        <img src="${photoUrl}" class="directory-photo" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/blank.png'">
+                        <img src="${photoBase}${d.name.replace(/\s+/g, '')}.png" class="directory-photo" style="background-color: ${bgHex};" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/blank.png'">
                         <h3 class="directory-name">${d.name}</h3>
                         <div class="directory-sub">${d.currentTeam}</div>
-                        <div style="margin-top: 15px; color: var(--f1-red); font-weight: 900; font-size: 18px;">${d.pts} PTS</div>
+                    </div>
+                `;
+            });
+
+            // Render Tracks
+            const tDir = document.getElementById('track-directory');
+            tDir.innerHTML = "";
+            let sortedTracks = Object.values(trackStats).sort((a,b) => b.races - a.races);
+            sortedTracks.forEach(t => {
+                tDir.innerHTML += `
+                    <div class="data-card" onclick="renderTrackProfile('${t.name}')">
+                        <h3 class="data-card-title">${t.name}</h3>
+                        <div class="data-card-stat">Races Held: ${t.races}</div>
+                    </div>
+                `;
+            });
+
+            // Render Seasons
+            const sDir = document.getElementById('season-directory');
+            sDir.innerHTML = "";
+            let sortedS = Object.keys(seasonStandings).sort((a,b) => b - a);
+            sortedS.forEach(s => {
+                sDir.innerHTML += `
+                    <div class="data-card" onclick="renderSeasonProfile('${s}')">
+                        <h3 class="data-card-title">Season ${s}</h3>
+                        <div class="data-card-stat">View Final Standings</div>
                     </div>
                 `;
             });
         }
 
+        // --- Driver Profiles ---
         function renderDriverProfile(dName) {
-            // Update URL for sharing
-            window.history.pushState({}, '', `?driver=${encodeURIComponent(dName)}`);
-
             document.getElementById('main-nav').style.display = "none";
             document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
             const container = document.getElementById('driver-profile-container');
@@ -322,25 +400,24 @@
 
             let s = driverStats[dName];
             let p = driverProfiles[dName] || {};
-            
-            let photoUrl = `${photoBase}${dName.replace(/\s+/g, '')}.png`;
-            let flagHtml = p.Nationality ? `<img src="${formatFlagUrl(p.Nationality)}" class="flag-icon" title="${p.Nationality}" onerror="this.style.display='none'">` : '';
+            let bgHex = teamColors[s.currentTeam] || '#444';
+            let flagHtml = p.Nationality ? `<img src="${formatFlagUrl(p.Nationality)}" class="flag-icon" onerror="this.style.display='none'">` : '';
             
             let avgPos = (s.starts - s.dnfs) > 0 ? (s.sumPos / (s.starts - s.dnfs)).toFixed(1) : "-";
+            let winPct = s.starts > 0 ? ((s.wins / s.starts) * 100).toFixed(1) + "%" : "0%";
             let podPct = s.starts > 0 ? ((s.podiums / s.starts) * 100).toFixed(1) + "%" : "0%";
             let bestTrack = Object.keys(s.tracksTracked).sort((a,b) => s.tracksTracked[b] - s.tracksTracked[a])[0] || "-";
 
             let html = `
                 <div class="profile-wrapper">
                     <div class="profile-header">
-                        <button class="back-btn" onclick="exitProfile()">❮ Back to Directory</button>
-                        <img src="${photoUrl}" class="profile-photo" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/blank.png'">
+                        <button class="back-btn" onclick="exitToDirectory('drivers')">Back</button>
+                        <img src="${photoBase}${dName.replace(/\s+/g, '')}.png" class="profile-photo" style="background-color: ${bgHex};" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/blank.png'">
                         <div class="profile-info">
-                            <h2 class="profile-name">${dName} ${flagHtml}</h2>
+                            <h2 class="profile-name">${dName} ${flagHtml} <img src="${getTeamLogoUrl(s.currentTeam)}" class="team-logo" onerror="this.style.display='none'"></h2>
                             <div class="profile-meta">
                                 ${p.RealName ? `<span class="meta-tag">👤 ${p.RealName}</span>` : ''}
                                 ${p.InGameName ? `<span class="meta-tag">🎮 ${p.InGameName}</span>` : ''}
-                                ${p.GamePlatform ? `<span class="meta-tag">💻 ${p.GamePlatform}</span>` : ''}
                                 ${p.RaceNumber ? `<span class="meta-tag" style="background:var(--f1-red); color:#fff; border:none;">#${p.RaceNumber}</span>` : ''}
                                 <span class="meta-tag" style="border-color: #888;">🏎️ ${s.currentTeam}</span>
                             </div>
@@ -348,22 +425,22 @@
                     </div>
 
                     <div class="stats-grid">
-                        <div class="stat-box"><div class="stat-value">${s.pts}</div><div class="stat-label">Career Points</div></div>
                         <div class="stat-box"><div class="stat-value">${s.starts}</div><div class="stat-label">Race Starts</div></div>
-                        <div class="stat-box"><div class="stat-value">${s.wins}</div><div class="stat-label">Wins</div></div>
+                        <div class="stat-box"><div class="stat-value">${s.wins}</div><div class="stat-label">Wins (${winPct})</div></div>
                         <div class="stat-box"><div class="stat-value">${s.podiums}</div><div class="stat-label">Podiums (${podPct})</div></div>
                         <div class="stat-box"><div class="stat-value">${s.poles}</div><div class="stat-label">Pole Positions</div></div>
                         <div class="stat-box"><div class="stat-value">${s.fls}</div><div class="stat-label">Fastest Laps</div></div>
+                        
                         <div class="stat-box"><div class="stat-value text-value">P${avgPos}</div><div class="stat-label">Average Finish</div></div>
-                        <div class="stat-box"><div class="stat-value text-value" style="font-size: 16px;">${s.bestResultString}</div><div class="stat-label">Best Finish</div></div>
+                        <div class="stat-box"><div class="stat-value text-value">P${s.bestPos === 999 ? '-' : s.bestPos}</div><div class="stat-label">Best Finish</div></div>
                         <div class="stat-box"><div class="stat-value" style="color:#ff8000;">${s.dnfs}</div><div class="stat-label">Total DNFs</div></div>
                         <div class="stat-box"><div class="stat-value" style="color:var(--f1-red);">${s.penPts}</div><div class="stat-label">Penalty Points</div></div>
-                        <div class="stat-box"><div class="stat-value text-value" style="font-size:18px;">${bestTrack}</div><div class="stat-label">Most Successful Track</div></div>
+                        <div class="stat-box"><div class="stat-value text-value" style="font-size:18px;">${bestTrack}</div><div class="stat-label">Best Track</div></div>
                     </div>
 
                     <div class="charts-section">
-                        <div class="chart-container"><h4 class="chart-title">Points by Season</h4><canvas id="ptsChart"></canvas></div>
-                        <div class="chart-container"><h4 class="chart-title">Race Finish Distribution</h4><canvas id="distChart"></canvas></div>
+                        <div class="chart-container"><h4 class="chart-title">Average Finish Position by Season</h4><canvas id="avgPosChart"></canvas></div>
+                        <div class="chart-container"><h4 class="chart-title">Race Finish Distribution</h4><canvas id="distBarChart"></canvas></div>
                     </div>
 
                     <div class="history-section">
@@ -374,9 +451,8 @@
             `;
             container.innerHTML = html;
 
-            // Render Accordions
             const accCont = document.getElementById('accordion-container');
-            let sortedSeasons = Object.keys(s.seasons).sort((a,b) => b - a); // Newest first
+            let sortedSeasons = Object.keys(s.seasons).sort((a,b) => b - a); 
             
             sortedSeasons.forEach(sNum => {
                 let sData = s.seasons[sNum];
@@ -385,16 +461,17 @@
                         <td style="width:50px; text-align:center; font-weight:900;">${r.pos}</td>
                         <td>${r.track} <span style="color:#888; font-size:11px;">(${r.label})</span></td>
                         <td>${r.team}</td>
-                        <td style="text-align:center; color:var(--f1-red); font-weight:900;">${r.pts}</td>
                     </tr>
                 `).join('');
 
+                let champStatus = getWDC(parseInt(sNum), dName);
+                
                 accCont.innerHTML += `
                     <details ${sNum == sortedSeasons[0] ? 'open' : ''}>
-                        <summary>Season ${sNum} <span class="summary-stats">${sData.pts} PTS</span></summary>
+                        <summary>Season ${sNum} <span class="summary-stats" style="color:#fff;">${champStatus}</span></summary>
                         <div class="table-wrap">
                             <table>
-                                <thead><tr><th style="text-align:center;">Pos</th><th>Track</th><th>Car</th><th style="text-align:center;">Pts</th></tr></thead>
+                                <thead><tr><th style="text-align:center;">Finish Pos</th><th>Track</th><th>Car</th></tr></thead>
                                 <tbody>${rows}</tbody>
                             </table>
                         </div>
@@ -402,43 +479,153 @@
                 `;
             });
 
-            // Render Charts
-            setTimeout(() => drawCharts(s, sortedSeasons), 100);
+            setTimeout(() => drawDriverCharts(s, sortedSeasons), 100);
         }
 
-        function drawCharts(s, sortedSeasons) {
+        function drawDriverCharts(s, sortedSeasons) {
             if(myChart1) myChart1.destroy();
             if(myChart2) myChart2.destroy();
 
-            // Line Chart: Points per Season
+            // Chart 1: Average Finish Pos By Season
             let labels = sortedSeasons.slice().reverse().map(num => `Season ${num}`);
-            let dataPts = sortedSeasons.slice().reverse().map(num => s.seasons[num].pts);
+            let avgData = sortedSeasons.slice().reverse().map(num => {
+                let races = s.seasons[num].races.filter(r => r.pos !== "DNF");
+                if (races.length === 0) return null;
+                let sum = races.reduce((acc, curr) => acc + curr.pos, 0);
+                return sum / races.length;
+            });
             
-            myChart1 = new Chart(document.getElementById('ptsChart'), {
+            myChart1 = new Chart(document.getElementById('avgPosChart'), {
                 type: 'line',
-                data: { labels: labels, datasets: [{ label: 'Points', data: dataPts, borderColor: '#e10600', backgroundColor: 'rgba(225, 6, 0, 0.2)', borderWidth: 3, tension: 0.3, fill: true }] },
+                data: { labels: labels, datasets: [{ label: 'Average Finish', data: avgData, borderColor: '#e10600', backgroundColor: 'rgba(225, 6, 0, 0.2)', borderWidth: 3, tension: 0.3, fill: true, pointRadius: 5 }] },
+                options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { reverse: true, min: 1, max: 20, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } }
+            });
+
+            // Chart 2: Finish Distribution (Bar Chart)
+            let d1=0, d2=0, d3=0, d4_10=0, d11_plus=0;
+            Object.values(s.seasons).forEach(season => {
+                season.races.forEach(r => {
+                    if (r.pos === 1) d1++;
+                    else if (r.pos === 2) d2++;
+                    else if (r.pos === 3) d3++;
+                    else if (r.pos >= 4 && r.pos <= 10) d4_10++;
+                    else if (r.pos > 10 && r.pos !== "DNF") d11_plus++;
+                });
+            });
+
+            myChart2 = new Chart(document.getElementById('distBarChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['1st', '2nd', '3rd', 'Top 10', '11+', 'DNFs'],
+                    datasets: [{ data: [d1, d2, d3, d4_10, d11_plus, s.dnfs], backgroundColor: ['#FFD700', '#C0C0C0', '#CD7F32', '#0090ff', '#555', '#e10600'], borderRadius: 4 }]
+                },
                 options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } }
             });
-
-            // Doughnut Chart: Distribution
-            let outOfPts = s.starts - s.dnfs - (s.podiums + s.wins); // Rough estimate for non-podium finishes
-            myChart2 = new Chart(document.getElementById('distChart'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['Wins', 'Podiums (2nd/3rd)', 'Finished', 'DNFs'],
-                    datasets: [{ data: [s.wins, s.podiums - s.wins, outOfPts, s.dnfs], backgroundColor: ['#FFD700', '#C0C0C0', '#0090ff', '#e10600'], borderWidth: 0 }]
-                },
-                options: { responsive: true, cutout: '70%', plugins: { legend: { position: 'bottom', labels: { color: '#ccc' } } } }
-            });
         }
 
-        function exitProfile() {
-            document.getElementById('driver-profile-container').classList.remove('active');
+        // --- Track Profiles ---
+        function renderTrackProfile(tName) {
+            document.getElementById('main-nav').style.display = "none";
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            const container = document.getElementById('track-profile-container');
+            container.classList.add('active');
+
+            let t = trackStats[tName];
+            
+            // Calc Most Wins
+            let winCounts = {};
+            t.winners.forEach(w => winCounts[w.name] = (winCounts[w.name] || 0) + 1);
+            let topWinner = Object.keys(winCounts).sort((a,b) => winCounts[b] - winCounts[a])[0] || "-";
+
+            let rows = t.winners.map((w, idx) => `
+                <tr><td>Season ${w.season}</td><td style="color: gold; font-weight: 900;">${w.name} 🏆</td></tr>
+            `).join('');
+
+            let html = `
+                <div class="profile-wrapper">
+                    <div class="profile-header">
+                        <button class="back-btn" onclick="exitToDirectory('tracks')">Back</button>
+                        <div>
+                            <h2 class="profile-name">${tName} Circuit</h2>
+                            <div class="profile-meta"><span class="meta-tag">Grand Prix Hosted: ${t.races}</span></div>
+                        </div>
+                    </div>
+                    <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr);">
+                        <div class="stat-box"><div class="stat-value text-value">${topWinner}</div><div class="stat-label">Most Feature Wins</div></div>
+                        <div class="stat-box"><div class="stat-value">${t.races}</div><div class="stat-label">Total Races</div></div>
+                    </div>
+                    <div class="history-section">
+                        <h3 class="history-title">Roll of Honour</h3>
+                        <table class="analysis-table">
+                            <thead><tr><th>Season</th><th>Race Winner</th></tr></thead>
+                            <tbody>${rows || '<tr><td colspan="2">No historical data</td></tr>'}</tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
+        // --- Season Profiles ---
+        function renderSeasonProfile(sNum) {
+            document.getElementById('main-nav').style.display = "none";
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            const container = document.getElementById('season-profile-container');
+            container.classList.add('active');
+
+            let sData = seasonStandings[sNum];
+            let sortedDrivers = Object.keys(sData.drivers).map(k => ({name: k, ...sData.drivers[k]})).sort((a,b) => b.points - a.points);
+            let sortedTeams = Object.keys(sData.teams).map(k => ({name: k, points: sData.teams[k]})).sort((a,b) => b.points - a.points);
+
+            let dRows = sortedDrivers.map((d, idx) => `
+                <tr>
+                    <td style="width: 50px; text-align: center; font-weight: 900;">${idx + 1}</td>
+                    <td style="${idx === 0 ? 'color: gold; font-weight: 900;' : ''}">${d.name} ${idx === 0 ? '👑' : ''}</td>
+                    <td>${d.team}</td>
+                </tr>
+            `).join('');
+
+            let html = `
+                <div class="profile-wrapper">
+                    <div class="profile-header">
+                        <button class="back-btn" onclick="exitToDirectory('seasons')">Back</button>
+                        <div>
+                            <h2 class="profile-name">Season ${sNum} Review</h2>
+                            <div class="profile-meta"><span class="meta-tag">World Championship Standings</span></div>
+                        </div>
+                    </div>
+                    <div class="history-section">
+                        <h3 class="history-title">Drivers' Championship</h3>
+                        <table class="analysis-table" style="margin-bottom: 40px;">
+                            <thead><tr><th style="text-align: center;">Pos</th><th>Driver</th><th>Constructor</th></tr></thead>
+                            <tbody>${dRows}</tbody>
+                        </table>
+
+                        <h3 class="history-title">Constructors' Championship</h3>
+                        <table class="analysis-table">
+                            <thead><tr><th style="text-align: center;">Pos</th><th>Constructor</th></tr></thead>
+                            <tbody>
+                                ${sortedTeams.map((t, idx) => `<tr><td style="width: 50px; text-align: center; font-weight: 900;">${idx + 1}</td><td style="${idx === 0 ? 'color: gold; font-weight: 900;' : ''}">${t.name} ${idx === 0 ? '🏆' : ''}</td></tr>`).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
+        function exitToDirectory(tabName) {
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
             document.getElementById('main-nav').style.display = "flex";
-            renderDirectory();
+            document.getElementById(`view-${tabName}`).classList.add('active');
+            
+            // Re-activate correct tab button
+            document.querySelectorAll('.stat-tab').forEach(t => t.classList.remove('active'));
+            if(tabName === 'drivers') document.querySelectorAll('.stat-tab')[0].classList.add('active');
+            if(tabName === 'tracks') document.querySelectorAll('.stat-tab')[1].classList.add('active');
+            if(tabName === 'seasons') document.querySelectorAll('.stat-tab')[2].classList.add('active');
         }
 
-        // Initialize App
         window.onload = initData;
     </script>
 </body>
