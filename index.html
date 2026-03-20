@@ -115,54 +115,6 @@
         .link-card h2 { font-size: 26px; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; }
         .link-card p { color: #bbb; font-size: 16px; margin: 0; line-height: 1.5; font-weight: 600; }
 
-        /* =========================================
-           CUSTOM MODAL FOR EA RACENET
-           ========================================= */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(5px);
-            display: flex; justify-content: center; align-items: center;
-            z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
-        }
-        .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        
-        .modal-content {
-            background: var(--f1-card); border-radius: 12px; padding: 30px 25px;
-            max-width: 400px; width: 90%; text-align: center;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.8);
-            border-top: 5px solid #ff4747; position: relative;
-            transform: translateY(20px); transition: transform 0.3s ease;
-        }
-        .modal-overlay.active .modal-content { transform: translateY(0); }
-        
-        .modal-close {
-            position: absolute; top: 15px; right: 15px; background: none; border: none;
-            color: #888; font-size: 28px; cursor: pointer; transition: 0.2s; line-height: 1;
-        }
-        .modal-close:hover { color: var(--f1-red); }
-        
-        .modal-content h3 { margin: 10px 0 5px 0; font-size: 24px; text-transform: uppercase; font-weight: 900; }
-        .modal-content p { color: #aaa; font-size: 14px; margin-bottom: 25px; line-height: 1.4; }
-        
-        .cred-group { margin-bottom: 12px; text-align: left; background: rgba(0,0,0,0.4); padding: 12px 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); }
-        .cred-label { display: block; font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-weight: 700; }
-        .cred-row { display: flex; justify-content: space-between; align-items: center; }
-        .cred-value { font-family: monospace; font-size: 15px; color: #fff; font-weight: 700; letter-spacing: 0.5px; user-select: all; }
-        
-        .copy-btn {
-            background: #333; color: #fff; border: none; padding: 6px 12px; border-radius: 4px;
-            cursor: pointer; font-size: 11px; font-weight: 700; transition: 0.2s; text-transform: uppercase; letter-spacing: 0.5px;
-        }
-        .copy-btn:hover { background: #555; }
-        .copy-btn.success { background: #00d7b6; color: #000; }
-        
-        .proceed-btn {
-            display: inline-block; margin-top: 15px; background: #ff4747; color: #fff; text-decoration: none;
-            padding: 14px 25px; border-radius: 6px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;
-            width: 100%; box-sizing: border-box; transition: 0.3s;
-        }
-        .proceed-btn:hover { background: #ff1a1a; box-shadow: 0 5px 15px rgba(255, 71, 71, 0.4); transform: translateY(-2px); }
-
         /* LOADING ANIMATION FOR TELEMETRY PING */
         @keyframes spin { 100% { transform: rotate(360deg); } }
         .spinning { animation: spin 1s linear infinite; }
@@ -230,40 +182,11 @@
                 <h2>Race Results</h2>
                 <p>Full race classification and detailed post-race data.</p>
             </a>
-            <a href="#" onclick="openRacenet(event)" class="link-card" style="--card-color: #ff4747;">
-                <div class="card-icon">
-                    <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/acce95aa34709d661580799b3accd42bc0d82658/EARacenetLogo.png" alt="EA Racenet Logo" style="width: 65px; height: 65px; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));">
-                </div>
-                <h2>EA Racenet</h2>
-                <p>Track in-game statistics, compare lap times and analyze telemetry data.</p>
+            <a href="statistics.html" class="link-card" style="--card-color: #ff4747;">
+                <div class="card-icon">📈</div>
+                <h2>Stats & Analysis</h2>
+                <p>Driver Database & Historical League Data.</p>
             </a>
-        </div>
-    </div>
-
-    <div id="racenet-modal" class="modal-overlay">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal()">×</button>
-            <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/acce95aa34709d661580799b3accd42bc0d82658/EARacenetLogo.png" alt="EA Racenet" style="width: 65px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));">
-            <h3>Racenet Login</h3>
-            <p>Use the league credentials below to access telemetry and session statistics.</p>
-            
-            <div class="cred-group">
-                <span class="cred-label">Username / Email</span>
-                <div class="cred-row">
-                    <span class="cred-value" id="rn-user">f1ladsleague@gmail.com</span>
-                    <button class="copy-btn" onclick="copyText('rn-user', this)">Copy</button>
-                </div>
-            </div>
-            
-            <div class="cred-group">
-                <span class="cred-label">Password</span>
-                <div class="cred-row">
-                    <span class="cred-value" id="rn-pass">madhawamaPa!23</span>
-                    <button class="copy-btn" onclick="copyText('rn-pass', this)">Copy</button>
-                </div>
-            </div>
-            
-            <a href="https://racenet.com/" target="_blank" class="proceed-btn">Proceed to Racenet ❯</a>
         </div>
     </div>
 
@@ -330,37 +253,6 @@
                     clearTimeout(safetyTimeout);
                     window.location.href = url;
                 });
-        }
-
-        // Replaces the old alert() with our new sleek modal
-        function openRacenet(event) {
-            event.preventDefault(); // Stop immediate navigation
-            document.getElementById('racenet-modal').classList.add('active');
-        }
-
-        // Closes the modal manually with the X
-        function closeModal() {
-            document.getElementById('racenet-modal').classList.remove('active');
-        }
-
-        // Copies text and flashes the button green
-        function copyText(elementId, btnElement) {
-            const textToCopy = document.getElementById(elementId).innerText;
-            
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                const originalText = btnElement.innerText;
-                btnElement.innerText = "COPIED!";
-                btnElement.classList.add('success');
-                
-                // Reset the button after 2 seconds
-                setTimeout(() => {
-                    btnElement.innerText = originalText;
-                    btnElement.classList.remove('success');
-                }, 2000);
-            }).catch(err => {
-                console.error('Failed to copy text: ', err);
-                alert("Failed to copy. Please manually select the text.");
-            });
         }
     </script>
 </body>
