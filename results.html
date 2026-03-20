@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Race Results | F1 Lads League</title>
+    
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/f1ladsleague/sidebetting/6f14ca658f9c288fd8ca8a79df5c658c97c8ac92/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { 
+            --f1-red: #e10600; 
+            --f1-dark: #15151e; 
+            --f1-card: #1f1f27;
+            --ferrari: #ef1a2d;
+            --mclaren: #ff8000;
+            --mercedes: #00d2be;
+            --aston: #006f62;
+            --redbull: #3671c6;
+            --fastest-lap: #b388ff;
+        }
+        
+        body { 
+            font-family: 'Titillium Web', sans-serif; 
+            background-color: var(--f1-dark); 
+            color: #fff; 
+            margin: 0; 
+            padding: 20px; 
+            overflow-y: scroll;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* HEADER & NAVIGATION */
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; flex-wrap: wrap; gap: 15px;}
+        .header-left { display: flex; align-items: center; }
+        .back-btn { background: #333; color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; transition: 0.3s; margin-right: 20px; text-transform: uppercase;}
+        .back-btn:hover { background: var(--f1-red); }
+        .title-wrapper h1 { margin: 0; font-size: 32px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; }
+        .title-wrapper p { margin: 5px 0 0 0; color: #aaa; font-size: 16px; }
+
+        /* DROPDOWN SELECTOR */
+        .race-selector {
+            background: var(--f1-card);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 12px 20px;
+            font-family: 'Titillium Web', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            border-radius: 8px;
+            outline: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .race-selector:hover { border-color: var(--f1-red); }
+        .race-selector:focus { border-color: var(--f1-red); box-shadow: 0 0 10px rgba(225, 6, 0, 0.3); }
+
+        /* RESULTS TABLE */
+        .results-wrapper {
+            background: var(--f1-card);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: rgba(0,0,0,0.4); padding: 15px 20px; color: #888; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; font-weight: 700; border-bottom: 1px solid #333; }
+        td { padding: 15px 20px; border-bottom: 1px solid #2a2a35; font-size: 16px; font-weight: 600; vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+
+        /* SPECIFIC COLUMNS */
+        .pos-col { width: 50px; text-align: center; font-weight: 900; font-size: 18px; color: #aaa; }
+        .driver-col { font-size: 18px; font-weight: 700; text-transform: uppercase; }
+        
+        .team-col { display: flex; align-items: center; gap: 10px; color: #ccc; font-size: 14px; text-transform: uppercase; }
+        .team-color-bar { width: 4px; height: 16px; border-radius: 2px; }
+
+        .time-col { font-family: monospace; font-size: 15px; letter-spacing: 0.5px; }
+        .pts-col { font-weight: 900; color: var(--f1-red); text-align: center; font-size: 18px; }
+        
+        .fastest-lap-icon { color: var(--fastest-lap); margin-left: 8px; font-size: 14px; display: inline-flex; align-items: center; gap: 4px; background: rgba(179, 136, 255, 0.1); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(179, 136, 255, 0.3);}
+        .dnf-text { color: #888; font-style: italic; }
+
+        /* LOADER */
+        #loader { text-align: center; padding: 50px; color: #888; font-style: italic; }
+
+        @media (max-width: 768px) {
+            .header-left { flex-direction: column; align-items: flex-start; gap: 15px; margin-bottom: 10px; }
+            .race-selector { width: 100%; }
+            th, td { padding: 12px 10px; font-size: 14px; }
+            .hide-mobile { display: none; }
+            .driver-col { font-size: 15px; }
+            .time-col { font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <a href="index.html" class="back-btn">❮ Back</a>
+                <div class="title-wrapper">
+                    <h1 id="race-title">Loading...</h1>
+                    <p id="race-subtitle">Fetching telemetry data.</p>
+                </div>
+            </div>
+            <select id="race-selector" class="race-selector" style="display: none;"></select>
+        </div>
+
+        <div class="results-wrapper">
+            <div id="loader">Compiling historical race data...</div>
+            <table id="results-table" style="display: none;">
+                <thead id="table-head">
+                    </thead>
+                <tbody id="results-body">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const teamColors = {
+            "Ferrari": "var(--ferrari)",
+            "McLaren": "var(--mclaren)",
+            "Mercedes": "var(--mercedes)",
+            "Aston Martin": "var(--aston)",
+            "Red Bull": "var(--redbull)"
+        };
+
+        function formatMs(ms) {
+            if (!ms || ms === 0) return "-";
+            let totalSeconds = ms / 1000;
+            let minutes = Math.floor(totalSeconds / 60);
+            let seconds = (totalSeconds % 60).toFixed(3);
+            if (minutes > 0) return `${minutes}:${seconds.padStart(6, '0')}`;
+            return seconds; 
+        }
+
+        let allRaceData = [];
+
+        fetch('https://raw.githubusercontent.com/f1ladsleague/standings/main/race_list.txt')
+            .then(res => {
+                if (!res.ok) throw new Error("List not found");
+                return res.text();
+            })
+            .then(async text => {
+                const files = text.split('\n').map(f => f.trim()).filter(f => f.endsWith('.json'));
+                if (files.length === 0) throw new Error("No race data found");
+
+                const fetchPromises = files.map(file => 
+                    fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/${file}`).then(r => r.json())
+                );
+                
+                allRaceData = await Promise.all(fetchPromises);
+
+                // SORT NEWEST TO OLDEST
+                allRaceData.sort((a, b) => new Date(b.Date) - new Date(a.Date));
+
+                const selector = document.getElementById('race-selector');
+                allRaceData.forEach((race, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    const dateStr = new Date(race.Date).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
+                    // Updated Dropdown to show if it's Quali or Race
+                    option.textContent = `${dateStr} - ${race.TrackName} (${race.SessionType})`;
+                    selector.appendChild(option);
+                });
+
+                selector.style.display = "block";
+                selector.addEventListener('change', (e) => renderRace(e.target.value));
+
+                renderRace(0);
+            })
+            .catch(err => {
+                document.getElementById('loader').innerText = "No race data has been uploaded yet.";
+            });
+
+        function renderRace(index) {
+            const data = allRaceData[index];
+            const isQuali = data.SessionType === "Qualification";
+            
+            document.getElementById('loader').style.display = "none";
+            document.getElementById('results-table').style.display = "table";
+
+            // Title and Subtitle
+            document.getElementById('race-title').innerText = `${data.TrackName} - ${data.SessionType}`;
+            const raceDate = new Date(data.Date).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+            document.getElementById('race-subtitle').innerText = `${isQuali ? 'Qualifying' : 'Race'} Session | ${raceDate}`;
+
+            // DYNAMIC HEADERS
+            const thead = document.getElementById('table-head');
+            thead.innerHTML = `
+                <tr>
+                    <th class="pos-col">Pos</th>
+                    <th>Driver</th>
+                    <th class="hide-mobile">Constructor</th>
+                    ${isQuali ? '' : '<th class="hide-mobile" style="text-align: center;">Grid</th>'}
+                    ${isQuali ? '' : '<th class="hide-mobile" style="text-align: center;">Pits</th>'}
+                    <th>${isQuali ? 'Best Lap' : 'Time / Gap'}</th>
+                    ${isQuali ? '' : '<th class="hide-mobile">Fastest Lap</th>'}
+                    ${isQuali ? '' : '<th class="pts-col">Pts</th>'}
+                </tr>
+            `;
+
+            // DYNAMIC BODY
+            const tbody = document.getElementById('results-body');
+            tbody.innerHTML = ""; 
+
+            const drivers = data.Drivers.sort((a, b) => a.Position - b.Position);
+
+            drivers.forEach(driver => {
+                const isFastestLap = data.FastestLapDriver && data.FastestLapDriver.Name === driver.Driver.Name;
+                
+                let timeDisplay = "";
+                
+                if (isQuali) {
+                    // QUALIFYING LOGIC
+                    if (driver.FastestLapTimeInt === 0 || driver.Status === "Dsq" || driver.Status === "Dnf") {
+                        timeDisplay = `<span class="dnf-text">${driver.Status === 'Dsq' ? 'DSQ' : 'NO TIME'}</span>`;
+                    } else {
+                        timeDisplay = formatMs(driver.FastestLapTimeInt);
+                    }
+                } else {
+                    // RACE LOGIC
+                    if (driver.Status !== "Ok" && driver.Status !== "finished") {
+                        timeDisplay = `<span class="dnf-text">${driver.Status === 'Dsq' ? 'DSQ' : 'DNF'}</span>`;
+                    } else if (driver.Position === 1) {
+                        timeDisplay = formatMs(driver.TimeInt); 
+                    } else {
+                        timeDisplay = "+" + (driver.GapInt / 1000).toFixed(3); 
+                    }
+                }
+
+                const teamName = driver.Team ? driver.Team.Name : "Unknown";
+                const teamColor = teamColors[teamName] || "#ffffff";
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="pos-col">${driver.Position}</td>
+                    <td class="driver-col">${driver.Driver.Name}</td>
+                    <td class="hide-mobile">
+                        <div class="team-col">
+                            <div class="team-color-bar" style="background-color: ${teamColor};"></div>
+                            ${teamName}
+                        </div>
+                    </td>
+                    ${isQuali ? '' : `<td class="hide-mobile" style="text-align: center;">${driver.GridPosition}</td>`}
+                    ${isQuali ? '' : `<td class="hide-mobile" style="text-align: center;">${driver.PitsCount}</td>`}
+                    <td class="time-col">${timeDisplay}</td>
+                    ${isQuali ? '' : `<td class="time-col hide-mobile">
+                        ${formatMs(driver.FastestLapTimeInt)}
+                        ${isFastestLap ? `<span class="fastest-lap-icon">⏱️ FL</span>` : ''}
+                    </td>`}
+                    ${isQuali ? '' : `<td class="pts-col">${driver.DriverPointsRaw}</td>`}
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+</html>
