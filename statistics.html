@@ -81,6 +81,24 @@
         .chart-container { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; min-width: 0; width: 100%; box-sizing: border-box; }
         .chart-title { font-size: 16px; color: #aaa; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; margin-top: 0; text-align: center; margin-bottom: 15px; }
 
+        /* CUSTOM PHOTO GRAPH CSS */
+        .track-finishes-grid { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: thin; scrollbar-color: var(--f1-red) #333; min-height: 120px;}
+        .track-finishes-grid::-webkit-scrollbar { height: 8px; }
+        .track-finishes-grid::-webkit-scrollbar-thumb { background: var(--f1-red); border-radius: 4px; }
+        .track-finishes-grid::-webkit-scrollbar-track { background: #333; border-radius: 4px; }
+        
+        .finish-col { flex: 1; min-width: 65px; display: flex; flex-direction: column; align-items: center; gap: 8px; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 10px 5px; border-top: 3px solid #444; }
+        .finish-col.pos-1 { border-top-color: gold; background: linear-gradient(to bottom, rgba(255,215,0,0.1), rgba(0,0,0,0.2)); }
+        .finish-col.pos-2 { border-top-color: #C0C0C0; background: linear-gradient(to bottom, rgba(192,192,192,0.1), rgba(0,0,0,0.2)); }
+        .finish-col.pos-3 { border-top-color: #CD7F32; background: linear-gradient(to bottom, rgba(205,127,50,0.1), rgba(0,0,0,0.2)); }
+        .finish-col.pos-dnf { border-top-color: var(--f1-red); background: linear-gradient(to bottom, rgba(225,6,0,0.1), rgba(0,0,0,0.2)); }
+        
+        .finish-col-title { font-weight: 900; font-size: 14px; color: #fff; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;}
+        .finish-driver-card { position: relative; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: 0.2s; }
+        .finish-driver-card:hover { transform: translateY(-3px); z-index: 2;}
+        .finish-photo { width: 42px; height: 42px; border-radius: 50%; border: 3px solid #444; object-fit: cover; object-position: center top; box-shadow: 0 4px 8px rgba(0,0,0,0.5);}
+        .finish-count-badge { position: absolute; bottom: -4px; right: -4px; background: #fff; color: #000; font-weight: 900; font-size: 11px; padding: 2px 5px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.8); border: 1px solid #ccc;}
+
         /* Accordion Season History */
         .history-section { padding: 30px; }
         .history-title { font-size: 24px; font-weight: 900; text-transform: uppercase; color: var(--f1-red); margin-top: 0; margin-bottom: 20px; }
@@ -104,7 +122,6 @@
         tr.row-standard td { color: #fff; }
         td.fl-time { color: var(--fastest-lap) !important; font-weight: 900; }
 
-        /* Analysis Tables */
         .analysis-table th { background: var(--f1-red); color: #fff; }
         .analysis-table td { background: rgba(0,0,0,0.2); }
         .analysis-table tr:hover td { background: rgba(255,255,255,0.05); }
@@ -216,9 +233,8 @@
         let seasonStandings = {};
         let currentSeasonMax = 1;
         
-        let myChart1, myChart2, myChart3;
+        let myChart1, myChart2;
 
-        // HARDCODED DRIVERS JSON
         const staticDriverProfiles = [
           { "Name": "Mapa", "RealName": "Madhawa Mapa", "InGameName": "M. MAPA", "Nationality": "United Arab Emirates", "RaceNumber": 99, "GamePlatform": "PC" },
           { "Name": "Shiyan", "RealName": "Shiyan Kekulkotuwage", "InGameName": "shiyank88", "RaceNumber": 8, "GamePlatform": "PC" },
@@ -232,13 +248,11 @@
           { "Name": "Kalpa", "RealName": "Kalpa Keragala", "InGameName": "PrODigY_v2", "Nationality": "Brazil", "RaceNumber": 88, "GamePlatform": "PS5" }
         ];
 
-        // AWARDS DICTIONARY
         const driverAwards = {
             "Rodda": ["Season 4 - Cleanest Driver", "Season 4 - Drivers MVP", "Season 4 - Overtake of the Season"],
             "Kalpa": ["Season 4 - Most Improved Driver"]
         };
 
-        // TRACK FLAGS DICTIONARY
         const trackCountryFlags = {
             "Bahrain": "bahrain", "Jeddah": "saudi_arabia", "Melbourne": "australia", 
             "Baku": "azerbaijan", "Miami": "united_states_of_america", "Imola": "italy", 
@@ -250,7 +264,6 @@
             "Yas Marina": "united_arab_emirates", "Shanghai": "china", "Montreal": "canada"
         };
 
-        // TRACK LAYOUTS DICTIONARY
         const trackLayouts = {
             "Bahrain": "bahrain", "Jeddah": "jeddah", "Melbourne": "melbourne", 
             "Baku": "baku", "Miami": "miami", "Imola": "imola", "Monaco": "monaco", 
@@ -398,7 +411,7 @@
                     if(!seasonStandings[ev.season].teams[tName]) seasonStandings[ev.season].teams[tName] = 0;
                     seasonStandings[ev.season].teams[tName] += pts;
 
-                    // NEW FINISH TRACKING FOR TRACK GRAPH
+                    // TRACK FINISHES FOR PICTOGRAM GRAPH
                     if (!trackStats[tNameStr].driverFinishes[dName]) {
                         trackStats[tNameStr].driverFinishes[dName] = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, "DNF": 0, total: 0 };
                     }
@@ -717,6 +730,53 @@
             });
         }
 
+        // GENERATE CUSTOM HTML PICTOGRAM GRID FOR TRACKS
+        function buildCustomTrackGraph(t) {
+            const positions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, "DNF"];
+            let html = '<div class="track-finishes-grid">';
+            
+            positions.forEach(pos => {
+                let colClass = "pos-standard";
+                if(pos === 1) colClass = "pos-1";
+                else if(pos === 2) colClass = "pos-2";
+                else if(pos === 3) colClass = "pos-3";
+                else if(pos === "DNF") colClass = "pos-dnf";
+
+                let posLabel = pos;
+                if (pos === 1) posLabel = "1st";
+                else if (pos === 2) posLabel = "2nd";
+                else if (pos === 3) posLabel = "3rd";
+                else if (pos !== "DNF") posLabel = pos + "th";
+
+                html += `<div class="finish-col ${colClass}">
+                            <div class="finish-col-title">${posLabel}</div>`;
+                
+                // Collect drivers who finished in this pos
+                let driversInPos = Object.keys(t.driverFinishes)
+                    .map(dName => ({ name: dName, count: t.driverFinishes[dName][pos] || 0 }))
+                    .filter(d => d.count > 0)
+                    .sort((a,b) => b.count - a.count);
+
+                driversInPos.forEach(d => {
+                    let s = driverStats[d.name];
+                    let bgHex = s ? teamColors[s.currentTeam] : '#444';
+                    let photoUrl = `${photoBase}${d.name.replace(/\\s+/g, '')}.png`;
+                    
+                    html += `
+                        <div class="finish-driver-card" title="${d.name} (${d.count} times in ${posLabel})">
+                            <img src="${photoUrl}" class="finish-photo" style="border-color: ${bgHex}; background-color: ${bgHex};" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/blank.png'">
+                            ${d.count > 1 ? `<div class="finish-count-badge">x${d.count}</div>` : ''}
+                        </div>
+                    `;
+                });
+
+                html += `</div>`;
+            });
+            
+            html += '</div>';
+            return html;
+        }
+
         function renderTrackProfile(tName) {
             document.getElementById('main-nav').style.display = "none";
             document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
@@ -795,6 +855,9 @@
                 `;
             }).join('');
 
+            // Inject the new custom pictogram HTML
+            let customGraphHtml = buildCustomTrackGraph(t);
+
             let html = `
                 <div class="profile-wrapper">
                     <div class="profile-nav-bar">
@@ -818,7 +881,7 @@
                     <div class="charts-section" style="grid-template-columns: 1fr;">
                         <div class="chart-container">
                             <h4 class="chart-title">Finishing Positions by Driver</h4>
-                            <div style="position: relative; height: 350px; width: 100%;"><canvas id="trackPointsChart"></canvas></div>
+                            ${customGraphHtml}
                         </div>
                     </div>
 
@@ -829,46 +892,6 @@
                 </div>
             `;
             container.innerHTML = html;
-
-            setTimeout(() => drawTrackChart(t), 100);
-        }
-
-        function drawTrackChart(t) {
-            if(myChart3) myChart3.destroy();
-
-            // Only show drivers who have actually raced at this track, sorted by who raced there the most
-            let activeDrivers = Object.keys(t.driverFinishes)
-                .filter(d => t.driverFinishes[d].total > 0)
-                .sort((a,b) => t.driverFinishes[b].total - t.driverFinishes[a].total);
-
-            // Create a dataset for each active driver
-            let datasets = activeDrivers.map(dName => {
-                let f = t.driverFinishes[dName];
-                let teamHex = driverStats[dName] ? teamColors[driverStats[dName].currentTeam] : '#888';
-                
-                return {
-                    label: dName,
-                    data: [f[1]||0, f[2]||0, f[3]||0, f[4]||0, f[5]||0, f[6]||0, f[7]||0, f[8]||0, f[9]||0, f[10]||0, f["DNF"]||0],
-                    backgroundColor: teamHex,
-                    borderRadius: 4
-                };
-            });
-
-            myChart3 = new Chart(document.getElementById('trackPointsChart'), {
-                type: 'bar',
-                data: {
-                    labels: ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', 'DNF'],
-                    datasets: datasets
-                },
-                options: { 
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { position: 'bottom', labels: { color: '#aaa', font: { family: 'Titillium Web', weight: 'bold' } } } }, 
-                    scales: { 
-                        x: { stacked: true, grid: { display: false } }, 
-                        y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.05)' } } 
-                    } 
-                }
-            });
         }
 
         function exitToDirectory(tabName) {
