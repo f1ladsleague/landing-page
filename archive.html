@@ -57,7 +57,7 @@
         .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; border-bottom: 2px solid #333; padding-bottom: 20px; flex-wrap: wrap; gap: 15px;}
         .header-left { display: flex; align-items: center; min-width: 0; flex: 1; }
         
-        .back-btn { background: #333; color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; transition: 0.3s; margin-right: 20px; text-transform: uppercase; white-space: nowrap;}
+        .back-btn { background: #333; color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 6px; border: none; font-family: 'Titillium Web', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.3s; margin-right: 20px; text-transform: uppercase; white-space: nowrap;}
         .back-btn:hover { background: var(--f1-red); }
         
         .title-wrapper h2 { margin: 0; font-size: 24px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; color: var(--f1-red); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
@@ -88,20 +88,40 @@
 
         .fl-row td { color: var(--fastest-lap) !important; }
         .fl-row .pos-col, .fl-row .pts-col, .fl-row .team-text { color: var(--fastest-lap) !important; }
-        
         .wdc-row td { background: rgba(255, 215, 0, 0.1); border-bottom: 1px solid rgba(255, 215, 0, 0.3); }
 
-        /* SPECIFIC COLUMNS */
+        /* SPECIFIC COLUMNS & DRIVER LINKS */
         .pos-col { width: 50px; text-align: center; font-weight: 900; font-size: 18px; color: #aaa; }
         .driver-cell { display: flex; align-items: center; gap: 15px; }
         .driver-photo-wrapper { width: 45px; height: 45px; border-radius: 50%; overflow: hidden; border: 2px solid #444; background: #222; flex-shrink: 0; display: flex; align-items: flex-start; justify-content: center; }
         .driver-photo { width: 100%; height: 100%; object-fit: cover; object-position: center top; transform-origin: top center; transform: scale(1.6); }
-        .driver-col { font-size: 18px; font-weight: 700; text-transform: uppercase; margin: 0; }
+        .driver-col { font-size: 18px; font-weight: 700; text-transform: uppercase; margin: 0; transition: 0.2s; }
+        
+        /* DRIVER LINK HOVER EFFECT */
+        .driver-link { cursor: pointer; text-decoration: underline; text-decoration-color: transparent; }
+        .driver-link:hover { color: var(--f1-red) !important; text-decoration-color: var(--f1-red); }
+
         .team-cell { display: flex; align-items: center; gap: 10px; }
         .team-text { color: #ccc; font-size: 14px; text-transform: uppercase; }
         .time-col { font-family: monospace; font-size: 15px; letter-spacing: 0.5px; }
         .pts-col { font-weight: 900; color: var(--f1-red); text-align: center; font-size: 18px; }
         .dnf-text { color: #888; font-style: italic; }
+
+        /* DRIVER PROFILE UI */
+        .profile-header { display: flex; align-items: center; gap: 20px; padding: 25px; background: rgba(0,0,0,0.3); border-bottom: 1px solid #333; flex-wrap: wrap; }
+        .profile-photo { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid var(--f1-red); background: #222; object-position: center top; transform-origin: top center; }
+        .profile-name { font-size: 36px; font-weight: 900; text-transform: uppercase; margin: 0; letter-spacing: 1px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; padding: 25px; background: rgba(255,255,255,0.02); }
+        .stat-box { background: rgba(0,0,0,0.4); padding: 15px; border-radius: 8px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .stat-value { font-size: 26px; font-weight: 900; color: #fff; }
+        .stat-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-top: 5px; }
+        .season-block { padding: 0; border-top: 1px solid #333; }
+        .season-block-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; background: rgba(255,255,255,0.02); }
+        .season-block-title { font-size: 20px; font-weight: 900; color: var(--f1-red); text-transform: uppercase; margin: 0; }
+        .season-block-stats { color: #aaa; font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .mini-table { width: 100%; border-collapse: collapse; }
+        .mini-table th { padding: 10px 25px; background: rgba(0,0,0,0.5); font-size: 12px; }
+        .mini-table td { padding: 10px 25px; border-bottom: 1px solid #2a2a35; font-size: 15px; }
 
         /* FOOTNOTES & LOADERS */
         #loader { text-align: center; padding: 50px; color: #888; font-style: italic; }
@@ -115,6 +135,9 @@
             .hide-mobile { display: none; }
             .driver-col { font-size: 15px; }
             .driver-photo-wrapper { width: 35px; height: 35px; }
+            .profile-header { flex-direction: column; text-align: center; }
+            .profile-header .back-btn { margin-left: 0; width: 100%; margin-top: 15px; }
+            .season-block-header { flex-direction: column; gap: 5px; align-items: flex-start; }
         }
     </style>
 </head>
@@ -133,7 +156,7 @@
             <button id="tab-s3" class="season-tab" onclick="loadSeason(3)">Season 3</button>
         </div>
 
-        <div class="header">
+        <div class="header" id="main-header">
             <div class="header-left">
                 <a href="results.html" class="back-btn">❮ Back</a>
                 <div class="title-wrapper">
@@ -151,10 +174,13 @@
 
         <div class="results-wrapper">
             <div id="loader">Compiling historical race data and calculating standings...</div>
+            
             <table id="results-table" style="display: none;">
                 <thead id="table-head"></thead>
                 <tbody id="results-body"></tbody>
             </table>
+            
+            <div id="driver-profile-container" style="display: none;"></div>
             
             <div id="reverse-grid-footnote" style="display: none;">
                 * <strong>Reverse Championship Grid:</strong> The starting grid for this race was determined by reversing the championship standings (e.g., the championship leader started in last place).
@@ -181,6 +207,7 @@
             // Season 2
             "Season%202/results_miami_race.json",
             "Season%202/results_imola_race.json",
+            "Season%202/results_monza_race.json", // <-- ADDED MONZA
             "Season%202/results_spa-francorchamps_race.json",
             "Season%202/results_barcelona_race.json",
             "Season%202/results_baku_race.json",
@@ -242,6 +269,8 @@
         let activeSeasonNum = 3; 
         let activeEventIndex = "standings";
         let activeSession = "Race"; 
+        let activeDriverName = "";
+        let previousEventIndex = "standings"; // For the back button in profiles
         let seasonStandings = { 1: { drivers: {}, teams: {} }, 2: { drivers: {}, teams: {} }, 3: { drivers: {}, teams: {} }, 4: { drivers: {}, teams: {} } };
 
         const cacheBuster = `?v=${new Date().getTime()}`;
@@ -267,15 +296,12 @@
                 if (path.includes("Season%202")) seasonNum = 2;
                 if (path.includes("Season%203")) seasonNum = 3;
 
-                // Advanced Feature/Sprint Classification
                 let maxPts = Math.max(0, ...race.Drivers.map(d => (d.DriverPointsRaw || 0) / 10));
                 let label = "Feature"; 
                 
                 if (seasonNum === 3) {
-                    // Season 3 logic: Sprint is 8 pts (+ FL = 9 max). Feature is 16 pts (+ FL = 17 max).
                     if (maxPts <= 10) label = "Sprint";
                 } else {
-                    // Standard logic: Sprint is 15 pts (+ FL = 16 max). Feature is 25 pts.
                     if (maxPts <= 16) label = "Sprint";
                 }
                 
@@ -314,7 +340,7 @@
                 return (order[a.label] || 3) - (order[b.label] || 3);
             });
 
-            // ASSIGN GLOBAL INDEX AFTER SORTING
+            // ASSIGN GLOBAL INDEX
             groupedEvents.forEach((e, idx) => e.globalIndex = idx);
 
             document.getElementById('season-nav').style.display = "flex";
@@ -328,7 +354,6 @@
             document.getElementById('loader').innerText = "Archive data is processing or syncing to GitHub. Check back later.";
         });
 
-        // TRIGGERED WHEN SEASON TAB IS CLICKED
         function loadSeason(sNum) {
             activeSeasonNum = sNum;
             
@@ -340,7 +365,6 @@
             const selector = document.getElementById('race-selector');
             selector.innerHTML = `<option value="standings">🏆 Season ${sNum} Final Standings</option>`;
             
-            // Generate options with Round numbers
             seasonEvents.forEach((event, idx) => {
                 const option = document.createElement('option');
                 option.value = event.globalIndex;
@@ -354,18 +378,168 @@
                 updateUI(); 
             });
 
-            // Force load the Standings view
             selector.value = "standings";
             activeEventIndex = "standings";
             updateUI();
         }
 
         function switchSession(type) { activeSession = type; updateUI(); }
+        
+        function loadDriverProfile(name) {
+            previousEventIndex = activeEventIndex; // Save where they came from
+            activeEventIndex = "driverProfile";
+            activeDriverName = name;
+            updateUI();
+        }
+        
+        function exitDriverProfile() {
+            activeEventIndex = previousEventIndex || "standings";
+            document.getElementById('race-selector').value = activeEventIndex;
+            updateUI();
+        }
+        
+        // Helper to get championship position
+        function getSeasonPosition(sNum, dName) {
+            if (!seasonStandings[sNum] || !seasonStandings[sNum].drivers[dName]) return "-";
+            let sortedS = Object.keys(seasonStandings[sNum].drivers)
+                .map(k => ({name: k, pts: seasonStandings[sNum].drivers[k].points}))
+                .sort((a,b) => b.pts - a.pts);
+            let idx = sortedS.findIndex(x => x.name === dName);
+            if (idx !== -1) {
+                let p = idx + 1;
+                return p === 1 ? "1st 👑" : p === 2 ? "2nd" : p === 3 ? "3rd" : p + "th";
+            }
+            return "-";
+        }
 
         function updateUI() {
             document.getElementById('loader').style.display = "none";
-            document.getElementById('results-table').style.display = "table";
+            const table = document.getElementById('results-table');
             const tbody = document.getElementById('results-body');
+            const profileContainer = document.getElementById('driver-profile-container');
+            
+            // ==========================================
+            // DRIVER PROFILE VIEW
+            // ==========================================
+            if (activeEventIndex === "driverProfile") {
+                table.style.display = "none";
+                document.getElementById('session-tabs').style.display = "none";
+                document.getElementById('reverse-grid-footnote').style.display = "none";
+                profileContainer.style.display = "block";
+                document.getElementById('race-selector').style.display = "none";
+
+                document.getElementById('race-title').innerText = `Driver Database`;
+                document.getElementById('race-subtitle').innerText = "Career Statistics & History";
+
+                // Calculate all stats
+                let pStats = { starts: 0, wins: 0, podiums: 0, pts: 0, fls: 0, poles: 0, seasons: {} };
+                let trackCount = {};
+                let teamCount = {};
+
+                groupedEvents.forEach(ev => {
+                    let rData = ev.raceData;
+                    let qData = ev.qualiData;
+                    let dRace = rData.Drivers.find(d => d.Driver.Name === activeDriverName);
+                    let dQuali = qData ? qData.Drivers.find(d => d.Driver.Name === activeDriverName) : null;
+
+                    if (dRace) {
+                        pStats.starts++;
+                        let pts = (dRace.DriverPointsRaw / 10) || 0;
+                        pStats.pts += pts;
+
+                        if (!pStats.seasons[ev.season]) pStats.seasons[ev.season] = { points: 0, races: [] };
+                        pStats.seasons[ev.season].points += pts;
+
+                        if (dRace.Position === 1) pStats.wins++;
+                        if (dRace.Position <= 3) pStats.podiums++;
+                        
+                        let isFL = rData.FastestLapDriver && rData.FastestLapDriver.Name === activeDriverName;
+                        if (isFL) pStats.fls++;
+                        if (dQuali && dQuali.Position === 1) pStats.poles++;
+                        
+                        // Accumulate Team & Track data for favorites
+                        let tName = dRace.Team ? dRace.Team.Name : "Unknown";
+                        if (!teamCount[tName]) teamCount[tName] = 0;
+                        teamCount[tName]++;
+                        
+                        if (!trackCount[ev.trackName]) trackCount[ev.trackName] = 0;
+                        trackCount[ev.trackName] += pts;
+                        
+                        let isDnf = (dRace.Status !== "Ok" && dRace.Status !== "finished" && !dRace.Status.toLowerCase().includes("lap"));
+
+                        pStats.seasons[ev.season].races.push({
+                            track: ev.trackName,
+                            label: ev.label,
+                            pos: isDnf ? "DNF" : dRace.Position,
+                            pts: pts,
+                            fl: isFL,
+                            team: tName
+                        });
+                    }
+                });
+
+                let bestTrack = Object.keys(trackCount).sort((a,b) => trackCount[b] - trackCount[a])[0] || "-";
+                let topTeam = Object.keys(teamCount).sort((a,b) => teamCount[b] - teamCount[a])[0] || "-";
+                let winRate = pStats.starts > 0 ? Math.round((pStats.wins / pStats.starts) * 100) + "%" : "0%";
+
+                let profileHTML = `
+                    <div class="profile-header">
+                        <img src="${getDriverPhotoUrl(3, activeDriverName, topTeam)}" class="profile-photo" onerror="this.parentElement.style.display='none'">
+                        <div>
+                            <h3 class="profile-name">${activeDriverName}</h3>
+                        </div>
+                        <button class="back-btn" style="margin-left: auto;" onclick="exitDriverProfile()">❮ Back to Results</button>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box"><div class="stat-value">${pStats.pts}</div><div class="stat-label">Career Points</div></div>
+                        <div class="stat-box"><div class="stat-value">${pStats.wins}</div><div class="stat-label">Wins (${winRate})</div></div>
+                        <div class="stat-box"><div class="stat-value">${pStats.podiums}</div><div class="stat-label">Podiums</div></div>
+                        <div class="stat-box"><div class="stat-value">${pStats.poles}</div><div class="stat-label">Poles</div></div>
+                        <div class="stat-box"><div class="stat-value">${pStats.fls}</div><div class="stat-label">Fastest Laps</div></div>
+                        <div class="stat-box"><div class="stat-value">${pStats.starts}</div><div class="stat-label">Race Starts</div></div>
+                        <div class="stat-box"><div class="stat-value" style="font-size:18px; margin-top:8px;">${topTeam}</div><div class="stat-label">Main Team</div></div>
+                        <div class="stat-box"><div class="stat-value" style="font-size:18px; margin-top:8px;">${bestTrack}</div><div class="stat-label">Best Track</div></div>
+                    </div>
+                `;
+
+                // Render Season Accordions
+                [3, 2, 1].forEach(sNum => {
+                    if(pStats.seasons[sNum]) {
+                        let sData = pStats.seasons[sNum];
+                        let sPos = getSeasonPosition(sNum, activeDriverName);
+
+                        let tableRows = sData.races.map(r => `
+                            <tr class="${r.fl ? 'fl-row' : ''}">
+                                <td class="pos-col">${r.pos}</td>
+                                <td>${r.track} <span style="color:#888; font-size:11px;">(${r.label})</span></td>
+                                <td class="hide-mobile">${r.team}</td>
+                                <td class="pts-col">${r.pts}</td>
+                            </tr>
+                        `).join('');
+
+                        profileHTML += `
+                            <div class="season-block">
+                                <div class="season-block-header">
+                                    <h4 class="season-block-title">Season ${sNum} Timeline</h4>
+                                    <div class="season-block-stats">Championship: <span style="color:#fff;">${sPos}</span> &nbsp;|&nbsp; Points: <span style="color:#fff;">${sData.points}</span></div>
+                                </div>
+                                <table class="mini-table">
+                                    <thead><tr><th class="pos-col">Pos</th><th>Track</th><th class="hide-mobile">Constructor</th><th class="pts-col">Pts</th></tr></thead>
+                                    <tbody>${tableRows}</tbody>
+                                </table>
+                            </div>
+                        `;
+                    }
+                });
+
+                profileContainer.innerHTML = profileHTML;
+                return; // Stop rendering table
+            }
+
+            // Return normal UI states
+            document.getElementById('race-selector').style.display = "block";
+            profileContainer.style.display = "none";
+            table.style.display = "table";
             tbody.innerHTML = ""; 
 
             // ==========================================
@@ -391,7 +565,6 @@
                 let sortedDrivers = Object.keys(sData.drivers).map(k => ({name: k, ...sData.drivers[k]})).sort((a,b) => b.points - a.points);
                 let sortedTeams = Object.keys(sData.teams).map(k => ({name: k, points: sData.teams[k]})).sort((a,b) => b.points - a.points);
 
-                // Print Drivers
                 sortedDrivers.forEach((d, idx) => {
                     let pos = idx + 1;
                     let isWDC = pos === 1;
@@ -406,7 +579,7 @@
                                     <div class="driver-photo-wrapper" style="background-color: ${teamColor};">
                                         <img src="${driverPhotoUrl}" alt="${d.name}" class="driver-photo" onerror="this.parentElement.style.display='none'">
                                     </div>
-                                    <span class="driver-col" style="${isWDC ? 'color: gold;' : ''}">${d.name}${isWDC ? ' 👑' : ''}</span>
+                                    <span class="driver-col driver-link" style="${isWDC ? 'color: gold;' : ''}" onclick="loadDriverProfile('${d.name}')">${d.name}${isWDC ? ' 👑' : ''}</span>
                                 </div>
                             </td>
                             <td class="hide-mobile">
@@ -419,10 +592,8 @@
                     `;
                 });
 
-                // Divider
                 tbody.innerHTML += `<tr><td colspan="4" style="background: rgba(0,0,0,0.4); text-align: center; color: #888; font-weight: 900; letter-spacing: 2px; padding: 20px;">CONSTRUCTORS CHAMPIONSHIP</td></tr>`;
 
-                // Print Teams
                 sortedTeams.forEach((t, idx) => {
                     let pos = idx + 1;
                     let isWCC = pos === 1;
@@ -441,7 +612,7 @@
                         </tr>
                     `;
                 });
-                return; // End of Standings Logic
+                return;
             }
 
 
@@ -459,7 +630,6 @@
 
             if (!data) return; 
 
-            // REVERSE GRID FOOTNOTE LOGIC
             const reverseFootnote = document.getElementById('reverse-grid-footnote');
             if (!isQuali && (event.season === 2 || event.season === 3)) {
                 reverseFootnote.style.display = "block";
@@ -467,7 +637,6 @@
                 reverseFootnote.style.display = "none";
             }
 
-            // SEASON 1 HIDDEN COLUMNS LOGIC (No timing AND no penalties for first 3 races)
             let hideTimingAndPenalties = false;
             if (event.season === 1) {
                 const tName = event.trackName.toLowerCase();
@@ -475,6 +644,9 @@
                     hideTimingAndPenalties = true;
                 }
             }
+            
+            // Explicitly hide Grid and Pits for Season 2 and Season 3 completely.
+            const hideGridPits = hideTimingAndPenalties || isQuali || event.season === 2 || event.season === 3;
 
             document.getElementById('race-title').innerText = event.trackName;
             const raceDate = new Date(data.Date).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
@@ -485,8 +657,8 @@
                     <th class="pos-col">Pos</th>
                     <th>Driver</th>
                     <th class="hide-mobile">Constructor</th>
-                    ${hideTimingAndPenalties || isQuali ? '' : '<th class="hide-mobile" style="text-align: center;">Grid</th>'}
-                    ${hideTimingAndPenalties || isQuali ? '' : '<th class="hide-mobile" style="text-align: center;">Pits</th>'}
+                    ${hideGridPits ? '' : '<th class="hide-mobile" style="text-align: center;">Grid</th>'}
+                    ${hideGridPits ? '' : '<th class="hide-mobile" style="text-align: center;">Pits</th>'}
                     ${hideTimingAndPenalties ? '' : `<th>${isQuali ? 'Best Lap' : 'Time / Gap'}</th>`}
                     ${hideTimingAndPenalties ? '' : '<th class="hide-mobile" style="text-align: center;">Penalties</th>'}
                     ${hideTimingAndPenalties || isQuali ? '' : '<th class="hide-mobile">Fastest Lap</th>'}
@@ -507,7 +679,6 @@
                 const driverPhotoUrl = getDriverPhotoUrl(event.season, driver.Driver.Name, teamName);
                 const teamColor = teamColors[teamName] || '#222';
 
-                // TIME / GAP CALCULATION
                 let timeDisplay = "";
                 if (!hideTimingAndPenalties) {
                     if (isQuali) {
@@ -531,7 +702,6 @@
                     }
                 }
 
-                // PENALTY CALCULATION
                 let penText = "-";
                 if (driver.PenaltySecsStewards > 0) {
                     penText = `+${driver.PenaltySecsStewards}s`;
@@ -551,7 +721,7 @@
                             <div class="driver-photo-wrapper" style="background-color: ${teamColor};">
                                 <img src="${driverPhotoUrl}" alt="${driver.Driver.Name}" class="driver-photo" onerror="this.parentElement.style.display='none'">
                             </div>
-                            <span class="driver-col">${driver.Driver.Name}</span>
+                            <span class="driver-col driver-link" onclick="loadDriverProfile('${driver.Driver.Name}')">${driver.Driver.Name}</span>
                         </div>
                     </td>
                     <td class="hide-mobile">
@@ -559,8 +729,8 @@
                             <span class="team-text">${teamName}</span>
                         </div>
                     </td>
-                    ${hideTimingAndPenalties || isQuali ? '' : `<td class="hide-mobile" style="text-align: center;">${driver.GridPosition}</td>`}
-                    ${hideTimingAndPenalties || isQuali ? '' : `<td class="hide-mobile" style="text-align: center;">${driver.PitsCount}</td>`}
+                    ${hideGridPits ? '' : `<td class="hide-mobile" style="text-align: center;">${driver.GridPosition}</td>`}
+                    ${hideGridPits ? '' : `<td class="hide-mobile" style="text-align: center;">${driver.PitsCount}</td>`}
                     ${hideTimingAndPenalties ? '' : `<td class="time-col">${timeDisplay}</td>`}
                     ${hideTimingAndPenalties ? '' : `<td class="hide-mobile" style="text-align: center; color: #ff8000; font-weight: 700;">${penText}</td>`}
                     ${hideTimingAndPenalties || isQuali ? '' : `<td class="time-col hide-mobile">${formatMs(driver.FastestLapTimeInt)}</td>`}
