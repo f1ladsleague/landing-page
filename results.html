@@ -84,7 +84,7 @@
             outline: none;
             cursor: pointer;
             transition: 0.3s;
-            max-width: 350px;
+            max-width: 400px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -99,8 +99,9 @@
             padding: 10px 25px; border-radius: 6px; font-size: 16px; font-weight: 700;
             text-transform: uppercase; cursor: pointer; transition: 0.3s; flex: 1; text-align: center;
         }
-        .tab-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .tab-btn:hover:not(:disabled) { background: rgba(255,255,255,0.1); color: #fff; }
         .tab-btn.active { background: var(--f1-red); color: #fff; border-color: var(--f1-red); box-shadow: 0 4px 15px rgba(225, 6, 0, 0.4); }
+        .tab-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
         /* RESULTS TABLE */
         .results-wrapper {
@@ -125,7 +126,19 @@
         .pos-col { width: 50px; text-align: center; font-weight: 900; font-size: 18px; color: #aaa; }
         
         .driver-cell { display: flex; align-items: center; gap: 15px; }
-        .driver-photo { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #444; background: #222; }
+        
+        /* ZOOMED DRIVER PHOTO WRAPPER */
+        .driver-photo-wrapper {
+            width: 45px; height: 45px; border-radius: 50%; overflow: hidden; 
+            border: 2px solid #444; background: #222; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .driver-photo { 
+            width: 100%; height: 100%; 
+            object-fit: cover; object-position: center 15%; /* Shifts focus up to the face */
+            transform: scale(1.4); /* Zooms in 40% */
+        }
+        
         .driver-col { font-size: 18px; font-weight: 700; text-transform: uppercase; margin: 0; }
         
         .team-cell { display: flex; align-items: center; gap: 10px; }
@@ -135,7 +148,6 @@
         .time-col { font-family: monospace; font-size: 15px; letter-spacing: 0.5px; }
         .pts-col { font-weight: 900; color: var(--f1-red); text-align: center; font-size: 18px; }
         
-        .fastest-lap-icon { color: var(--fastest-lap); margin-left: 8px; font-size: 14px; display: inline-flex; align-items: center; gap: 4px; background: rgba(174, 55, 222, 0.1); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(174, 55, 222, 0.3);}
         .dnf-text { color: #888; font-style: italic; }
 
         /* LOADER */
@@ -149,7 +161,7 @@
             .hide-mobile { display: none; }
             .driver-col { font-size: 15px; }
             .time-col { font-size: 13px; }
-            .driver-photo { width: 35px; height: 35px; }
+            .driver-photo-wrapper { width: 35px; height: 35px; }
         }
     </style>
 </head>
@@ -175,7 +187,9 @@
         </div>
 
         <div class="session-tabs" id="session-tabs" style="display: none;">
-            </div>
+            <button id="tab-quali" class="tab-btn" onclick="switchSession('Qualification')">Qualification</button>
+            <button id="tab-race" class="tab-btn" onclick="switchSession('Race')">Race</button>
+        </div>
 
         <div class="results-wrapper">
             <div id="loader">Compiling historical race data...</div>
@@ -218,25 +232,10 @@
         }
 
         // GLOBALS
-        let groupedEvents = []; 
+        let groupedEvents = []; // Array of specific race events (Sprint or Feature)
         let activeEventIndex = 0;
-        let activeSession = ""; 
+        let activeSession = "Race"; 
         const cacheBuster = `?v=${new Date().getTime()}`;
-
-        // Smart Session Classifier (Checks Winner Points)
-        function getSessionLabel(data) {
-            if (data.SessionType === "Qualification") return "Qualification";
-            
-            const winner = data.Drivers.find(d => d.Position === 1);
-            if (winner) {
-                // If the winner gets ~30 points (Feature) or ~15 points (Sprint)
-                // Dividing by 10 because raw points are 10x
-                const truePoints = winner.DriverPointsRaw / 10;
-                if (truePoints > 20) return "Feature";
-                if (truePoints <= 20) return "Sprint";
-            }
-            return "Race"; // Fallback
-        }
 
         // 1. FETCH & PROCESS DATA
         fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/race_list.txt${cacheBuster}`)
@@ -253,25 +252,35 @@
                 );
                 const allRaceData = await Promise.all(fetchPromises);
 
-                // 2. GROUP FILES BY TRACK NAME
-                let eventsMap = new Map();
-                allRaceData.forEach(data => {
-                    const track = data.TrackName;
-                    const sessionLabel = getSessionLabel(data);
+                // Separate races and qualifications
+                const races = allRaceData.filter(d => d.SessionType === "Race");
+                const qualis = allRaceData.filter(d => d.SessionType === "Qualification");
 
-                    if (!eventsMap.has(track)) {
-                        eventsMap.set(track, { trackName: track, date: data.Date, sessions: {} });
-                    }
-                    eventsMap.get(track).sessions[sessionLabel] = data;
+                // 2. BUILD EVENTS (Mapping each Race to its Quali)
+                races.forEach(race => {
+                    const winner = race.Drivers.find(d => d.Position === 1);
+                    let label = "Feature"; // Default
                     
-                    // Use Race dates for main dropdown sorting if available
-                    if (sessionLabel === "Feature" || sessionLabel === "Sprint") {
-                        eventsMap.get(track).date = data.Date;
+                    if (winner) {
+                        // Check raw points (divide by 10). If <= 20, it's a Sprint.
+                        const truePoints = winner.DriverPointsRaw / 10;
+                        if (truePoints <= 20) label = "Sprint";
                     }
+                    
+                    // Find the matching qualification session for this track
+                    const matchingQuali = qualis.find(q => q.TrackName === race.TrackName);
+
+                    groupedEvents.push({
+                        trackName: race.TrackName,
+                        label: label,
+                        date: race.Date,
+                        raceData: race,
+                        qualiData: matchingQuali
+                    });
                 });
 
-                // Convert map to array and sort by newest date
-                groupedEvents = Array.from(eventsMap.values()).sort((a, b) => new Date(b.date) - new Date(a.date));
+                // Sort Ascending: Oldest first (Sprint/Round 1 at the top of the dropdown)
+                groupedEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
 
                 // 3. POPULATE DROPDOWN
                 const selector = document.getElementById('race-selector');
@@ -279,76 +288,53 @@
                     const option = document.createElement('option');
                     option.value = index;
                     const dateStr = new Date(event.date).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
-                    option.textContent = `${dateStr} - ${event.trackName}`;
+                    // Explicit dropdown label: "15 Mar - Spa-Francorchamps (Feature)"
+                    option.textContent = `${dateStr} - ${event.trackName} (${event.label})`;
                     selector.appendChild(option);
                 });
 
                 selector.style.display = "block";
-                
+                document.getElementById('session-tabs').style.display = "flex";
+
                 selector.addEventListener('change', (e) => {
                     activeEventIndex = e.target.value;
-                    determineInitialSession();
+                    activeSession = "Race"; // Always default to Race when picking a new track
+                    updateUI();
                 });
 
-                determineInitialSession();
+                updateUI();
             })
             .catch(err => {
                 console.error("Fetch Error: ", err);
                 document.getElementById('loader').innerText = "No race data has been uploaded yet or still syncing to GitHub.";
             });
 
-        // Picks best default session to show on load
-        function determineInitialSession() {
-            const sessions = groupedEvents[activeEventIndex].sessions;
-            if (sessions["Feature"]) activeSession = "Feature";
-            else if (sessions["Sprint"]) activeSession = "Sprint";
-            else activeSession = "Qualification";
-            
-            buildTabs();
+        function switchSession(type) {
+            activeSession = type;
             updateUI();
-        }
-
-        // Builds tabs in exact required order
-        function buildTabs() {
-            const tabsContainer = document.getElementById('session-tabs');
-            tabsContainer.innerHTML = '';
-            tabsContainer.style.display = "flex";
-
-            const event = groupedEvents[activeEventIndex];
-            const displayOrder = ["Qualification", "Sprint", "Feature"];
-            
-            // Only create tabs for sessions that actually exist in the JSON files
-            displayOrder.forEach(sessionName => {
-                if (event.sessions[sessionName]) {
-                    const btn = document.createElement('button');
-                    btn.className = `tab-btn ${activeSession === sessionName ? 'active' : ''}`;
-                    btn.onclick = () => {
-                        activeSession = sessionName;
-                        buildTabs(); // Refresh active state
-                        updateUI();
-                    };
-                    btn.innerText = sessionName;
-                    tabsContainer.appendChild(btn);
-                }
-            });
         }
 
         // RENDER THE CURRENT STATE
         function updateUI() {
             const event = groupedEvents[activeEventIndex];
-            const data = event.sessions[activeSession];
-            if (!data) return; 
-
+            const data = activeSession === "Qualification" ? event.qualiData : event.raceData;
             const isQuali = activeSession === "Qualification";
             
+            // Tab Buttons Logic (Disable Quali tab if no Quali file exists for this race)
+            document.getElementById('tab-quali').disabled = !event.qualiData;
+            document.getElementById('tab-quali').className = `tab-btn ${isQuali ? 'active' : ''}`;
+            document.getElementById('tab-race').className = `tab-btn ${!isQuali ? 'active' : ''}`;
+
+            if (!data) return; 
+
             document.getElementById('loader').style.display = "none";
             document.getElementById('results-table').style.display = "table";
 
             document.getElementById('race-title').innerText = event.trackName;
             const raceDate = new Date(data.Date).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
             
-            // Dynamic Subtitle depending on Sprint/Feature/Quali
-            let subtitlePrefix = isQuali ? 'Qualifying' : `${activeSession} Race`;
+            // Explicitly state Sprint or Feature in subtitle
+            let subtitlePrefix = isQuali ? 'Qualifying' : `${event.label} Race`;
             document.getElementById('race-subtitle').innerText = `${subtitlePrefix} Classification | ${raceDate}`;
 
             // BUILD HEADERS
@@ -404,7 +390,7 @@
                         // Dynamically calculate gap by subtracting winner's time from their time
                         timeDisplay = formatGap(driver.TimeInt - winnerTime);
                     } else if (driver.Status && driver.Status.toLowerCase().includes("lap")) {
-                        timeDisplay = driver.Status; // Outputs "+1 Lap" etc.
+                        timeDisplay = driver.Status; 
                     } else {
                         timeDisplay = `<span class="dnf-text">Unknown</span>`;
                     }
@@ -414,6 +400,7 @@
                 const truePoints = isQuali ? 0 : (driver.DriverPointsRaw / 10);
 
                 const tr = document.createElement('tr');
+                // Apply pure purple color override to the row if it's fastest lap
                 if (!isQuali && isFastestLap) {
                     tr.classList.add('fl-row');
                 }
@@ -422,7 +409,9 @@
                     <td class="pos-col">${driver.Position}</td>
                     <td>
                         <div class="driver-cell">
-                            <img src="${driverPhotoUrl}" alt="${driver.Driver.Name}" class="driver-photo" onerror="this.style.display='none'">
+                            <div class="driver-photo-wrapper">
+                                <img src="${driverPhotoUrl}" alt="${driver.Driver.Name}" class="driver-photo" onerror="this.parentElement.style.display='none'">
+                            </div>
                             <span class="driver-col">${driver.Driver.Name}</span>
                         </div>
                     </td>
@@ -437,7 +426,6 @@
                     <td class="time-col">${timeDisplay}</td>
                     ${isQuali ? '' : `<td class="time-col hide-mobile">
                         ${formatMs(driver.FastestLapTimeInt)}
-                        ${isFastestLap ? `<span class="fastest-lap-icon">⏱️ FL</span>` : ''}
                     </td>`}
                     ${isQuali ? '' : `<td class="pts-col">${truePoints}</td>`}
                 `;
