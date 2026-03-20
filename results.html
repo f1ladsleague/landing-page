@@ -131,12 +131,14 @@
         .driver-photo-wrapper {
             width: 45px; height: 45px; border-radius: 50%; overflow: hidden; 
             border: 2px solid #444; background: #222; flex-shrink: 0;
-            display: flex; align-items: center; justify-content: center;
+            display: flex; align-items: flex-start; justify-content: center;
         }
         .driver-photo { 
             width: 100%; height: 100%; 
-            object-fit: cover; object-position: center 15%; /* Shifts focus up to the face */
-            transform: scale(1.4); /* Zooms in 40% */
+            object-fit: cover; 
+            object-position: center top; /* Anchors the top of the photo to the top of the circle */
+            transform-origin: top center; /* Scales from the top down */
+            transform: scale(1.6); /* Increased zoom */
         }
         
         .driver-col { font-size: 18px; font-weight: 700; text-transform: uppercase; margin: 0; }
@@ -222,7 +224,6 @@
             return seconds; 
         }
 
-        // Custom gap formatter (+Seconds.ms or +Minutes:Seconds.ms)
         function formatGap(ms) {
             let totalSeconds = ms / 1000;
             let minutes = Math.floor(totalSeconds / 60);
@@ -232,7 +233,7 @@
         }
 
         // GLOBALS
-        let groupedEvents = []; // Array of specific race events (Sprint or Feature)
+        let groupedEvents = []; 
         let activeEventIndex = 0;
         let activeSession = "Race"; 
         const cacheBuster = `?v=${new Date().getTime()}`;
@@ -252,22 +253,19 @@
                 );
                 const allRaceData = await Promise.all(fetchPromises);
 
-                // Separate races and qualifications
                 const races = allRaceData.filter(d => d.SessionType === "Race");
                 const qualis = allRaceData.filter(d => d.SessionType === "Qualification");
 
-                // 2. BUILD EVENTS (Mapping each Race to its Quali)
+                // 2. BUILD EVENTS
                 races.forEach(race => {
                     const winner = race.Drivers.find(d => d.Position === 1);
-                    let label = "Feature"; // Default
+                    let label = "Feature"; 
                     
                     if (winner) {
-                        // Check raw points (divide by 10). If <= 20, it's a Sprint.
                         const truePoints = winner.DriverPointsRaw / 10;
                         if (truePoints <= 20) label = "Sprint";
                     }
                     
-                    // Find the matching qualification session for this track
                     const matchingQuali = qualis.find(q => q.TrackName === race.TrackName);
 
                     groupedEvents.push({
@@ -279,8 +277,18 @@
                     });
                 });
 
-                // Sort Ascending: Oldest first (Sprint/Round 1 at the top of the dropdown)
-                groupedEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+                // Sort Ascending: Oldest first. 
+                // Tie-breaker: If dates are identical, force Sprint before Feature.
+                groupedEvents.sort((a, b) => {
+                    let dateDiff = new Date(a.date) - new Date(b.date);
+                    if (dateDiff !== 0) return dateDiff;
+                    
+                    // Tie-breaker logic
+                    let order = { "Sprint": 1, "Feature": 2 };
+                    let aOrder = order[a.label] || 3;
+                    let bOrder = order[b.label] || 3;
+                    return aOrder - bOrder;
+                });
 
                 // 3. POPULATE DROPDOWN
                 const selector = document.getElementById('race-selector');
@@ -288,7 +296,6 @@
                     const option = document.createElement('option');
                     option.value = index;
                     const dateStr = new Date(event.date).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
-                    // Explicit dropdown label: "15 Mar - Spa-Francorchamps (Feature)"
                     option.textContent = `${dateStr} - ${event.trackName} (${event.label})`;
                     selector.appendChild(option);
                 });
@@ -298,7 +305,7 @@
 
                 selector.addEventListener('change', (e) => {
                     activeEventIndex = e.target.value;
-                    activeSession = "Race"; // Always default to Race when picking a new track
+                    activeSession = "Race"; 
                     updateUI();
                 });
 
@@ -320,7 +327,6 @@
             const data = activeSession === "Qualification" ? event.qualiData : event.raceData;
             const isQuali = activeSession === "Qualification";
             
-            // Tab Buttons Logic (Disable Quali tab if no Quali file exists for this race)
             document.getElementById('tab-quali').disabled = !event.qualiData;
             document.getElementById('tab-quali').className = `tab-btn ${isQuali ? 'active' : ''}`;
             document.getElementById('tab-race').className = `tab-btn ${!isQuali ? 'active' : ''}`;
@@ -333,7 +339,6 @@
             document.getElementById('race-title').innerText = event.trackName;
             const raceDate = new Date(data.Date).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
             
-            // Explicitly state Sprint or Feature in subtitle
             let subtitlePrefix = isQuali ? 'Qualifying' : `${event.label} Race`;
             document.getElementById('race-subtitle').innerText = `${subtitlePrefix} Classification | ${raceDate}`;
 
@@ -356,7 +361,6 @@
 
             const drivers = data.Drivers.sort((a, b) => a.Position - b.Position);
 
-            // Find winner's time to calculate gaps dynamically
             let winnerTime = 0;
             if (!isQuali) {
                 const winner = drivers.find(d => d.Position === 1);
@@ -381,13 +385,11 @@
                         timeDisplay = formatMs(driver.FastestLapTimeInt);
                     }
                 } else {
-                    // Race Time/Gap Logic
                     if (driver.Status !== "Ok" && driver.Status !== "finished") {
                         timeDisplay = `<span class="dnf-text">${driver.Status === 'Dsq' ? 'DSQ' : 'DNF'}</span>`;
                     } else if (driver.Position === 1) {
                         timeDisplay = formatMs(driver.TimeInt); 
                     } else if (driver.TimeInt > 0 && winnerTime > 0) {
-                        // Dynamically calculate gap by subtracting winner's time from their time
                         timeDisplay = formatGap(driver.TimeInt - winnerTime);
                     } else if (driver.Status && driver.Status.toLowerCase().includes("lap")) {
                         timeDisplay = driver.Status; 
@@ -396,11 +398,9 @@
                     }
                 }
 
-                // Divide by 10 to correct the raw JSON scores
                 const truePoints = isQuali ? 0 : (driver.DriverPointsRaw / 10);
 
                 const tr = document.createElement('tr');
-                // Apply pure purple color override to the row if it's fastest lap
                 if (!isQuali && isFastestLap) {
                     tr.classList.add('fl-row');
                 }
