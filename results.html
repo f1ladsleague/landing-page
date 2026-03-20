@@ -24,6 +24,10 @@
         body { 
             font-family: 'Titillium Web', sans-serif; 
             background-color: var(--f1-dark); 
+            background-image: linear-gradient(rgba(21, 21, 30, 0.95), rgba(21, 21, 30, 0.98)), url('https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             color: #fff; 
             margin: 0; 
             padding: 20px; 
@@ -35,13 +39,32 @@
             margin: 0 auto;
         }
 
+        /* BRAND HEADER */
+        .top-brand-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .page-logo {
+            max-width: 220px;
+            filter: drop-shadow(0px 4px 10px rgba(0,0,0,0.5));
+            margin-bottom: 5px;
+        }
+        .page-main-title {
+            font-size: 28px;
+            text-transform: uppercase;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #fff;
+            margin: 0;
+        }
+
         /* HEADER & NAVIGATION */
         .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; flex-wrap: wrap; gap: 15px;}
         .header-left { display: flex; align-items: center; }
         .back-btn { background: #333; color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; transition: 0.3s; margin-right: 20px; text-transform: uppercase;}
         .back-btn:hover { background: var(--f1-red); }
-        .title-wrapper h1 { margin: 0; font-size: 32px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; }
-        .title-wrapper p { margin: 5px 0 0 0; color: #aaa; font-size: 16px; }
+        .title-wrapper h2 { margin: 0; font-size: 24px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; color: var(--f1-red);}
+        .title-wrapper p { margin: 5px 0 0 0; color: #aaa; font-size: 15px; }
 
         /* DROPDOWN SELECTOR */
         .race-selector {
@@ -104,11 +127,16 @@
 <body>
 
     <div class="container">
+        <div class="top-brand-header">
+            <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Logo.png" alt="F1 Lads Logo" class="page-logo">
+            <h1 class="page-main-title">Race Results</h1>
+        </div>
+
         <div class="header">
             <div class="header-left">
                 <a href="index.html" class="back-btn">❮ Back</a>
                 <div class="title-wrapper">
-                    <h1 id="race-title">Loading...</h1>
+                    <h2 id="race-title">Loading...</h2>
                     <p id="race-subtitle">Fetching telemetry data.</p>
                 </div>
             </div>
@@ -146,7 +174,10 @@
 
         let allRaceData = [];
 
-        fetch('https://raw.githubusercontent.com/f1ladsleague/standings/main/race_list.txt')
+        // CACHE BUSTER: Forces the browser to grab the freshest files instead of locally cached ones
+        const cacheBuster = `?v=${new Date().getTime()}`;
+
+        fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/race_list.txt${cacheBuster}`)
             .then(res => {
                 if (!res.ok) throw new Error("List not found");
                 return res.text();
@@ -156,7 +187,9 @@
                 if (files.length === 0) throw new Error("No race data found");
 
                 const fetchPromises = files.map(file => 
-                    fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/${file}`).then(r => r.json())
+                    // Add cache buster to the individual JSON files too
+                    fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/${file}${cacheBuster}`)
+                        .then(r => r.json())
                 );
                 
                 allRaceData = await Promise.all(fetchPromises);
@@ -169,7 +202,6 @@
                     const option = document.createElement('option');
                     option.value = index;
                     const dateStr = new Date(race.Date).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
-                    // Updated Dropdown to show if it's Quali or Race
                     option.textContent = `${dateStr} - ${race.TrackName} (${race.SessionType})`;
                     selector.appendChild(option);
                 });
@@ -180,7 +212,8 @@
                 renderRace(0);
             })
             .catch(err => {
-                document.getElementById('loader').innerText = "No race data has been uploaded yet.";
+                console.error("Fetch Error: ", err);
+                document.getElementById('loader').innerText = "No race data has been uploaded yet or still syncing to GitHub (give it 2 mins).";
             });
 
         function renderRace(index) {
