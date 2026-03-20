@@ -95,7 +95,7 @@
             padding: 50px 20px 80px 20px;
         }
         
-        .links-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
+        .links-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 25px; }
 
         .link-card {
             background: rgba(31, 31, 39, 0.7); backdrop-filter: blur(10px); border-radius: 16px; padding: 40px 25px;
@@ -175,6 +175,18 @@
                 <h2>The Paddock</h2>
                 <p>Meet the Season 5 Constructors, Principals, and Drivers.</p>
             </a>
+            <a href="results.html" class="link-card" style="--card-color: #e000d4;">
+                <div class="card-icon">🏁</div>
+                <h2>Race Results</h2>
+                <p>Full race classification and detailed post-race data.</p>
+            </a>
+            <a href="#" onclick="openRacenet(event)" class="link-card" style="--card-color: #ea0000;">
+                <div class="card-icon">
+                    <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/acce95aa34709d661580799b3accd42bc0d82658/EARacenetLogo.png" alt="EA Racenet Logo" style="width: 45px; height: 45px; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));">
+                </div>
+                <h2>EA Racenet</h2>
+                <p>Track in-game statistics, compare lap times and analyze telemetry data.</p>
+            </a>
         </div>
     </div>
 
@@ -241,6 +253,16 @@
                     clearTimeout(safetyTimeout);
                     window.location.href = url;
                 });
+        }
+
+        function openRacenet(event) {
+            event.preventDefault(); // Stop immediate navigation
+            
+            // Show the login popup
+            alert("EA Racenet Login Information:\n\nUsername: f1ladsleague@gmail.com\nPassword: madhawamaPa!23\n\nClick OK to proceed to Racenet.");
+            
+            // Open Racenet in a new tab
+            window.open('https://racenet.com/', '_blank');
         }
     </script>
 </body>
