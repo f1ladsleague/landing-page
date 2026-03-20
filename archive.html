@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historical Archive | F1 Lads League</title>
+    <title>Race Results (Previous Seasons) | F1 Lads League</title>
     
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/f1ladsleague/sidebetting/6f14ca658f9c288fd8ca8a79df5c658c97c8ac92/favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700;900&display=swap" rel="stylesheet">
@@ -40,17 +40,18 @@
         .container { max-width: 1100px; margin: 0 auto; }
 
         /* BRAND HEADER */
-        .top-brand-header { text-align: center; margin-bottom: 20px; }
+        .top-brand-header { text-align: center; margin-bottom: 25px; }
         .page-logo { max-width: 220px; filter: drop-shadow(0px 4px 10px rgba(0,0,0,0.5)); margin-bottom: 5px; transition: transform 0.3s ease; }
         .page-logo:hover { transform: scale(1.05); }
         .page-main-title { font-size: 42px; text-transform: uppercase; font-weight: 900; letter-spacing: 2px; color: #fff; margin: 0; text-shadow: 0 4px 10px rgba(0,0,0,0.6); }
+        .page-subtitle { color: #888; font-size: 18px; font-weight: 700; text-transform: uppercase; letter-spacing: 3px; margin: -5px 0 0 0; }
 
         /* SEASON NAVIGATION TABS */
         .season-nav { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 10px; flex-wrap: wrap; }
-        .season-tab { background: transparent; border: none; color: #888; font-family: 'Titillium Web', sans-serif; font-size: 20px; font-weight: 900; text-transform: uppercase; padding: 10px 20px; cursor: pointer; transition: 0.3s; position: relative; }
-        .season-tab:hover { color: #fff; }
-        .season-tab.active { color: var(--f1-red); }
-        .season-tab.active::after { content: ''; position: absolute; bottom: -12px; left: 0; width: 100%; height: 4px; background: var(--f1-red); border-radius: 4px 4px 0 0; }
+        .season-tab { background: transparent; border: none; color: #888; font-family: 'Titillium Web', sans-serif; font-size: 20px; font-weight: 900; text-transform: uppercase; padding: 10px 20px; cursor: pointer; transition: 0.3s; position: relative; border-radius: 8px; }
+        .season-tab:hover { color: #fff; background: rgba(255,255,255,0.05); }
+        .season-tab.active { color: #fff; background: rgba(255,255,255,0.15); box-shadow: 0 4px 15px rgba(255,255,255,0.1); }
+        .season-tab.active::after { content: ''; position: absolute; bottom: -12px; left: 0; width: 100%; height: 4px; background: #fff; border-radius: 4px 4px 0 0; }
 
         /* HEADER & NAVIGATION */
         .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; border-bottom: 2px solid #333; padding-bottom: 20px; flex-wrap: wrap; gap: 15px;}
@@ -66,7 +67,7 @@
         .race-selector {
             background: var(--f1-card); color: #fff; border: 1px solid rgba(255,255,255,0.2);
             padding: 12px 20px; font-family: 'Titillium Web', sans-serif; font-size: 16px; font-weight: 700;
-            border-radius: 8px; outline: none; cursor: pointer; transition: 0.3s; max-width: 400px;
+            border-radius: 8px; outline: none; cursor: pointer; transition: 0.3s; max-width: 450px;
         }
         .race-selector:hover { border-color: var(--f1-red); }
 
@@ -122,7 +123,8 @@
     <div class="container">
         <div class="top-brand-header">
             <a href="https://f1lads.com"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Logo.png" alt="F1 Lads Logo" class="page-logo"></a>
-            <h1 class="page-main-title">Historical Archive</h1>
+            <h1 class="page-main-title">Race Results</h1>
+            <p class="page-subtitle">(Previous Seasons)</p>
         </div>
 
         <div class="season-nav" id="season-nav" style="display: none;">
@@ -221,7 +223,6 @@
 
             if (seasonNum === 1 || seasonNum === 2) {
                 if (driverName === "Nuwie G") safeName = "NuwiG";
-                if (driverName === "Eranga") return `${photoBase}Season%203/Eranga.png`; // Fallback for missing S2 Eranga Photo
                 return `${photoBase}Season_1_2/${safeName}.png`;
             } 
             else if (seasonNum === 3) {
@@ -266,9 +267,17 @@
                 if (path.includes("Season%202")) seasonNum = 2;
                 if (path.includes("Season%203")) seasonNum = 3;
 
-                const winner = race.Drivers.find(d => d.Position === 1);
+                // Advanced Feature/Sprint Classification
+                let maxPts = Math.max(0, ...race.Drivers.map(d => (d.DriverPointsRaw || 0) / 10));
                 let label = "Feature"; 
-                if (winner && (winner.DriverPointsRaw / 10) <= 20) label = "Sprint";
+                
+                if (seasonNum === 3) {
+                    // Season 3 logic: Sprint is 8 pts (+ FL = 9 max). Feature is 16 pts (+ FL = 17 max).
+                    if (maxPts <= 10) label = "Sprint";
+                } else {
+                    // Standard logic: Sprint is 15 pts (+ FL = 16 max). Feature is 25 pts.
+                    if (maxPts <= 16) label = "Sprint";
+                }
                 
                 const matchingQuali = qualis.find(q => q.data.TrackName === race.TrackName && q.data.Date === race.Date);
 
@@ -281,7 +290,7 @@
                     qualiData: matchingQuali ? matchingQuali.data : null 
                 });
 
-                // CALCULATE SEASON STANDINGS (Sums up the 10x points multiplier logic from the game)
+                // CALCULATE SEASON STANDINGS
                 race.Drivers.forEach(d => {
                     let dName = d.Driver.Name;
                     let tName = d.Team ? d.Team.Name : "Unknown";
@@ -331,10 +340,11 @@
             const selector = document.getElementById('race-selector');
             selector.innerHTML = `<option value="standings">🏆 Season ${sNum} Final Standings</option>`;
             
-            seasonEvents.forEach(event => {
+            // Generate options with Round numbers
+            seasonEvents.forEach((event, idx) => {
                 const option = document.createElement('option');
                 option.value = event.globalIndex;
-                option.textContent = `${event.trackName} (${event.label})`;
+                option.textContent = `Round ${idx + 1} - ${event.trackName} (${event.label})`;
                 selector.appendChild(option);
             });
 
