@@ -49,15 +49,16 @@
         .profile-photo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; object-position: center top; border: 4px solid #444; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         .profile-info { flex: 1; }
         .profile-name { font-size: 42px; font-weight: 900; text-transform: uppercase; margin: 0; letter-spacing: 1px; display: flex; align-items: center; gap: 15px; flex-wrap: wrap;}
+        
         .flag-icon { height: 28px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
-        .team-logo { height: 35px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+        .team-logo-main { height: 45px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); margin-left: 5px; }
         .rookie-badge { background: #00d2be; color: #000; font-size: 12px; font-weight: 900; padding: 4px 10px; border-radius: 4px; letter-spacing: 1px; vertical-align: middle; }
         
         .profile-meta { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px; color: #aaa; font-size: 15px; align-items: center;}
         .meta-tag { background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 4px; font-weight: 700; text-transform: uppercase; font-size: 12px; border: 1px solid rgba(255,255,255,0.1); }
         
         .former-teams { display: flex; gap: 10px; align-items: center; margin-top: 15px; font-size: 12px; color: #888; text-transform: uppercase; font-weight: 700; letter-spacing: 1px;}
-        .former-team-logo { height: 20px; object-fit: contain; opacity: 0.6; transition: 0.3s; }
+        .former-team-logo { height: 30px; object-fit: contain; opacity: 0.6; transition: 0.3s; }
         .former-team-logo:hover { opacity: 1; }
 
         .back-btn { position: absolute; top: 20px; right: 20px; background: #333; color: #fff; text-decoration: none; padding: 8px 20px; border-radius: 6px; font-weight: 700; border: none; cursor: pointer; transition: 0.3s; font-family: 'Titillium Web'; text-transform: uppercase;}
@@ -94,23 +95,51 @@
         .analysis-table td { background: rgba(0,0,0,0.2); }
         .analysis-table tr:hover td { background: rgba(255,255,255,0.05); }
 
-        /* Dynamic Row Colors */
-        .pos-gold { color: gold !important; }
-        .pos-silver { color: #C0C0C0 !important; }
-        .pos-bronze { color: #CD7F32 !important; }
-        .pos-dnf { color: var(--f1-red) !important; font-style: italic; }
-        .fl-row td { color: var(--fastest-lap) !important; }
-        .fl-row .gap-col { color: var(--fastest-lap) !important; }
-
-        /* EA Racenet Modal */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal-overlay.active { display: flex; }
-        .modal-content { background: var(--f1-card); border: 1px solid #333; padding: 40px; border-radius: 12px; text-align: center; max-width: 500px; width: 90%; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
-        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #888; cursor: pointer; transition: 0.3s; }
+        /* EXACT CUSTOM MODAL FOR EA RACENET FROM LANDING PAGE */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(5px);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        
+        .modal-content {
+            background: var(--f1-card); border-radius: 12px; padding: 30px 25px;
+            max-width: 400px; width: 90%; text-align: center;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.8);
+            border-top: 5px solid #ff4747; position: relative;
+            transform: translateY(20px); transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        
+        .modal-close {
+            position: absolute; top: 15px; right: 15px; background: none; border: none;
+            color: #888; font-size: 28px; cursor: pointer; transition: 0.2s; line-height: 1;
+        }
         .modal-close:hover { color: var(--f1-red); }
-        .modal-title { font-size: 28px; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; color: #fff; }
-        .ea-btn { background: var(--f1-red); color: #fff; text-decoration: none; padding: 15px 30px; font-size: 18px; font-weight: 900; text-transform: uppercase; border-radius: 6px; display: inline-block; transition: 0.3s; }
-        .ea-btn:hover { background: #fff; color: var(--f1-red); transform: scale(1.05); }
+        
+        .modal-content h3 { margin: 10px 0 5px 0; font-size: 24px; text-transform: uppercase; font-weight: 900; color: #fff; }
+        .modal-content p { color: #aaa; font-size: 14px; margin-bottom: 25px; line-height: 1.4; }
+        
+        .cred-group { margin-bottom: 12px; text-align: left; background: rgba(0,0,0,0.4); padding: 12px 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); }
+        .cred-label { display: block; font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-weight: 700; }
+        .cred-row { display: flex; justify-content: space-between; align-items: center; }
+        .cred-value { font-family: monospace; font-size: 15px; color: #fff; font-weight: 700; letter-spacing: 0.5px; user-select: all; }
+        
+        .copy-btn {
+            background: #333; color: #fff; border: none; padding: 6px 12px; border-radius: 4px;
+            cursor: pointer; font-size: 11px; font-weight: 700; transition: 0.2s; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .copy-btn:hover { background: #555; }
+        .copy-btn.success { background: #00d7b6; color: #000; }
+        
+        .proceed-btn {
+            display: inline-block; margin-top: 15px; background: #ff4747; color: #fff; text-decoration: none;
+            padding: 14px 25px; border-radius: 6px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;
+            width: 100%; box-sizing: border-box; transition: 0.3s;
+        }
+        .proceed-btn:hover { background: #ff1a1a; box-shadow: 0 5px 15px rgba(255, 71, 71, 0.4); transform: translateY(-2px); }
 
         #loader { text-align: center; padding: 50px; font-size: 18px; color: #aaa; font-style: italic; }
 
@@ -142,7 +171,7 @@
         <div class="stat-nav" id="main-nav" style="display: none;">
             <button class="stat-tab active" onclick="switchMainTab('drivers')">👤 Driver Profiles</button>
             <button class="stat-tab" onclick="switchMainTab('tracks')">🏁 Track Analysis</button>
-            <button class="stat-tab" onclick="openEAModal()">🎮 EA Racenet</button>
+            <button class="stat-tab" onclick="openRacenet(event)">🎮 EA Racenet</button>
         </div>
 
         <div id="loader">Syncing telemetry and databases...</div>
@@ -160,20 +189,30 @@
 
     </div>
 
-    <div class="modal-overlay" id="eaModal">
+    <div id="racenet-modal" class="modal-overlay">
         <div class="modal-content">
-            <div class="modal-close" onclick="closeEAModal()">✖</div>
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Electronic-Arts-Logo.svg/1024px-Electronic-Arts-Logo.svg.png" style="width: 80px; margin-bottom: 20px; filter: brightness(0) invert(1);">
-            <h2 class="modal-title">EA Racenet</h2>
-            <p style="color: #aaa; margin-bottom: 20px; font-size: 15px;">Access official EA Racenet telemetry, league standings, and deep dive lap data directly via the EA portal.</p>
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/acce95aa34709d661580799b3accd42bc0d82658/EARacenetLogo.png" alt="EA Racenet" style="width: 65px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));">
+            <h3>Racenet Login</h3>
+            <p>Use the league credentials below to access telemetry and session statistics.</p>
             
-            <p style="font-size: 14px; color: #888; margin-bottom: 25px; text-align: left; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
-                <strong>League Credentials:</strong><br>
-                Username: <span style="color: #fff;">F1LadsLeague@gmail.com</span><br>
-                Password: <span style="color: #fff;">F1lads123!</span>
-            </p>
-
-            <a href="https://racenet.com/f1_24/leagues/league/265017" target="_blank" class="ea-btn">Launch Racenet ❯</a>
+            <div class="cred-group">
+                <span class="cred-label">Username / Email</span>
+                <div class="cred-row">
+                    <span class="cred-value" id="rn-user">f1ladsleague@gmail.com</span>
+                    <button class="copy-btn" onclick="copyText('rn-user', this)">Copy</button>
+                </div>
+            </div>
+            
+            <div class="cred-group">
+                <span class="cred-label">Password</span>
+                <div class="cred-row">
+                    <span class="cred-value" id="rn-pass">madhawamaPa!23</span>
+                    <button class="copy-btn" onclick="copyText('rn-pass', this)">Copy</button>
+                </div>
+            </div>
+            
+            <a href="https://racenet.com/" target="_blank" class="proceed-btn">Proceed to Racenet ❯</a>
         </div>
     </div>
 
@@ -190,6 +229,20 @@
         let currentSeasonMax = 1;
         
         let myChart1, myChart2;
+
+        // HARDCODED DRIVERS JSON TO GUARANTEE FLAGS/NUMBERS/NAMES WORK
+        const staticDriverProfiles = [
+          { "Name": "Mapa", "RealName": "Madhawa Mapa", "InGameName": "M. MAPA", "Nationality": "United Arab Emirates", "RaceNumber": 99, "GamePlatform": "PC" },
+          { "Name": "Shiyan", "RealName": "Shiyan Kekulkotuwage", "InGameName": "shiyank88", "RaceNumber": 8, "GamePlatform": "PC" },
+          { "Name": "Nuwie G", "RealName": "Nuwantha Gamage", "InGameName": "Nuwie_G", "Nationality": "Saudi Arabia", "RaceNumber": 11, "GamePlatform": "PS5" },
+          { "Name": "Shahan", "RealName": "Shahan Withanage", "InGameName": "ShahanW", "Nationality": "Pakistan", "RaceNumber": 13, "GamePlatform": "PS5" },
+          { "Name": "Sameera", "RealName": "Sameera Malimbada", "InGameName": "S. Malimbada", "Nationality": "Sri Lanka", "RaceNumber": 98, "GamePlatform": "PC" },
+          { "Name": "Sahan", "RealName": "Sahan Wimalagunaratna", "InGameName": "Laforet", "RaceNumber": 15, "GamePlatform": "PC" },
+          { "Name": "Nippa E", "RealName": "Nippa Ekanayake", "InGameName": "Racer4965", "Nationality": "Fiji", "RaceNumber": 69, "GamePlatform": "PS5" },
+          { "Name": "Eranga", "RealName": "Eranga Pelpola", "InGameName": "BiGDaddyE3002", "RaceNumber": 91, "GamePlatform": "Xbox" },
+          { "Name": "Rodda", "RealName": "Nuwi Rodrigo", "InGameName": "NuwiRODDA", "Nationality": "Germany", "RaceNumber": 92, "GamePlatform": "PS5" },
+          { "Name": "Kalpa", "RealName": "Kalpa Keragala", "InGameName": "PrODigY_v2", "Nationality": "Brazil", "RaceNumber": 88, "GamePlatform": "PS5" }
+        ];
 
         const archiveFiles = [
             "Season%201/results_silverstone_race.json", "Season%201/results_spielberg_race.json", "Season%201/results_bahrain_race.json", "Season%201/results_jeddah_race.json", "Season%201/results_melbourne_race.json", "Season%201/results_suzuka_race.json",
@@ -216,18 +269,38 @@
             return `+${seconds}`;
         }
 
-        function openEAModal() { document.getElementById('eaModal').classList.add('active'); }
-        function closeEAModal() { document.getElementById('eaModal').classList.remove('active'); }
+        // EXACT EA MODAL JS
+        function openRacenet(event) {
+            event.preventDefault(); 
+            document.getElementById('racenet-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('racenet-modal').classList.remove('active');
+        }
+
+        function copyText(elementId, btnElement) {
+            const textToCopy = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = btnElement.innerText;
+                btnElement.innerText = "COPIED!";
+                btnElement.classList.add('success');
+                setTimeout(() => {
+                    btnElement.innerText = originalText;
+                    btnElement.classList.remove('success');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+                alert("Failed to copy. Please manually select the text.");
+            });
+        }
 
         async function initData() {
             try {
-                // Fetch driver info
-                const dRes = await fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/drivers.json${cacheBuster}`);
-                if (dRes.ok) {
-                    const dData = await dRes.json();
-                    dData.forEach(d => driverProfiles[d.Name] = d);
-                }
+                // Initialize static driver profiles first
+                staticDriverProfiles.forEach(d => driverProfiles[d.Name] = d);
 
+                // Live files fetch
                 let liveFiles = [];
                 const listRes = await fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/race_list.txt${cacheBuster}`);
                 if (listRes.ok) {
@@ -287,7 +360,6 @@
 
                 if (!seasonStandings[ev.season]) seasonStandings[ev.season] = { drivers: {}, teams: {} };
                 
-                let driverCount = ev.raceData.Drivers.length;
                 let winnerTime = ev.raceData.Drivers.find(d => d.Position === 1)?.TimeInt || 0;
 
                 ev.raceData.Drivers.forEach(d => {
@@ -356,7 +428,6 @@
                         fl: isFL, 
                         flTime: flTime,
                         gap: gapStr,
-                        gridSize: driverCount,
                         team: tName 
                     });
                 });
@@ -369,7 +440,16 @@
         }
         
         function getTeamLogoUrl(teamName) {
-            let fileMap = { "Alfa Romeo": "alfaromeo", "Aston Martin": "astonmartin", "Red Bull": "redbull", "Kick Sauber": "kicksauber", "AlphaTauri": "alphatauri" };
+            let fileMap = { 
+                "Aston Martin": "AM", 
+                "Ferrari": "FER", 
+                "McLaren": "MCL", 
+                "Mercedes": "MER", 
+                "Red Bull": "RB",
+                "Alpine": "alpine", 
+                "AlphaTauri": "alphatauri", 
+                "Alfa Romeo": "alfaromeo"
+            };
             let fName = fileMap[teamName] || teamName.toLowerCase().replace(/\s+/g, '');
             return `${photoBase}${fName}.png`; 
         }
@@ -460,7 +540,7 @@
                         <div class="profile-info">
                             <h2 class="profile-name">
                                 ${dName} ${rookieBadge} ${flagHtml} 
-                                <img src="${getTeamLogoUrl(s.currentTeam)}" class="team-logo" onerror="this.style.display='none'">
+                                <img src="${getTeamLogoUrl(s.currentTeam)}" class="team-logo-main" onerror="this.style.display='none'">
                             </h2>
                             <div class="profile-meta">
                                 ${p.RealName ? `<span class="meta-tag">👤 ${p.RealName}</span>` : ''}
@@ -504,21 +584,26 @@
             
             sortedSeasons.forEach(sNum => {
                 let sData = s.seasons[sNum];
+                
+                // Calculate max grid size for this season
+                let sGridSize = Object.keys(seasonStandings[sNum].drivers).length;
+
                 let rows = sData.races.map(r => {
-                    let posClass = "";
-                    if (r.pos === "DNF" || r.pos === "DSQ") posClass = "pos-dnf";
-                    else if (r.pos === 1) posClass = "pos-gold";
-                    else if (r.pos === 2) posClass = "pos-silver";
-                    else if (r.pos === 3) posClass = "pos-bronze";
+                    let rowStyle = "";
+                    if (r.pos === "DNF" || r.pos === "DSQ") rowStyle = "color: var(--f1-red); font-style: italic;";
+                    else if (r.pos === 1) rowStyle = "color: gold; font-weight: 700;";
+                    else if (r.pos === 2) rowStyle = "color: #C0C0C0; font-weight: 700;";
+                    else if (r.pos === 3) rowStyle = "color: #CD7F32; font-weight: 700;";
+
+                    let flStyle = r.fl ? "color: var(--fastest-lap); font-weight: 900;" : "color: #aaa;";
 
                     return `
-                        <tr class="${r.fl ? 'fl-row' : ''}">
-                            <td style="width:50px; text-align:center; font-weight:900;" class="${posClass}">${r.pos}</td>
-                            <td>${r.track} <span style="color:#888; font-size:11px;">(${r.label})</span></td>
+                        <tr style="${rowStyle}">
+                            <td style="width:50px; text-align:center; font-weight:900;">${r.pos}</td>
+                            <td>${r.track} <span style="color:#888; font-size:11px; font-weight: normal;">(${r.label})</span></td>
                             <td>${r.team}</td>
-                            <td class="gap-col" style="font-family:monospace; color:#aaa;">${r.gap}</td>
-                            <td class="gap-col" style="font-family:monospace; color:#aaa;">${formatMs(r.flTime)}</td>
-                            <td style="text-align:center; color:#888;">${r.gridSize}</td>
+                            <td style="font-family:monospace;">${r.gap}</td>
+                            <td style="font-family:monospace; ${flStyle}">${formatMs(r.flTime)}</td>
                         </tr>
                     `;
                 }).join('');
@@ -527,7 +612,7 @@
                 
                 accCont.innerHTML += `
                     <details ${sNum == sortedSeasons[0] ? 'open' : ''}>
-                        <summary>Season ${sNum} <span class="summary-stats" style="color:#fff;">${champStatus}</span></summary>
+                        <summary>Season ${sNum} <span class="summary-stats" style="color:#fff;">${champStatus} | Grid Size: ${sGridSize}</span></summary>
                         <div class="table-wrap">
                             <table>
                                 <thead><tr>
@@ -536,7 +621,6 @@
                                     <th>Car</th>
                                     <th>Gap to Leader</th>
                                     <th>Fastest Lap</th>
-                                    <th style="text-align:center;">Grid Size</th>
                                 </tr></thead>
                                 <tbody>${rows}</tbody>
                             </table>
@@ -552,7 +636,7 @@
             if(myChart1) myChart1.destroy();
             if(myChart2) myChart2.destroy();
 
-            // Chart 1: Average Finish Pos By Season (Scale fixed 1 to 10)
+            // Chart 1: Average Finish Pos By Season
             let labels = sortedSeasons.slice().reverse().map(num => `S${num}`);
             let avgData = sortedSeasons.slice().reverse().map(num => {
                 let races = s.seasons[num].races.filter(r => r.pos !== "DNF");
@@ -567,7 +651,7 @@
                 options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { reverse: true, min: 1, max: 10, ticks: { stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } }
             });
 
-            // Chart 2: Finish Distribution (Exact Buckets)
+            // Chart 2: Finish Distribution
             let p1=0, p2=0, p3=0, p4=0, p5=0, p6=0, p7_10=0;
             Object.values(s.seasons).forEach(season => {
                 season.races.forEach(r => {
