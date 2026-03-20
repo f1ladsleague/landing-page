@@ -35,7 +35,7 @@
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 0 auto;
         }
 
@@ -50,20 +50,22 @@
             margin-bottom: 5px;
         }
         .page-main-title {
-            font-size: 28px;
+            font-size: 42px; /* Increased Size */
             text-transform: uppercase;
             font-weight: 900;
             letter-spacing: 2px;
             color: #fff;
             margin: 0;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.6);
         }
 
         /* HEADER & NAVIGATION */
-        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; flex-wrap: wrap; gap: 15px;}
-        .header-left { display: flex; align-items: center; }
-        .back-btn { background: #333; color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; transition: 0.3s; margin-right: 20px; text-transform: uppercase;}
+        /* Fixed wrap issue: forces elements to stay inline on desktop */
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; border-bottom: 2px solid #333; padding-bottom: 20px; flex-wrap: nowrap; gap: 15px;}
+        .header-left { display: flex; align-items: center; min-width: 0; }
+        .back-btn { background: #333; color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; transition: 0.3s; margin-right: 20px; text-transform: uppercase; white-space: nowrap;}
         .back-btn:hover { background: var(--f1-red); }
-        .title-wrapper h2 { margin: 0; font-size: 24px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; color: var(--f1-red);}
+        .title-wrapper h2 { margin: 0; font-size: 24px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; color: var(--f1-red); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         .title-wrapper p { margin: 5px 0 0 0; color: #aaa; font-size: 15px; }
 
         /* DROPDOWN SELECTOR */
@@ -79,9 +81,24 @@
             outline: none;
             cursor: pointer;
             transition: 0.3s;
+            max-width: 350px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .race-selector:hover { border-color: var(--f1-red); }
         .race-selector:focus { border-color: var(--f1-red); box-shadow: 0 0 10px rgba(225, 6, 0, 0.3); }
+
+        /* TABS */
+        .session-tabs { display: flex; gap: 15px; margin-bottom: 20px; }
+        .tab-btn {
+            background: rgba(255,255,255,0.05); color: #888; border: 1px solid rgba(255,255,255,0.1);
+            padding: 10px 25px; border-radius: 6px; font-size: 16px; font-weight: 700;
+            text-transform: uppercase; cursor: pointer; transition: 0.3s; flex: 1; text-align: center;
+        }
+        .tab-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .tab-btn.active { background: var(--f1-red); color: #fff; border-color: var(--f1-red); box-shadow: 0 4px 15px rgba(225, 6, 0, 0.4); }
+        .tab-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
         /* RESULTS TABLE */
         .results-wrapper {
@@ -94,16 +111,24 @@
 
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th { background: rgba(0,0,0,0.4); padding: 15px 20px; color: #888; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; font-weight: 700; border-bottom: 1px solid #333; }
-        td { padding: 15px 20px; border-bottom: 1px solid #2a2a35; font-size: 16px; font-weight: 600; vertical-align: middle; }
+        td { padding: 12px 20px; border-bottom: 1px solid #2a2a35; font-size: 16px; font-weight: 600; vertical-align: middle; transition: background 0.2s; }
         tr:last-child td { border-bottom: none; }
         tr:hover td { background: rgba(255,255,255,0.02); }
 
+        /* FASTEST LAP PURPLE ROW OVERRIDE */
+        .fl-row td { color: var(--fastest-lap) !important; }
+        .fl-row .pos-col, .fl-row .pts-col, .fl-row .team-text { color: var(--fastest-lap) !important; }
+
         /* SPECIFIC COLUMNS */
         .pos-col { width: 50px; text-align: center; font-weight: 900; font-size: 18px; color: #aaa; }
-        .driver-col { font-size: 18px; font-weight: 700; text-transform: uppercase; }
         
-        .team-col { display: flex; align-items: center; gap: 10px; color: #ccc; font-size: 14px; text-transform: uppercase; }
-        .team-color-bar { width: 4px; height: 16px; border-radius: 2px; }
+        .driver-cell { display: flex; align-items: center; gap: 15px; }
+        .driver-photo { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #444; background: #222; }
+        .driver-col { font-size: 18px; font-weight: 700; text-transform: uppercase; margin: 0; }
+        
+        .team-cell { display: flex; align-items: center; gap: 10px; }
+        .team-logo { width: 35px; height: 35px; object-fit: contain; }
+        .team-text { color: #ccc; font-size: 14px; text-transform: uppercase; }
 
         .time-col { font-family: monospace; font-size: 15px; letter-spacing: 0.5px; }
         .pts-col { font-weight: 900; color: var(--f1-red); text-align: center; font-size: 18px; }
@@ -115,12 +140,14 @@
         #loader { text-align: center; padding: 50px; color: #888; font-style: italic; }
 
         @media (max-width: 768px) {
-            .header-left { flex-direction: column; align-items: flex-start; gap: 15px; margin-bottom: 10px; }
-            .race-selector { width: 100%; }
-            th, td { padding: 12px 10px; font-size: 14px; }
+            .header { flex-direction: column; align-items: flex-start; flex-wrap: wrap; }
+            .header-left { width: 100%; margin-bottom: 10px; }
+            .race-selector { width: 100%; max-width: 100%; }
+            th, td { padding: 10px 10px; font-size: 14px; }
             .hide-mobile { display: none; }
             .driver-col { font-size: 15px; }
             .time-col { font-size: 13px; }
+            .driver-photo { width: 35px; height: 35px; }
         }
     </style>
 </head>
@@ -143,6 +170,11 @@
             <select id="race-selector" class="race-selector" style="display: none;"></select>
         </div>
 
+        <div class="session-tabs" id="session-tabs" style="display: none;">
+            <button id="tab-quali" class="tab-btn" onclick="switchSession('Qualification')">Qualification</button>
+            <button id="tab-race" class="tab-btn" onclick="switchSession('Race')">Race</button>
+        </div>
+
         <div class="results-wrapper">
             <div id="loader">Compiling historical race data...</div>
             <table id="results-table" style="display: none;">
@@ -155,12 +187,14 @@
     </div>
 
     <script>
-        const teamColors = {
-            "Ferrari": "var(--ferrari)",
-            "McLaren": "var(--mclaren)",
-            "Mercedes": "var(--mercedes)",
-            "Aston Martin": "var(--aston)",
-            "Red Bull": "var(--redbull)"
+        // ASSETS MAPPING
+        const photoBase = "https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/";
+        const teamLogos = {
+            "Aston Martin": "AM.png",
+            "Ferrari": "FER.png",
+            "McLaren": "MCL.png",
+            "Mercedes": "MER.png",
+            "Red Bull": "RB.png"
         };
 
         function formatMs(ms) {
@@ -172,11 +206,13 @@
             return seconds; 
         }
 
-        let allRaceData = [];
-
-        // CACHE BUSTER: Forces the browser to grab the freshest files instead of locally cached ones
+        // GLOBALS
+        let groupedEvents = []; // Array of grouped weekend data
+        let activeEventIndex = 0;
+        let activeSession = "Race"; // Defaults to race
         const cacheBuster = `?v=${new Date().getTime()}`;
 
+        // 1. FETCH & PROCESS DATA
         fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/race_list.txt${cacheBuster}`)
             .then(res => {
                 if (!res.ok) throw new Error("List not found");
@@ -187,50 +223,86 @@
                 if (files.length === 0) throw new Error("No race data found");
 
                 const fetchPromises = files.map(file => 
-                    // Add cache buster to the individual JSON files too
-                    fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/${file}${cacheBuster}`)
-                        .then(r => r.json())
+                    fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/${file}${cacheBuster}`).then(r => r.json())
                 );
-                
-                allRaceData = await Promise.all(fetchPromises);
+                const allRaceData = await Promise.all(fetchPromises);
 
-                // SORT NEWEST TO OLDEST
-                allRaceData.sort((a, b) => new Date(b.Date) - new Date(a.Date));
+                // 2. GROUP FILES BY TRACK NAME (Weekend Concept)
+                let eventsMap = new Map();
+                allRaceData.forEach(data => {
+                    const track = data.TrackName;
+                    if (!eventsMap.has(track)) {
+                        eventsMap.set(track, { trackName: track, date: data.Date, sessions: {} });
+                    }
+                    eventsMap.get(track).sessions[data.SessionType] = data;
+                    // Ensure the main display date uses the Race date if available
+                    if (data.SessionType === "Race") eventsMap.get(track).date = data.Date;
+                });
 
+                // Convert map to array and sort by newest date
+                groupedEvents = Array.from(eventsMap.values()).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                // 3. POPULATE DROPDOWN (Now only shows "Date - Track")
                 const selector = document.getElementById('race-selector');
-                allRaceData.forEach((race, index) => {
+                groupedEvents.forEach((event, index) => {
                     const option = document.createElement('option');
                     option.value = index;
-                    const dateStr = new Date(race.Date).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
-                    option.textContent = `${dateStr} - ${race.TrackName} (${race.SessionType})`;
+                    const dateStr = new Date(event.date).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
+                    option.textContent = `${dateStr} - ${event.trackName}`;
                     selector.appendChild(option);
                 });
 
                 selector.style.display = "block";
-                selector.addEventListener('change', (e) => renderRace(e.target.value));
+                document.getElementById('session-tabs').style.display = "flex";
 
-                renderRace(0);
+                selector.addEventListener('change', (e) => {
+                    activeEventIndex = e.target.value;
+                    // Automatically switch to race if available, otherwise quali
+                    activeSession = groupedEvents[activeEventIndex].sessions["Race"] ? "Race" : "Qualification";
+                    updateUI();
+                });
+
+                updateUI();
             })
             .catch(err => {
                 console.error("Fetch Error: ", err);
-                document.getElementById('loader').innerText = "No race data has been uploaded yet or still syncing to GitHub (give it 2 mins).";
+                document.getElementById('loader').innerText = "No race data has been uploaded yet or still syncing to GitHub.";
             });
 
-        function renderRace(index) {
-            const data = allRaceData[index];
-            const isQuali = data.SessionType === "Qualification";
+        // 4. HANDLE TAB CLICKS
+        function switchSession(type) {
+            activeSession = type;
+            updateUI();
+        }
+
+        // 5. RENDER THE CURRENT STATE
+        function updateUI() {
+            const event = groupedEvents[activeEventIndex];
+            
+            // Tab Buttons Logic (Disable if a file is missing for that weekend)
+            const hasQuali = !!event.sessions["Qualification"];
+            const hasRace = !!event.sessions["Race"];
+            
+            document.getElementById('tab-quali').disabled = !hasQuali;
+            document.getElementById('tab-race').disabled = !hasRace;
+            
+            document.getElementById('tab-quali').className = `tab-btn ${activeSession === 'Qualification' ? 'active' : ''}`;
+            document.getElementById('tab-race').className = `tab-btn ${activeSession === 'Race' ? 'active' : ''}`;
+
+            const data = event.sessions[activeSession];
+            if (!data) return; // Guard clause
+
+            const isQuali = activeSession === "Qualification";
             
             document.getElementById('loader').style.display = "none";
             document.getElementById('results-table').style.display = "table";
 
-            // Title and Subtitle
-            document.getElementById('race-title').innerText = `${data.TrackName} - ${data.SessionType}`;
+            document.getElementById('race-title').innerText = event.trackName;
             const raceDate = new Date(data.Date).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
-            document.getElementById('race-subtitle').innerText = `${isQuali ? 'Qualifying' : 'Race'} Session | ${raceDate}`;
+            document.getElementById('race-subtitle').innerText = `${isQuali ? 'Qualifying' : 'Race'} Classification | ${raceDate}`;
 
-            // DYNAMIC HEADERS
-            const thead = document.getElementById('table-head');
-            thead.innerHTML = `
+            // BUILD HEADERS
+            document.getElementById('table-head').innerHTML = `
                 <tr>
                     <th class="pos-col">Pos</th>
                     <th>Driver</th>
@@ -243,7 +315,7 @@
                 </tr>
             `;
 
-            // DYNAMIC BODY
+            // BUILD BODY
             const tbody = document.getElementById('results-body');
             tbody.innerHTML = ""; 
 
@@ -252,17 +324,22 @@
             drivers.forEach(driver => {
                 const isFastestLap = data.FastestLapDriver && data.FastestLapDriver.Name === driver.Driver.Name;
                 
+                // Format specific driver name for image loading (Removes spaces, e.g., 'Nuwie G' -> 'NuwieG')
+                const safeDriverName = driver.Driver.Name.replace(/\s+/g, '');
+                const driverPhotoUrl = `${photoBase}${safeDriverName}.png`;
+                
+                const teamName = driver.Team ? driver.Team.Name : "Unknown";
+                const teamLogoUrl = teamLogos[teamName] ? `${photoBase}${teamLogos[teamName]}` : '';
+
                 let timeDisplay = "";
                 
                 if (isQuali) {
-                    // QUALIFYING LOGIC
                     if (driver.FastestLapTimeInt === 0 || driver.Status === "Dsq" || driver.Status === "Dnf") {
                         timeDisplay = `<span class="dnf-text">${driver.Status === 'Dsq' ? 'DSQ' : 'NO TIME'}</span>`;
                     } else {
                         timeDisplay = formatMs(driver.FastestLapTimeInt);
                     }
                 } else {
-                    // RACE LOGIC
                     if (driver.Status !== "Ok" && driver.Status !== "finished") {
                         timeDisplay = `<span class="dnf-text">${driver.Status === 'Dsq' ? 'DSQ' : 'DNF'}</span>`;
                     } else if (driver.Position === 1) {
@@ -272,17 +349,26 @@
                     }
                 }
 
-                const teamName = driver.Team ? driver.Team.Name : "Unknown";
-                const teamColor = teamColors[teamName] || "#ffffff";
+                const truePoints = isQuali ? 0 : (driver.DriverPointsRaw / 10);
 
                 const tr = document.createElement('tr');
+                // If it is the race and they got fastest lap, assign the purple override class
+                if (!isQuali && isFastestLap) {
+                    tr.classList.add('fl-row');
+                }
+
                 tr.innerHTML = `
                     <td class="pos-col">${driver.Position}</td>
-                    <td class="driver-col">${driver.Driver.Name}</td>
+                    <td>
+                        <div class="driver-cell">
+                            <img src="${driverPhotoUrl}" alt="${driver.Driver.Name}" class="driver-photo" onerror="this.style.display='none'">
+                            <span class="driver-col">${driver.Driver.Name}</span>
+                        </div>
+                    </td>
                     <td class="hide-mobile">
-                        <div class="team-col">
-                            <div class="team-color-bar" style="background-color: ${teamColor};"></div>
-                            ${teamName}
+                        <div class="team-cell">
+                            ${teamLogoUrl ? `<img src="${teamLogoUrl}" alt="${teamName}" class="team-logo">` : ''}
+                            <span class="team-text">${teamName}</span>
                         </div>
                     </td>
                     ${isQuali ? '' : `<td class="hide-mobile" style="text-align: center;">${driver.GridPosition}</td>`}
@@ -292,7 +378,7 @@
                         ${formatMs(driver.FastestLapTimeInt)}
                         ${isFastestLap ? `<span class="fastest-lap-icon">⏱️ FL</span>` : ''}
                     </td>`}
-                    ${isQuali ? '' : `<td class="pts-col">${driver.DriverPointsRaw}</td>`}
+                    ${isQuali ? '' : `<td class="pts-col">${truePoints}</td>`}
                 `;
                 tbody.appendChild(tr);
             });
