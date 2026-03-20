@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>League Statistics | F1 Lads League</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/f1ladsleague/sidebetting/6f14ca658f9c288fd8ca8a79df5c658c97c8ac92/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root { --f1-red: #e10600; --f1-dark: #15151e; --f1-card: #1f1f27; --ferrari: #ef1a2d; --mclaren: #ff8000; --mercedes: #00d2be; --aston: #006f62; --redbull: #3671c6; --alpine: #0090ff; --alfaromeo: #900000; --alphatauri: #2b4562; --fastest-lap: #ae37de; }
+        body { font-family: 'Titillium Web', sans-serif; background-color: var(--f1-dark); background-image: linear-gradient(rgba(21, 21, 30, 0.95), rgba(21, 21, 30, 0.98)), url('https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/background.jpg'); background-size: cover; background-position: center; background-attachment: fixed; color: #fff; margin: 0; padding: 20px; overflow-y: scroll; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        .top-brand-header { text-align: center; margin-bottom: 25px; }
+        .page-logo { max-width: 220px; filter: drop-shadow(0px 4px 10px rgba(0,0,0,0.5)); transition: transform 0.3s ease; }
+        .page-logo:hover { transform: scale(1.05); }
+        .page-main-title { font-size: 42px; text-transform: uppercase; font-weight: 900; letter-spacing: 2px; color: #fff; margin: 10px 0 0 0; text-shadow: 0 4px 10px rgba(0,0,0,0.6); }
+        .page-subtitle { color: var(--f1-red); font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 3px; margin: 0; }
+
+        /* Navigation Tabs */
+        .stat-nav { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 15px; flex-wrap: wrap;}
+        .stat-tab { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #aaa; font-family: 'Titillium Web', sans-serif; font-size: 18px; font-weight: 700; text-transform: uppercase; padding: 12px 30px; cursor: pointer; transition: 0.3s; border-radius: 8px; }
+        .stat-tab:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .stat-tab.active { background: var(--f1-red); color: #fff; border-color: var(--f1-red); box-shadow: 0 4px 15px rgba(225, 6, 0, 0.4); }
+
+        .view-section { display: none; }
+        .view-section.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Directory UI */
+        .directory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
+        .directory-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: 0.3s; text-decoration: none; color: inherit; display: block; }
+        .directory-card:hover { background: rgba(255,255,255,0.08); border-color: var(--f1-red); transform: translateY(-5px); }
+        .directory-photo { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; object-position: center top; border: 2px solid #555; margin-bottom: 15px; background: #222; }
+        .directory-name { font-size: 22px; font-weight: 900; text-transform: uppercase; margin: 0; }
+        .directory-sub { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
+
+        /* Profile UI */
+        .profile-wrapper { background: var(--f1-card); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .profile-header { display: flex; align-items: center; gap: 25px; padding: 30px; background: rgba(0,0,0,0.4); border-bottom: 1px solid #333; flex-wrap: wrap; position: relative;}
+        .profile-photo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; object-position: center top; border: 4px solid var(--f1-red); background: #222; }
+        .profile-info { flex: 1; }
+        .profile-name { font-size: 42px; font-weight: 900; text-transform: uppercase; margin: 0; letter-spacing: 1px; display: flex; align-items: center; gap: 15px; }
+        .flag-icon { height: 28px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        .profile-meta { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 10px; color: #aaa; font-size: 15px; }
+        .meta-tag { background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 4px; font-weight: 700; text-transform: uppercase; font-size: 12px; border: 1px solid rgba(255,255,255,0.1); }
+        
+        .back-btn { position: absolute; top: 20px; right: 20px; background: #333; color: #fff; text-decoration: none; padding: 8px 15px; border-radius: 6px; font-weight: 700; border: none; cursor: pointer; transition: 0.3s; font-family: 'Titillium Web'; text-transform: uppercase;}
+        .back-btn:hover { background: var(--f1-red); }
+
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: #333; border-bottom: 1px solid #333;}
+        .stat-box { background: var(--f1-card); padding: 25px 15px; text-align: center; display: flex; flex-direction: column; justify-content: center;}
+        .stat-value { font-size: 32px; font-weight: 900; color: #fff; line-height: 1; }
+        .stat-label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-top: 10px; }
+        
+        /* Advanced Layout fix for Best Track / Text Heavy Stats */
+        .stat-value.text-value { font-size: 20px; word-break: break-word; color: #ddd; }
+
+        /* Charts Section */
+        .charts-section { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 30px; background: rgba(0,0,0,0.2); }
+        .chart-container { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; }
+        .chart-title { font-size: 16px; color: #aaa; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; margin-top: 0; text-align: center; }
+
+        /* Accordion Season History */
+        .history-section { padding: 30px; }
+        .history-title { font-size: 24px; font-weight: 900; text-transform: uppercase; color: var(--f1-red); margin-top: 0; margin-bottom: 20px; }
+        details { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; margin-bottom: 15px; overflow: hidden; }
+        summary { padding: 20px; font-size: 18px; font-weight: 900; text-transform: uppercase; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s; }
+        summary::-webkit-details-marker { display: none; }
+        summary:hover { background: rgba(255,255,255,0.05); }
+        .summary-stats { font-size: 14px; color: #aaa; font-weight: 700; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: rgba(0,0,0,0.6); padding: 12px 20px; color: #888; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; border-bottom: 1px solid #333; }
+        td { padding: 12px 20px; border-bottom: 1px solid #2a2a35; font-size: 15px; font-weight: 600; color: #ddd;}
+        tr:last-child td { border-bottom: none; }
+        .fl-row td { color: var(--fastest-lap) !important; }
+
+        #loader { text-align: center; padding: 50px; font-size: 18px; color: #aaa; font-style: italic; }
+
+        @media (max-width: 768px) {
+            .profile-header { flex-direction: column; text-align: center; }
+            .profile-name { justify-content: center; font-size: 32px; }
+            .profile-meta { justify-content: center; }
+            .back-btn { position: relative; top: 0; right: 0; width: 100%; margin-bottom: 15px; }
+            .charts-section { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="top-brand-header">
+            <a href="index.html"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Logo.png" alt="F1 Lads Logo" class="page-logo"></a>
+            <h1 class="page-main-title">Statistical Hub</h1>
+            <p class="page-subtitle">Driver Analysis & Database</p>
+        </div>
+
+        <div class="stat-nav" id="main-nav" style="display: none;">
+            <button class="stat-tab active" onclick="switchMainTab('drivers')">Drivers</button>
+            <button class="stat-tab" onclick="switchMainTab('tracks')">Tracks Database</button>
+            <button class="stat-tab" onclick="switchMainTab('seasons')">Season Summaries</button>
+        </div>
+
+        <div id="loader">Syncing telemetry and databases...</div>
+
+        <div id="view-drivers" class="view-section">
+            <div class="directory-grid" id="driver-directory"></div>
+        </div>
+
+        <div id="view-tracks" class="view-section" style="text-align: center; padding: 50px; color: #888;">
+            <h2>Track Database Module</h2>
+            <p>Track-specific leaderboards and lap records will be implemented in the next major update.</p>
+        </div>
+
+        <div id="view-seasons" class="view-section" style="text-align: center; padding: 50px; color: #888;">
+            <h2>Season Summaries Module</h2>
+            <p>Historical Constructor & Driver Championship standings will be implemented in the next major update.</p>
+        </div>
+
+        <div id="driver-profile-container" class="view-section"></div>
+
+    </div>
+
+    <script>
+        const photoBase = "https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/";
+        const flagsBase = "https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Flags/";
+        
+        // Data Storage
+        let allEvents = [];
+        let driverProfiles = {}; // From drivers.json
+        let driverStats = {};    // Computed from races
+        let myChart1, myChart2;
+
+        const archiveFiles = [
+            "Season%201/results_silverstone_race.json", "Season%201/results_spielberg_race.json", "Season%201/results_bahrain_race.json", "Season%201/results_jeddah_race.json", "Season%201/results_melbourne_race.json", "Season%201/results_suzuka_race.json",
+            "Season%202/results_miami_race.json", "Season%202/results_imola_race.json", "Season%202/results_monza_race.json", "Season%202/results_spa-francorchamps_race.json", "Season%202/results_barcelona_race.json", "Season%202/results_baku_race.json", "Season%202/results_losail_race.json", "Season%202/results_hungaroring_race.json", "Season%202/results_singapore_race.json",
+            "Season%203/results_imola_race.json", "Season%203/results_shanghai_sprint.json", "Season%203/results_shanghai_race.json", "Season%203/results_austin_sprint.json", "Season%203/results_austin_race.json", "Season%203/results_zandvoort_race.json", "Season%203/results_mexico_race.json", "Season%203/results_interlagos_sprint.json", "Season%203/results_interlagos_race.json", "Season%203/results_las%20vegas_race.json", "Season%203/results_yas%20marina_race.json"
+        ];
+
+        const cacheBuster = `?v=${new Date().getTime()}`;
+
+        async function initData() {
+            try {
+                // 1. Fetch JSON Profiles
+                const dRes = await fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/drivers.json${cacheBuster}`);
+                if (dRes.ok) {
+                    const dData = await dRes.json();
+                    dData.forEach(d => driverProfiles[d.Name] = d);
+                }
+
+                // 2. Fetch Live Files List (Season 4/5)
+                let liveFiles = [];
+                const listRes = await fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/race_list.txt${cacheBuster}`);
+                if (listRes.ok) {
+                    const text = await listRes.text();
+                    liveFiles = text.split('\n').map(f => f.trim()).filter(f => f.endsWith('.json'));
+                }
+
+                // 3. Fetch all Race Files
+                const allFilePaths = [...archiveFiles, ...liveFiles];
+                const fetchPromises = allFilePaths.map(file => fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/${file}${cacheBuster}`).then(r => r.ok ? r.json().then(data => ({ data, path: file })) : null));
+                
+                const results = await Promise.all(fetchPromises);
+                const validFiles = results.filter(r => r !== null);
+                
+                const races = validFiles.filter(f => f.data.SessionType === "Race");
+                const qualis = validFiles.filter(f => f.data.SessionType === "Qualification");
+
+                races.forEach(fileObj => {
+                    const race = fileObj.data; const path = fileObj.path;
+                    let dateObj = new Date(race.Date);
+                    
+                    // Determine Season dynamically based on folder or date
+                    let seasonNum = 5; 
+                    if (path.includes("Season%201")) seasonNum = 1;
+                    else if (path.includes("Season%202")) seasonNum = 2;
+                    else if (path.includes("Season%203")) seasonNum = 3;
+                    else if (dateObj.getFullYear() < 2026) seasonNum = 4; // Basic check for S4
+                    
+                    let maxPts = Math.max(0, ...race.Drivers.map(d => (d.DriverPointsRaw || 0) / 10));
+                    let label = "Feature"; 
+                    if (seasonNum === 3 && maxPts <= 10) label = "Sprint";
+                    else if (seasonNum !== 3 && maxPts <= 16) label = "Sprint";
+
+                    const matchingQuali = qualis.find(q => q.data.TrackName === race.TrackName && q.data.Date === race.Date);
+                    
+                    allEvents.push({ season: seasonNum, trackName: race.TrackName, label: label, date: dateObj, raceData: race, qualiData: matchingQuali ? matchingQuali.data : null });
+                });
+
+                // Sort Chronologically
+                allEvents.sort((a, b) => a.date - b.date);
+
+                // 4. Compute Driver Statistics
+                computeStatistics();
+
+                // Remove Loader & Setup UI
+                document.getElementById('loader').style.display = "none";
+                document.getElementById('main-nav').style.display = "flex";
+
+                // Routing Check
+                const urlParams = new URLSearchParams(window.location.search);
+                const requestedDriver = urlParams.get('driver');
+                if (requestedDriver && driverStats[requestedDriver]) {
+                    renderDriverProfile(requestedDriver);
+                } else {
+                    renderDirectory();
+                }
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('loader').innerText = "Error syncing database.";
+            }
+        }
+
+        function computeStatistics() {
+            allEvents.forEach((ev, roundIdx) => {
+                ev.raceData.Drivers.forEach(d => {
+                    let dName = d.Driver.Name;
+                    let tName = d.Team ? d.Team.Name : "Unknown";
+                    let pts = (d.DriverPointsRaw / 10) || 0;
+                    let pos = d.Position;
+                    let penPts = d.PenaltyPoints || 0;
+                    let isFL = ev.raceData.FastestLapDriver && ev.raceData.FastestLapDriver.Name === dName;
+                    let isDnf = (d.Status !== "Ok" && d.Status !== "finished" && !d.Status.toLowerCase().includes("lap"));
+
+                    // Initialize if missing
+                    if (!driverStats[dName]) {
+                        driverStats[dName] = { 
+                            name: dName, currentTeam: tName, starts: 0, wins: 0, podiums: 0, 
+                            pts: 0, fls: 0, poles: 0, dnfs: 0, penPts: 0,
+                            sumPos: 0, bestPos: 999, bestResultString: "-",
+                            teamsTracked: {}, tracksTracked: {}, seasons: {}
+                        };
+                    }
+
+                    let s = driverStats[dName];
+                    s.currentTeam = tName; // Since array is sorted chronologically, the last processed event will set the most recent team.
+                    s.starts++;
+                    s.pts += pts;
+                    s.penPts += penPts;
+                    
+                    if (pos === 1) s.wins++;
+                    if (pos <= 3) s.podiums++;
+                    if (isFL) s.fls++;
+                    
+                    let qData = ev.qualiData ? ev.qualiData.Drivers.find(qd => qd.Driver.Name === dName) : null;
+                    if (qData && qData.Position === 1) s.poles++;
+
+                    if (isDnf) s.dnfs++;
+                    else {
+                        s.sumPos += pos; // Only sum actual finishes for average calculation
+                        if (pos < s.bestPos) {
+                            s.bestPos = pos;
+                            s.bestResultString = `P${pos} (${ev.trackName}, S${ev.season})`;
+                        }
+                    }
+
+                    // Favourites Tracking
+                    s.teamsTracked[tName] = (s.teamsTracked[tName] || 0) + 1;
+                    s.tracksTracked[ev.trackName] = (s.tracksTracked[ev.trackName] || 0) + pts;
+
+                    // Season History
+                    if (!s.seasons[ev.season]) s.seasons[ev.season] = { pts: 0, races: [] };
+                    s.seasons[ev.season].pts += pts;
+                    s.seasons[ev.season].races.push({ track: ev.trackName, label: ev.label, pos: isDnf ? "DNF" : pos, pts: pts, fl: isFL, team: tName });
+                });
+            });
+        }
+
+        function formatFlagUrl(nat) {
+            if (!nat) return "";
+            let formatted = nat.toLowerCase().replace(/\s+/g, '_');
+            return `${flagsBase}${formatted}.png`;
+        }
+
+        function switchMainTab(tab) {
+            document.querySelectorAll('.stat-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            document.getElementById(`view-${tab}`).classList.add('active');
+            
+            // Clean URL if navigating back to directory
+            window.history.pushState({}, '', window.location.pathname);
+        }
+
+        function renderDirectory() {
+            document.querySelectorAll('.stat-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector('.stat-tab').classList.add('active'); // First tab
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-drivers').classList.add('active');
+
+            const dir = document.getElementById('driver-directory');
+            dir.innerHTML = "";
+
+            let sortedDrivers = Object.values(driverStats).sort((a,b) => b.pts - a.pts); // Sort by total points globally
+
+            sortedDrivers.forEach(d => {
+                let photoUrl = `${photoBase}${d.name.replace(/\s+/g, '')}.png`;
+                dir.innerHTML += `
+                    <div class="directory-card" onclick="renderDriverProfile('${d.name}')">
+                        <img src="${photoUrl}" class="directory-photo" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/blank.png'">
+                        <h3 class="directory-name">${d.name}</h3>
+                        <div class="directory-sub">${d.currentTeam}</div>
+                        <div style="margin-top: 15px; color: var(--f1-red); font-weight: 900; font-size: 18px;">${d.pts} PTS</div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderDriverProfile(dName) {
+            // Update URL for sharing
+            window.history.pushState({}, '', `?driver=${encodeURIComponent(dName)}`);
+
+            document.getElementById('main-nav').style.display = "none";
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            const container = document.getElementById('driver-profile-container');
+            container.classList.add('active');
+
+            let s = driverStats[dName];
+            let p = driverProfiles[dName] || {};
+            
+            let photoUrl = `${photoBase}${dName.replace(/\s+/g, '')}.png`;
+            let flagHtml = p.Nationality ? `<img src="${formatFlagUrl(p.Nationality)}" class="flag-icon" title="${p.Nationality}" onerror="this.style.display='none'">` : '';
+            
+            let avgPos = (s.starts - s.dnfs) > 0 ? (s.sumPos / (s.starts - s.dnfs)).toFixed(1) : "-";
+            let podPct = s.starts > 0 ? ((s.podiums / s.starts) * 100).toFixed(1) + "%" : "0%";
+            let bestTrack = Object.keys(s.tracksTracked).sort((a,b) => s.tracksTracked[b] - s.tracksTracked[a])[0] || "-";
+
+            let html = `
+                <div class="profile-wrapper">
+                    <div class="profile-header">
+                        <button class="back-btn" onclick="exitProfile()">❮ Back to Directory</button>
+                        <img src="${photoUrl}" class="profile-photo" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/blank.png'">
+                        <div class="profile-info">
+                            <h2 class="profile-name">${dName} ${flagHtml}</h2>
+                            <div class="profile-meta">
+                                ${p.RealName ? `<span class="meta-tag">👤 ${p.RealName}</span>` : ''}
+                                ${p.InGameName ? `<span class="meta-tag">🎮 ${p.InGameName}</span>` : ''}
+                                ${p.GamePlatform ? `<span class="meta-tag">💻 ${p.GamePlatform}</span>` : ''}
+                                ${p.RaceNumber ? `<span class="meta-tag" style="background:var(--f1-red); color:#fff; border:none;">#${p.RaceNumber}</span>` : ''}
+                                <span class="meta-tag" style="border-color: #888;">🏎️ ${s.currentTeam}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-box"><div class="stat-value">${s.pts}</div><div class="stat-label">Career Points</div></div>
+                        <div class="stat-box"><div class="stat-value">${s.starts}</div><div class="stat-label">Race Starts</div></div>
+                        <div class="stat-box"><div class="stat-value">${s.wins}</div><div class="stat-label">Wins</div></div>
+                        <div class="stat-box"><div class="stat-value">${s.podiums}</div><div class="stat-label">Podiums (${podPct})</div></div>
+                        <div class="stat-box"><div class="stat-value">${s.poles}</div><div class="stat-label">Pole Positions</div></div>
+                        <div class="stat-box"><div class="stat-value">${s.fls}</div><div class="stat-label">Fastest Laps</div></div>
+                        <div class="stat-box"><div class="stat-value text-value">P${avgPos}</div><div class="stat-label">Average Finish</div></div>
+                        <div class="stat-box"><div class="stat-value text-value" style="font-size: 16px;">${s.bestResultString}</div><div class="stat-label">Best Finish</div></div>
+                        <div class="stat-box"><div class="stat-value" style="color:#ff8000;">${s.dnfs}</div><div class="stat-label">Total DNFs</div></div>
+                        <div class="stat-box"><div class="stat-value" style="color:var(--f1-red);">${s.penPts}</div><div class="stat-label">Penalty Points</div></div>
+                        <div class="stat-box"><div class="stat-value text-value" style="font-size:18px;">${bestTrack}</div><div class="stat-label">Most Successful Track</div></div>
+                    </div>
+
+                    <div class="charts-section">
+                        <div class="chart-container"><h4 class="chart-title">Points by Season</h4><canvas id="ptsChart"></canvas></div>
+                        <div class="chart-container"><h4 class="chart-title">Race Finish Distribution</h4><canvas id="distChart"></canvas></div>
+                    </div>
+
+                    <div class="history-section">
+                        <h3 class="history-title">Season History</h3>
+                        <div id="accordion-container"></div>
+                    </div>
+                </div>
+            `;
+            container.innerHTML = html;
+
+            // Render Accordions
+            const accCont = document.getElementById('accordion-container');
+            let sortedSeasons = Object.keys(s.seasons).sort((a,b) => b - a); // Newest first
+            
+            sortedSeasons.forEach(sNum => {
+                let sData = s.seasons[sNum];
+                let rows = sData.races.map(r => `
+                    <tr class="${r.fl ? 'fl-row' : ''}">
+                        <td style="width:50px; text-align:center; font-weight:900;">${r.pos}</td>
+                        <td>${r.track} <span style="color:#888; font-size:11px;">(${r.label})</span></td>
+                        <td>${r.team}</td>
+                        <td style="text-align:center; color:var(--f1-red); font-weight:900;">${r.pts}</td>
+                    </tr>
+                `).join('');
+
+                accCont.innerHTML += `
+                    <details ${sNum == sortedSeasons[0] ? 'open' : ''}>
+                        <summary>Season ${sNum} <span class="summary-stats">${sData.pts} PTS</span></summary>
+                        <div class="table-wrap">
+                            <table>
+                                <thead><tr><th style="text-align:center;">Pos</th><th>Track</th><th>Car</th><th style="text-align:center;">Pts</th></tr></thead>
+                                <tbody>${rows}</tbody>
+                            </table>
+                        </div>
+                    </details>
+                `;
+            });
+
+            // Render Charts
+            setTimeout(() => drawCharts(s, sortedSeasons), 100);
+        }
+
+        function drawCharts(s, sortedSeasons) {
+            if(myChart1) myChart1.destroy();
+            if(myChart2) myChart2.destroy();
+
+            // Line Chart: Points per Season
+            let labels = sortedSeasons.slice().reverse().map(num => `Season ${num}`);
+            let dataPts = sortedSeasons.slice().reverse().map(num => s.seasons[num].pts);
+            
+            myChart1 = new Chart(document.getElementById('ptsChart'), {
+                type: 'line',
+                data: { labels: labels, datasets: [{ label: 'Points', data: dataPts, borderColor: '#e10600', backgroundColor: 'rgba(225, 6, 0, 0.2)', borderWidth: 3, tension: 0.3, fill: true }] },
+                options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } }
+            });
+
+            // Doughnut Chart: Distribution
+            let outOfPts = s.starts - s.dnfs - (s.podiums + s.wins); // Rough estimate for non-podium finishes
+            myChart2 = new Chart(document.getElementById('distChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Wins', 'Podiums (2nd/3rd)', 'Finished', 'DNFs'],
+                    datasets: [{ data: [s.wins, s.podiums - s.wins, outOfPts, s.dnfs], backgroundColor: ['#FFD700', '#C0C0C0', '#0090ff', '#e10600'], borderWidth: 0 }]
+                },
+                options: { responsive: true, cutout: '70%', plugins: { legend: { position: 'bottom', labels: { color: '#ccc' } } } }
+            });
+        }
+
+        function exitProfile() {
+            document.getElementById('driver-profile-container').classList.remove('active');
+            document.getElementById('main-nav').style.display = "flex";
+            renderDirectory();
+        }
+
+        // Initialize App
+        window.onload = initData;
+    </script>
+</body>
+</html>
