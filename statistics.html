@@ -31,23 +31,24 @@
 
         /* Directory UI */
         .directory-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; }
-        .directory-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: 0.3s; text-decoration: none; color: inherit; display: block; }
+        .directory-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: 0.3s; text-decoration: none; color: inherit; display: block; position: relative; }
         .directory-card:hover { background: rgba(255,255,255,0.08); border-color: var(--f1-red); transform: translateY(-5px); }
         .directory-photo { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; object-position: center top; border: 3px solid #444; margin-bottom: 15px; transition: 0.3s; }
         .directory-card:hover .directory-photo { border-color: #fff; }
-        .directory-name { font-size: 20px; font-weight: 900; text-transform: uppercase; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .directory-name { font-size: 20px; font-weight: 900; text-transform: uppercase; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; justify-content: center; gap: 8px;}
         .directory-sub { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
 
         .data-card { background: rgba(0,0,0,0.4); border: 1px solid #333; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: 0.3s; }
         .data-card:hover { border-color: var(--f1-red); background: rgba(225,6,0,0.1); }
-        .data-card-title { font-size: 22px; font-weight: 900; text-transform: uppercase; margin: 0 0 10px 0; color: #fff; }
+        .data-card-title { font-size: 20px; font-weight: 900; text-transform: uppercase; margin: 0 0 10px 0; color: #fff; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .data-card-stat { font-size: 14px; color: #aaa; }
+        .track-dir-flag { width: 25px; border-radius: 3px; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 
         /* Profile UI */
         .profile-wrapper { background: var(--f1-card); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .profile-header { display: flex; align-items: center; gap: 25px; padding: 30px; background: rgba(0,0,0,0.4); border-bottom: 1px solid #333; flex-wrap: wrap; position: relative;}
         .profile-photo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; object-position: center top; border: 4px solid #444; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-        .profile-info { flex: 1; }
+        .profile-info { flex: 1; min-width: 0; }
         .profile-name { font-size: 42px; font-weight: 900; text-transform: uppercase; margin: 0; letter-spacing: 1px; display: flex; align-items: center; gap: 15px; flex-wrap: wrap;}
         
         .flag-icon { height: 28px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
@@ -61,8 +62,10 @@
         .former-team-logo { height: 30px; object-fit: contain; opacity: 0.6; transition: 0.3s; }
         .former-team-logo:hover { opacity: 1; }
 
-        .back-btn { position: absolute; top: 20px; right: 20px; background: #333; color: #fff; text-decoration: none; padding: 8px 20px; border-radius: 6px; font-weight: 700; border: none; cursor: pointer; transition: 0.3s; font-family: 'Titillium Web'; text-transform: uppercase;}
+        .back-btn { position: absolute; top: 20px; right: 20px; background: #333; color: #fff; text-decoration: none; padding: 8px 20px; border-radius: 6px; font-weight: 700; border: none; cursor: pointer; transition: 0.3s; font-family: 'Titillium Web'; text-transform: uppercase; z-index: 10;}
         .back-btn:hover { background: var(--f1-red); }
+
+        .track-layout-img { max-width: 300px; max-height: 150px; object-fit: contain; opacity: 0.8; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5)); margin-left: auto; display: block;}
 
         /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: #333; border-bottom: 1px solid #333;}
@@ -72,73 +75,55 @@
         .stat-value.text-value { font-size: 20px; word-break: break-word; color: #ddd; }
 
         /* Charts Section */
-        .charts-section { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 30px; background: rgba(0,0,0,0.2); }
-        .chart-container { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; }
+        .charts-section { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 30px; background: rgba(0,0,0,0.2); width: 100%; box-sizing: border-box;}
+        .chart-container { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; min-width: 0; width: 100%; box-sizing: border-box; }
         .chart-title { font-size: 16px; color: #aaa; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; margin-top: 0; text-align: center; margin-bottom: 15px; }
 
         /* Accordion Season History */
         .history-section { padding: 30px; }
         .history-title { font-size: 24px; font-weight: 900; text-transform: uppercase; color: var(--f1-red); margin-top: 0; margin-bottom: 20px; }
         details { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; margin-bottom: 15px; overflow: hidden; }
-        summary { padding: 20px; font-size: 18px; font-weight: 900; text-transform: uppercase; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s; }
+        summary { padding: 20px; font-size: 18px; font-weight: 900; text-transform: uppercase; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s; flex-wrap: wrap; gap: 10px;}
         summary::-webkit-details-marker { display: none; }
         summary:hover { background: rgba(255,255,255,0.05); }
         .summary-stats { font-size: 14px; color: #aaa; font-weight: 700; }
+        
         .table-wrap { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th { background: rgba(0,0,0,0.6); padding: 12px 20px; color: #888; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; border-bottom: 1px solid #333; }
-        td { padding: 12px 20px; border-bottom: 1px solid #2a2a35; font-size: 15px; font-weight: 600; color: #ddd;}
+        td { padding: 12px 20px; border-bottom: 1px solid #2a2a35; font-size: 15px; font-weight: 600; color: inherit; transition: background 0.2s;}
         tr:last-child td { border-bottom: none; }
+
+        /* Color Overrides for Rows */
+        tr.row-1 td { color: gold !important; font-weight: 700; }
+        tr.row-2 td { color: #C0C0C0 !important; font-weight: 700; }
+        tr.row-3 td { color: #CD7F32 !important; font-weight: 700; }
+        tr.row-dnf td { color: var(--f1-red) !important; font-style: italic; }
+        tr.row-standard td { color: #fff; }
+        td.fl-time { color: var(--fastest-lap) !important; font-weight: 900; }
 
         /* Analysis Tables */
         .analysis-table th { background: var(--f1-red); color: #fff; }
         .analysis-table td { background: rgba(0,0,0,0.2); }
         .analysis-table tr:hover td { background: rgba(255,255,255,0.05); }
 
-        /* EXACT CUSTOM MODAL FOR EA RACENET FROM LANDING PAGE */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(5px);
-            display: flex; justify-content: center; align-items: center;
-            z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
-        }
+        /* EXACT CUSTOM MODAL FOR EA RACENET */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        
-        .modal-content {
-            background: var(--f1-card); border-radius: 12px; padding: 30px 25px;
-            max-width: 400px; width: 90%; text-align: center;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.8);
-            border-top: 5px solid #ff4747; position: relative;
-            transform: translateY(20px); transition: transform 0.3s ease;
-        }
+        .modal-content { background: var(--f1-card); border-radius: 12px; padding: 30px 25px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 15px 50px rgba(0,0,0,0.8); border-top: 5px solid #ff4747; position: relative; transform: translateY(20px); transition: transform 0.3s ease; }
         .modal-overlay.active .modal-content { transform: translateY(0); }
-        
-        .modal-close {
-            position: absolute; top: 15px; right: 15px; background: none; border: none;
-            color: #888; font-size: 28px; cursor: pointer; transition: 0.2s; line-height: 1;
-        }
+        .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; color: #888; font-size: 28px; cursor: pointer; transition: 0.2s; line-height: 1; }
         .modal-close:hover { color: var(--f1-red); }
-        
         .modal-content h3 { margin: 10px 0 5px 0; font-size: 24px; text-transform: uppercase; font-weight: 900; color: #fff; }
         .modal-content p { color: #aaa; font-size: 14px; margin-bottom: 25px; line-height: 1.4; }
-        
         .cred-group { margin-bottom: 12px; text-align: left; background: rgba(0,0,0,0.4); padding: 12px 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); }
         .cred-label { display: block; font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-weight: 700; }
         .cred-row { display: flex; justify-content: space-between; align-items: center; }
         .cred-value { font-family: monospace; font-size: 15px; color: #fff; font-weight: 700; letter-spacing: 0.5px; user-select: all; }
-        
-        .copy-btn {
-            background: #333; color: #fff; border: none; padding: 6px 12px; border-radius: 4px;
-            cursor: pointer; font-size: 11px; font-weight: 700; transition: 0.2s; text-transform: uppercase; letter-spacing: 0.5px;
-        }
+        .copy-btn { background: #333; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 700; transition: 0.2s; text-transform: uppercase; letter-spacing: 0.5px; }
         .copy-btn:hover { background: #555; }
         .copy-btn.success { background: #00d7b6; color: #000; }
-        
-        .proceed-btn {
-            display: inline-block; margin-top: 15px; background: #ff4747; color: #fff; text-decoration: none;
-            padding: 14px 25px; border-radius: 6px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;
-            width: 100%; box-sizing: border-box; transition: 0.3s;
-        }
+        .proceed-btn { display: inline-block; margin-top: 15px; background: #ff4747; color: #fff; text-decoration: none; padding: 14px 25px; border-radius: 6px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; width: 100%; box-sizing: border-box; transition: 0.3s; }
         .proceed-btn:hover { background: #ff1a1a; box-shadow: 0 5px 15px rgba(255, 71, 71, 0.4); transform: translateY(-2px); }
 
         #loader { text-align: center; padding: 50px; font-size: 18px; color: #aaa; font-style: italic; }
@@ -150,12 +135,16 @@
         @media (max-width: 768px) {
             .directory-grid { grid-template-columns: repeat(2, 1fr); }
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .profile-header { flex-direction: column; text-align: center; }
+            .profile-header { flex-direction: column; text-align: center; padding: 20px; }
             .profile-name { justify-content: center; font-size: 32px; flex-wrap: wrap;}
             .profile-meta { justify-content: center; }
             .former-teams { justify-content: center; }
             .back-btn { position: relative; top: 0; right: 0; width: 100%; margin-bottom: 15px; }
-            .charts-section { grid-template-columns: 1fr; }
+            .track-layout-img { margin: 15px auto 0 auto; width: 100%; }
+            .charts-section { grid-template-columns: 1fr; padding: 15px; }
+            .history-section { padding: 15px; }
+            summary { flex-direction: column; align-items: flex-start; }
+            .summary-stats { width: 100%; text-align: left; opacity: 0.8; }
         }
     </style>
 </head>
@@ -249,6 +238,30 @@
             "Kalpa": ["Season 4 - Most Improved Driver"]
         };
 
+        // TRACK FLAGS DICTIONARY
+        const trackCountryFlags = {
+            "Bahrain": "bahrain", "Jeddah": "saudi_arabia", "Melbourne": "australia", 
+            "Baku": "azerbaijan", "Miami": "united_states_of_america", "Imola": "italy", 
+            "Monaco": "monaco", "Barcelona": "spain", "Spielberg": "austria", 
+            "Silverstone": "great_britain", "Hungaroring": "hungary", "Spa": "belgium", 
+            "Zandvoort": "netherlands", "Monza": "italy", "Singapore": "singapore", 
+            "Suzuka": "japan", "Losail": "qatar", "Austin": "united_states_of_america", 
+            "Mexico": "mexico", "Interlagos": "brazil", "Las Vegas": "united_states_of_america", 
+            "Yas Marina": "united_arab_emirates", "Shanghai": "china", "Montreal": "canada"
+        };
+
+        // TRACK LAYOUTS DICTIONARY
+        const trackLayouts = {
+            "Bahrain": "bahrain", "Jeddah": "jeddah", "Melbourne": "melbourne", 
+            "Baku": "baku", "Miami": "miami", "Imola": "imola", "Monaco": "monaco", 
+            "Barcelona": "barcelona", "Spielberg": "austria", "Silverstone": "silverstone", 
+            "Hungaroring": "hungaroring", "Spa": "spa", "Zandvoort": "zandvoort", 
+            "Monza": "monza", "Singapore": "singapore", "Suzuka": "japan", 
+            "Losail": "losail", "Austin": "austin", "Mexico": "mexico", 
+            "Interlagos": "brazil", "Las Vegas": "lasvegas", "Yas Marina": "abudhabi", 
+            "Shanghai": "china", "Montreal": "canada"
+        };
+
         const archiveFiles = [
             "Season%201/results_silverstone_race.json", "Season%201/results_spielberg_race.json", "Season%201/results_bahrain_race.json", "Season%201/results_jeddah_race.json", "Season%201/results_melbourne_race.json", "Season%201/results_suzuka_race.json",
             "Season%202/results_miami_race.json", "Season%202/results_imola_race.json", "Season%202/results_monza_race.json", "Season%202/results_spa-francorchamps_race.json", "Season%202/results_barcelona_race.json", "Season%202/results_baku_race.json", "Season%202/results_losail_race.json", "Season%202/results_hungaroring_race.json", "Season%202/results_singapore_race.json",
@@ -274,38 +287,22 @@
             return `+${seconds}`;
         }
 
-        // EXACT EA MODAL JS
-        function openRacenet(event) {
-            event.preventDefault(); 
-            document.getElementById('racenet-modal').classList.add('active');
-        }
-
-        function closeModal() {
-            document.getElementById('racenet-modal').classList.remove('active');
-        }
+        function openRacenet(event) { event.preventDefault(); document.getElementById('racenet-modal').classList.add('active'); }
+        function closeModal() { document.getElementById('racenet-modal').classList.remove('active'); }
 
         function copyText(elementId, btnElement) {
             const textToCopy = document.getElementById(elementId).innerText;
             navigator.clipboard.writeText(textToCopy).then(() => {
                 const originalText = btnElement.innerText;
-                btnElement.innerText = "COPIED!";
-                btnElement.classList.add('success');
-                setTimeout(() => {
-                    btnElement.innerText = originalText;
-                    btnElement.classList.remove('success');
-                }, 2000);
-            }).catch(err => {
-                console.error('Failed to copy text: ', err);
-                alert("Failed to copy. Please manually select the text.");
-            });
+                btnElement.innerText = "COPIED!"; btnElement.classList.add('success');
+                setTimeout(() => { btnElement.innerText = originalText; btnElement.classList.remove('success'); }, 2000);
+            }).catch(err => { alert("Failed to copy. Please manually select the text."); });
         }
 
         async function initData() {
             try {
-                // Initialize static driver profiles first
                 staticDriverProfiles.forEach(d => driverProfiles[d.Name] = d);
 
-                // Live files fetch
                 let liveFiles = [];
                 const listRes = await fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/race_list.txt${cacheBuster}`);
                 if (listRes.ok) {
@@ -319,7 +316,6 @@
                 const results = await Promise.all(fetchPromises);
                 const validFiles = results.filter(r => r !== null);
                 
-                // Track all sessions (Race + Sprints)
                 const racesAndSprints = validFiles.filter(f => f.data.SessionType === "Race");
 
                 racesAndSprints.forEach(fileObj => {
@@ -338,10 +334,13 @@
                     let label = "Feature"; 
                     if (seasonNum === 3 && maxPts <= 10) label = "Sprint";
                     else if (seasonNum !== 3 && maxPts <= 16) label = "Sprint";
-                    
                     if (race.RaceType === "Sprint") label = "Sprint";
 
-                    allEvents.push({ season: seasonNum, trackName: race.TrackName, label: label, date: dateObj, raceData: race });
+                    // Rename Spa 
+                    let cleanTrackName = race.TrackName;
+                    if (cleanTrackName === "Spa-Francorchamps") cleanTrackName = "Spa";
+
+                    allEvents.push({ season: seasonNum, trackName: cleanTrackName, label: label, date: dateObj, raceData: race });
                 });
 
                 allEvents.sort((a, b) => a.date - b.date);
@@ -362,18 +361,17 @@
             allEvents.forEach((ev) => {
                 let tNameStr = ev.trackName;
                 
-                // Initialize Track Stats to hold ALL sessions
                 if (!trackStats[tNameStr]) trackStats[tNameStr] = { 
                     name: tNameStr, 
                     races: 0, 
                     sessions: [],
-                    driverPoints: {},
+                    driverFinishes: {},
                     driverWins: {},
                     lapRecord: { time: 999999999, driver: "-" }
                 };
                 
-                // Increment overall track race counter if it's a Feature race
-                if (ev.label === "Feature") trackStats[tNameStr].races++;
+                // Count ALL sessions for the Track
+                trackStats[tNameStr].races++;
                 trackStats[tNameStr].sessions.push(ev);
 
                 if (!seasonStandings[ev.season]) seasonStandings[ev.season] = { drivers: {}, teams: {} };
@@ -396,22 +394,26 @@
                     else if (d.TimeInt > 0 && winnerTime > 0) gapStr = formatGap(d.TimeInt - winnerTime);
                     else if (d.Status && d.Status.toLowerCase().includes("lap")) gapStr = d.Status;
 
-                    // Update Season Standings
                     if(!seasonStandings[ev.season].drivers[dName]) seasonStandings[ev.season].drivers[dName] = { points: 0, team: tName };
                     seasonStandings[ev.season].drivers[dName].points += pts;
                     seasonStandings[ev.season].drivers[dName].team = tName; 
                     if(!seasonStandings[ev.season].teams[tName]) seasonStandings[ev.season].teams[tName] = 0;
                     seasonStandings[ev.season].teams[tName] += pts;
 
-                    // Update Track Specific Aggregates
+                    // Update Track Finishing Stats
+                    if (!trackStats[tNameStr].driverFinishes[dName]) trackStats[tNameStr].driverFinishes[dName] = { 1: 0, 2: 0, 3: 0, top6: 0, total: 0 };
+                    trackStats[tNameStr].driverFinishes[dName].total++;
+                    if (pos === 1 && !isDnf) trackStats[tNameStr].driverFinishes[dName][1]++;
+                    if (pos === 2 && !isDnf) trackStats[tNameStr].driverFinishes[dName][2]++;
+                    if (pos === 3 && !isDnf) trackStats[tNameStr].driverFinishes[dName][3]++;
+                    if (pos >= 4 && pos <= 6 && !isDnf) trackStats[tNameStr].driverFinishes[dName].top6++;
+                    
                     if (pos === 1 && ev.label === "Feature") trackStats[tNameStr].driverWins[dName] = (trackStats[tNameStr].driverWins[dName] || 0) + 1;
-                    trackStats[tNameStr].driverPoints[dName] = (trackStats[tNameStr].driverPoints[dName] || 0) + pts;
                     
                     if (flTime > 0 && flTime < trackStats[tNameStr].lapRecord.time) {
                         trackStats[tNameStr].lapRecord = { time: flTime, driver: dName };
                     }
 
-                    // Setup Driver Profiles
                     if (!driverStats[dName]) {
                         driverStats[dName] = { 
                             name: dName, currentTeam: tName, starts: 0, wins: 0, podiums: 0, 
@@ -455,21 +457,17 @@
 
         function formatFlagUrl(nat) {
             if (!nat) return "";
-            // Maps to standard format: united_arab_emirates.png
             return `${photoBase}${nat.toLowerCase().replace(/\s+/g, '_')}.png`;
         }
         
+        function getTrackFlagUrl(trackName) {
+            let fName = trackCountryFlags[trackName];
+            if (!fName) return "";
+            return `${photoBase}${fName}.png`;
+        }
+
         function getTeamLogoUrl(teamName) {
-            let fileMap = { 
-                "Aston Martin": "AM", 
-                "Ferrari": "FER", 
-                "McLaren": "MCL", 
-                "Mercedes": "MER", 
-                "Red Bull": "RB",
-                "Alpine": "alpine", 
-                "AlphaTauri": "alphatauri", 
-                "Alfa Romeo": "alfaromeo"
-            };
+            let fileMap = { "Aston Martin": "AM", "Ferrari": "FER", "McLaren": "MCL", "Mercedes": "MER", "Red Bull": "RB", "Alpine": "alpine", "AlphaTauri": "alphatauri", "Alfa Romeo": "alfaromeo" };
             let fName = fileMap[teamName] || teamName.toLowerCase().replace(/\s+/g, '');
             return `${photoBase}${fName}.png`; 
         }
@@ -481,7 +479,7 @@
             if (idx === -1) return "-";
             let p = idx + 1;
             
-            if (sNum === currentSeasonMax) return `${p}${p===1?'st':p===2?'nd':p===3?'rd':'th'} Overall`;
+            if (sNum === currentSeasonMax) return `Current Standing: ${p}${p===1?'st':p===2?'nd':p===3?'rd':'th'}`;
             return p === 1 ? "Champion 👑" : p === 2 ? "2nd Overall" : p === 3 ? "3rd Overall" : `${p}th Overall`;
         }
 
@@ -516,10 +514,11 @@
             tDir.innerHTML = "";
             let sortedTracks = Object.values(trackStats).sort((a,b) => b.races - a.races);
             sortedTracks.forEach(t => {
+                let flagImg = getTrackFlagUrl(t.name) ? `<img src="${getTrackFlagUrl(t.name)}" class="track-dir-flag">` : '';
                 tDir.innerHTML += `
                     <div class="data-card" onclick="renderTrackProfile('${t.name}')">
-                        <h3 class="data-card-title">${t.name}</h3>
-                        <div class="data-card-stat">Features Hosted: ${t.races}</div>
+                        <h3 class="data-card-title">${flagImg} ${t.name}</h3>
+                        <div class="data-card-stat">Races Hosted: ${t.races}</div>
                     </div>
                 `;
             });
@@ -545,14 +544,12 @@
             let bestTrack = Object.keys(s.tracksTracked).sort((a,b) => s.tracksTracked[b] - s.tracksTracked[a])[0] || "-";
             let debutSeason = Math.min(...Object.keys(s.seasons));
 
-            // Extract former teams
             let formerTeamsHtml = "";
             let uniqueTeams = Object.keys(s.teamsTracked).filter(t => t !== s.currentTeam);
             if (uniqueTeams.length > 0) {
                 formerTeamsHtml = `<div class="former-teams">Former Teams: ` + uniqueTeams.map(t => `<img src="${getTeamLogoUrl(t)}" class="former-team-logo" title="${t}" onerror="this.style.display='none'">`).join(' ') + `</div>`;
             }
 
-            // Awards Box
             let awardsHtml = "";
             if (driverAwards[dName]) {
                 let list = driverAwards[dName].map(aw => `<li>🏆 ${aw}</li>`).join('');
@@ -573,11 +570,11 @@
                         <img src="${photoBase}${dName.replace(/\s+/g, '')}.png" class="profile-photo" style="background-color: ${bgHex};" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/blank.png'">
                         <div class="profile-info">
                             <h2 class="profile-name">
+                                ${p.RaceNumber ? `<span style="background:var(--f1-red); color:#fff; padding:2px 10px; border-radius:6px; font-size: 32px;">#${p.RaceNumber}</span>` : ''}
                                 ${dName} ${rookieBadge} ${flagHtml} 
                                 <img src="${getTeamLogoUrl(s.currentTeam)}" class="team-logo-main" onerror="this.style.display='none'">
                             </h2>
                             <div class="profile-meta">
-                                ${p.RaceNumber ? `<span class="meta-tag" style="background:var(--f1-red); color:#fff; border:none;">#${p.RaceNumber}</span>` : ''}
                                 ${p.RealName ? `<span class="meta-tag">Real Name: ${p.RealName}</span>` : ''}
                                 ${p.InGameName ? `<span class="meta-tag">In-Game: ${p.InGameName}</span>` : ''}
                                 ${p.GamePlatform ? `<span class="meta-tag">Platform: ${p.GamePlatform}</span>` : ''}
@@ -619,27 +616,25 @@
             
             sortedSeasons.forEach(sNum => {
                 let sData = s.seasons[sNum];
-                
-                // Calculate max grid size for this season
                 let sGridSize = Object.keys(seasonStandings[sNum].drivers).length;
 
                 let rows = sData.races.map(r => {
-                    let rowStyle = "color: #fff;"; // Default to white
-                    if (r.pos === "DNF" || r.pos === "DSQ") rowStyle = "color: var(--f1-red); font-style: italic;";
-                    else if (r.pos === 1) rowStyle = "color: gold; font-weight: 700;";
-                    else if (r.pos === 2) rowStyle = "color: #C0C0C0; font-weight: 700;";
-                    else if (r.pos === 3) rowStyle = "color: #CD7F32; font-weight: 700;";
+                    let rowClass = "row-standard";
+                    if (r.pos === "DNF" || r.pos === "DSQ") rowClass = "row-dnf";
+                    else if (r.pos === 1) rowClass = "row-1";
+                    else if (r.pos === 2) rowClass = "row-2";
+                    else if (r.pos === 3) rowClass = "row-3";
 
-                    // Only the FL text goes purple if they got FL
-                    let flStyle = r.fl ? "color: var(--fastest-lap); font-weight: 900;" : "";
+                    let flClass = r.fl ? "fl-time" : "";
+                    let tFlag = getTrackFlagUrl(r.track) ? `<img src="${getTrackFlagUrl(r.track)}" style="width:18px; vertical-align:middle; margin-right:6px; border-radius:2px;" onerror="this.style.display='none'">` : '';
 
                     return `
-                        <tr style="${rowStyle}">
+                        <tr class="${rowClass}">
                             <td style="width:50px; text-align:center; font-weight:900;">${r.pos}</td>
-                            <td>${r.track} <span style="opacity: 0.6; font-size:11px; font-weight: normal;">(${r.label})</span></td>
+                            <td>${tFlag}${r.track} <span style="opacity: 0.6; font-size:11px; font-weight: normal;">(${r.label})</span></td>
                             <td>${r.team}</td>
                             <td style="font-family:monospace;">${r.gap}</td>
-                            <td style="font-family:monospace; ${flStyle}">${formatMs(r.flTime)}</td>
+                            <td class="${flClass}" style="font-family:monospace;">${formatMs(r.flTime)}</td>
                         </tr>
                     `;
                 }).join('');
@@ -648,7 +643,10 @@
                 
                 accCont.innerHTML += `
                     <details ${sNum == sortedSeasons[0] ? 'open' : ''}>
-                        <summary>Season ${sNum} <span class="summary-stats" style="color:#fff;">${champStatus} | Grid Size: ${sGridSize}</span></summary>
+                        <summary>
+                            <span>Season ${sNum}</span>
+                            <span class="summary-stats" style="color:#fff;">${champStatus} &nbsp;|&nbsp; Grid Size: ${sGridSize}</span>
+                        </summary>
                         <div class="table-wrap">
                             <table>
                                 <thead><tr>
@@ -683,7 +681,7 @@
             myChart1 = new Chart(document.getElementById('avgPosChart'), {
                 type: 'line',
                 data: { labels: labels, datasets: [{ label: 'Average Finish', data: avgData, borderColor: '#e10600', backgroundColor: 'rgba(225, 6, 0, 0.2)', borderWidth: 3, tension: 0.3, fill: true, pointRadius: 5 }] },
-                options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { reverse: true, min: 1, max: 10, ticks: { stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { reverse: true, min: 1, max: 10, ticks: { stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } }
             });
 
             let p1=0, p2=0, p3=0, p4=0, p5=0, p6=0, p7_10=0;
@@ -705,11 +703,10 @@
                     labels: ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th-10th', 'DNFs'],
                     datasets: [{ data: [p1, p2, p3, p4, p5, p6, p7_10, s.dnfs], backgroundColor: ['#FFD700', '#C0C0C0', '#CD7F32', '#0090ff', '#00d2be', '#3671c6', '#555', '#e10600'], borderRadius: 4 }]
                 },
-                options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } }
             });
         }
 
-        // --- Track Profiles (Fully Built Out) ---
         function renderTrackProfile(tName) {
             document.getElementById('main-nav').style.display = "none";
             document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
@@ -718,14 +715,19 @@
 
             let t = trackStats[tName];
             
-            // Get Top Winner
             let topWinner = Object.keys(t.driverWins).sort((a,b) => t.driverWins[b] - t.driverWins[a])[0] || "-";
-            // Get Top Points Scorer
-            let topPointsDriver = Object.keys(t.driverPoints).sort((a,b) => t.driverPoints[b] - t.driverPoints[a])[0] || "-";
-            // Lap Record Data
-            let lapRecText = t.lapRecord.time < 999999999 ? `${formatMs(t.lapRecord.time)}<br><span style="font-size:12px;color:#888;">${t.lapRecord.driver}</span>` : "-";
+            
+            let topPodiumDriver = Object.keys(t.driverFinishes).sort((a,b) => {
+                let podA = (t.driverFinishes[a][1]||0) + (t.driverFinishes[a][2]||0) + (t.driverFinishes[a][3]||0);
+                let podB = (t.driverFinishes[b][1]||0) + (t.driverFinishes[b][2]||0) + (t.driverFinishes[b][3]||0);
+                return podB - podA;
+            })[0] || "-";
 
-            // Loop through every session held at this track
+            let lapRecText = t.lapRecord.time < 999999999 ? `${formatMs(t.lapRecord.time)}<br><span style="font-size:12px;color:#888;">${t.lapRecord.driver}</span>` : "-";
+            
+            let flagImg = getTrackFlagUrl(tName) ? `<img src="${getTrackFlagUrl(tName)}" class="track-dir-flag" style="margin-right: 15px;">` : '';
+            let layoutImg = trackLayouts[tName] ? `<img src="${photoBase}Track%20Layouts/${trackLayouts[tName]}-track-layout.png" class="track-layout-img" onerror="this.style.display='none'">` : '';
+
             let sessionAccordions = t.sessions.map((ev, idx) => {
                 let sortedDrivers = ev.raceData.Drivers.sort((a, b) => a.Position - b.Position);
                 let winnerTime = sortedDrivers.find(d => d.Position === 1)?.TimeInt || 0;
@@ -740,13 +742,21 @@
                     else if (d.TimeInt > 0 && winnerTime > 0) gapStr = formatGap(d.TimeInt - winnerTime);
                     else if (d.Status && d.Status.toLowerCase().includes("lap")) gapStr = d.Status;
 
+                    let rowClass = "row-standard";
+                    if (isDnf) rowClass = "row-dnf";
+                    else if (d.Position === 1) rowClass = "row-1";
+                    else if (d.Position === 2) rowClass = "row-2";
+                    else if (d.Position === 3) rowClass = "row-3";
+                    
+                    let flClass = isFL ? "fl-time" : "";
+
                     return `
-                        <tr class="${isFL ? 'fl-row' : ''}">
+                        <tr class="${rowClass}">
                             <td style="text-align:center; font-weight:900;">${d.Position}</td>
                             <td>${d.Driver.Name}</td>
                             <td>${d.Team ? d.Team.Name : "Unknown"}</td>
                             <td style="font-family:monospace;">${gapStr}</td>
-                            <td style="font-family:monospace;">${formatMs(d.FastestLapTimeInt || 0)}</td>
+                            <td class="${flClass}" style="font-family:monospace;">${formatMs(d.FastestLapTimeInt || 0)}</td>
                             <td style="text-align:center; color:var(--f1-red); font-weight:900;">${(d.DriverPointsRaw || 0) / 10}</td>
                         </tr>
                     `;
@@ -754,7 +764,10 @@
 
                 return `
                     <details ${idx === t.sessions.length - 1 ? 'open' : ''}>
-                        <summary>Season ${ev.season} - ${ev.label} <span class="summary-stats">Grid Size: ${sortedDrivers.length}</span></summary>
+                        <summary>
+                            <span>Season ${ev.season} - ${ev.label}</span>
+                            <span class="summary-stats">Grid Size: ${sortedDrivers.length}</span>
+                        </summary>
                         <div class="table-wrap">
                             <table class="analysis-table">
                                 <thead><tr>
@@ -777,20 +790,24 @@
                     <div class="profile-header">
                         <button class="back-btn" onclick="exitToDirectory('tracks')">Back</button>
                         <div>
-                            <h2 class="profile-name">${tName} Circuit</h2>
+                            <h2 class="profile-name">${flagImg} ${tName} Circuit</h2>
                             <div class="profile-meta"><span class="meta-tag">Total Sessions Hosted: ${t.sessions.length}</span></div>
                         </div>
+                        ${layoutImg}
                     </div>
                     
                     <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr);">
                         <div class="stat-box"><div class="stat-value text-value">${topWinner}</div><div class="stat-label">Most Feature Wins</div></div>
-                        <div class="stat-box"><div class="stat-value text-value">${topPointsDriver}</div><div class="stat-label">Most Points Scored</div></div>
+                        <div class="stat-box"><div class="stat-value text-value">${topPodiumDriver}</div><div class="stat-label">Most Podiums</div></div>
                         <div class="stat-box"><div class="stat-value text-value" style="font-family:monospace; line-height: 1.2;">${lapRecText}</div><div class="stat-label">All-Time Lap Record</div></div>
-                        <div class="stat-box"><div class="stat-value">${t.races}</div><div class="stat-label">Feature Races Held</div></div>
+                        <div class="stat-box"><div class="stat-value">${t.races}</div><div class="stat-label">Total Races Held</div></div>
                     </div>
 
                     <div class="charts-section" style="grid-template-columns: 1fr;">
-                        <div class="chart-container"><h4 class="chart-title">Top 5 Drivers by Points at ${tName}</h4><canvas id="trackPointsChart" style="max-height: 300px;"></canvas></div>
+                        <div class="chart-container">
+                            <h4 class="chart-title">Top 5 Drivers by Finishes at ${tName}</h4>
+                            <div style="height: 350px; width: 100%;"><canvas id="trackPointsChart"></canvas></div>
+                        </div>
                     </div>
 
                     <div class="history-section">
@@ -807,19 +824,38 @@
         function drawTrackChart(t) {
             if(myChart3) myChart3.destroy();
 
-            // Sort drivers by points at this track and take top 5
-            let topDrivers = Object.keys(t.driverPoints)
-                                   .sort((a, b) => t.driverPoints[b] - t.driverPoints[a])
-                                   .slice(0, 5);
-            let pointValues = topDrivers.map(d => t.driverPoints[d]);
+            // Sort top 5 drivers by total podiums, then by top 6s
+            let topDrivers = Object.keys(t.driverFinishes).sort((a,b) => {
+                let pA = (t.driverFinishes[a][1]||0) + (t.driverFinishes[a][2]||0) + (t.driverFinishes[a][3]||0);
+                let pB = (t.driverFinishes[b][1]||0) + (t.driverFinishes[b][2]||0) + (t.driverFinishes[b][3]||0);
+                if (pA !== pB) return pB - pA;
+                return t.driverFinishes[b].top6 - t.driverFinishes[a].top6;
+            }).slice(0, 5);
+
+            let d1 = topDrivers.map(d => t.driverFinishes[d][1] || 0);
+            let d2 = topDrivers.map(d => t.driverFinishes[d][2] || 0);
+            let d3 = topDrivers.map(d => t.driverFinishes[d][3] || 0);
+            let d4_6 = topDrivers.map(d => t.driverFinishes[d].top6 || 0);
 
             myChart3 = new Chart(document.getElementById('trackPointsChart'), {
                 type: 'bar',
                 data: {
                     labels: topDrivers,
-                    datasets: [{ label: 'Total Points', data: pointValues, backgroundColor: 'rgba(225, 6, 0, 0.8)', borderRadius: 4 }]
+                    datasets: [
+                        { label: '1st', data: d1, backgroundColor: '#FFD700', borderRadius: 4 },
+                        { label: '2nd', data: d2, backgroundColor: '#C0C0C0', borderRadius: 4 },
+                        { label: '3rd', data: d3, backgroundColor: '#CD7F32', borderRadius: 4 },
+                        { label: '4th-6th', data: d4_6, backgroundColor: '#0090ff', borderRadius: 4 }
+                    ]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } }
+                options: { 
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { color: '#aaa', font: { family: 'Titillium Web', weight: 'bold' } } } }, 
+                    scales: { 
+                        x: { stacked: true, grid: { display: false } }, 
+                        y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.05)' } } 
+                    } 
+                }
             });
         }
 
