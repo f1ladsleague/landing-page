@@ -18,7 +18,7 @@
             --mercedes: #00d2be;
             --aston: #006f62;
             --redbull: #3671c6;
-            --fastest-lap: #b388ff;
+            --fastest-lap: #ae37de; 
         }
         
         body { 
@@ -48,9 +48,13 @@
             max-width: 220px;
             filter: drop-shadow(0px 4px 10px rgba(0,0,0,0.5));
             margin-bottom: 5px;
+            transition: transform 0.3s ease;
+        }
+        .page-logo:hover {
+            transform: scale(1.05);
         }
         .page-main-title {
-            font-size: 42px; /* Increased Size */
+            font-size: 42px;
             text-transform: uppercase;
             font-weight: 900;
             letter-spacing: 2px;
@@ -60,7 +64,6 @@
         }
 
         /* HEADER & NAVIGATION */
-        /* Fixed wrap issue: forces elements to stay inline on desktop */
         .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; border-bottom: 2px solid #333; padding-bottom: 20px; flex-wrap: nowrap; gap: 15px;}
         .header-left { display: flex; align-items: center; min-width: 0; }
         .back-btn { background: #333; color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; transition: 0.3s; margin-right: 20px; text-transform: uppercase; white-space: nowrap;}
@@ -98,7 +101,6 @@
         }
         .tab-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
         .tab-btn.active { background: var(--f1-red); color: #fff; border-color: var(--f1-red); box-shadow: 0 4px 15px rgba(225, 6, 0, 0.4); }
-        .tab-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
         /* RESULTS TABLE */
         .results-wrapper {
@@ -133,7 +135,7 @@
         .time-col { font-family: monospace; font-size: 15px; letter-spacing: 0.5px; }
         .pts-col { font-weight: 900; color: var(--f1-red); text-align: center; font-size: 18px; }
         
-        .fastest-lap-icon { color: var(--fastest-lap); margin-left: 8px; font-size: 14px; display: inline-flex; align-items: center; gap: 4px; background: rgba(179, 136, 255, 0.1); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(179, 136, 255, 0.3);}
+        .fastest-lap-icon { color: var(--fastest-lap); margin-left: 8px; font-size: 14px; display: inline-flex; align-items: center; gap: 4px; background: rgba(174, 55, 222, 0.1); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(174, 55, 222, 0.3);}
         .dnf-text { color: #888; font-style: italic; }
 
         /* LOADER */
@@ -155,7 +157,9 @@
 
     <div class="container">
         <div class="top-brand-header">
-            <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Logo.png" alt="F1 Lads Logo" class="page-logo">
+            <a href="https://f1lads.com">
+                <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Logo.png" alt="F1 Lads Logo" class="page-logo">
+            </a>
             <h1 class="page-main-title">Race Results</h1>
         </div>
 
@@ -171,9 +175,7 @@
         </div>
 
         <div class="session-tabs" id="session-tabs" style="display: none;">
-            <button id="tab-quali" class="tab-btn" onclick="switchSession('Qualification')">Qualification</button>
-            <button id="tab-race" class="tab-btn" onclick="switchSession('Race')">Race</button>
-        </div>
+            </div>
 
         <div class="results-wrapper">
             <div id="loader">Compiling historical race data...</div>
@@ -206,11 +208,35 @@
             return seconds; 
         }
 
+        // Custom gap formatter (+Seconds.ms or +Minutes:Seconds.ms)
+        function formatGap(ms) {
+            let totalSeconds = ms / 1000;
+            let minutes = Math.floor(totalSeconds / 60);
+            let seconds = (totalSeconds % 60).toFixed(3);
+            if (minutes > 0) return `+${minutes}:${seconds.padStart(6, '0')}`;
+            return `+${seconds}`;
+        }
+
         // GLOBALS
-        let groupedEvents = []; // Array of grouped weekend data
+        let groupedEvents = []; 
         let activeEventIndex = 0;
-        let activeSession = "Race"; // Defaults to race
+        let activeSession = ""; 
         const cacheBuster = `?v=${new Date().getTime()}`;
+
+        // Smart Session Classifier (Checks Winner Points)
+        function getSessionLabel(data) {
+            if (data.SessionType === "Qualification") return "Qualification";
+            
+            const winner = data.Drivers.find(d => d.Position === 1);
+            if (winner) {
+                // If the winner gets ~30 points (Feature) or ~15 points (Sprint)
+                // Dividing by 10 because raw points are 10x
+                const truePoints = winner.DriverPointsRaw / 10;
+                if (truePoints > 20) return "Feature";
+                if (truePoints <= 20) return "Sprint";
+            }
+            return "Race"; // Fallback
+        }
 
         // 1. FETCH & PROCESS DATA
         fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/race_list.txt${cacheBuster}`)
@@ -227,22 +253,27 @@
                 );
                 const allRaceData = await Promise.all(fetchPromises);
 
-                // 2. GROUP FILES BY TRACK NAME (Weekend Concept)
+                // 2. GROUP FILES BY TRACK NAME
                 let eventsMap = new Map();
                 allRaceData.forEach(data => {
                     const track = data.TrackName;
+                    const sessionLabel = getSessionLabel(data);
+
                     if (!eventsMap.has(track)) {
                         eventsMap.set(track, { trackName: track, date: data.Date, sessions: {} });
                     }
-                    eventsMap.get(track).sessions[data.SessionType] = data;
-                    // Ensure the main display date uses the Race date if available
-                    if (data.SessionType === "Race") eventsMap.get(track).date = data.Date;
+                    eventsMap.get(track).sessions[sessionLabel] = data;
+                    
+                    // Use Race dates for main dropdown sorting if available
+                    if (sessionLabel === "Feature" || sessionLabel === "Sprint") {
+                        eventsMap.get(track).date = data.Date;
+                    }
                 });
 
                 // Convert map to array and sort by newest date
                 groupedEvents = Array.from(eventsMap.values()).sort((a, b) => new Date(b.date) - new Date(a.date));
 
-                // 3. POPULATE DROPDOWN (Now only shows "Date - Track")
+                // 3. POPULATE DROPDOWN
                 const selector = document.getElementById('race-selector');
                 groupedEvents.forEach((event, index) => {
                     const option = document.createElement('option');
@@ -253,44 +284,60 @@
                 });
 
                 selector.style.display = "block";
-                document.getElementById('session-tabs').style.display = "flex";
-
+                
                 selector.addEventListener('change', (e) => {
                     activeEventIndex = e.target.value;
-                    // Automatically switch to race if available, otherwise quali
-                    activeSession = groupedEvents[activeEventIndex].sessions["Race"] ? "Race" : "Qualification";
-                    updateUI();
+                    determineInitialSession();
                 });
 
-                updateUI();
+                determineInitialSession();
             })
             .catch(err => {
                 console.error("Fetch Error: ", err);
                 document.getElementById('loader').innerText = "No race data has been uploaded yet or still syncing to GitHub.";
             });
 
-        // 4. HANDLE TAB CLICKS
-        function switchSession(type) {
-            activeSession = type;
+        // Picks best default session to show on load
+        function determineInitialSession() {
+            const sessions = groupedEvents[activeEventIndex].sessions;
+            if (sessions["Feature"]) activeSession = "Feature";
+            else if (sessions["Sprint"]) activeSession = "Sprint";
+            else activeSession = "Qualification";
+            
+            buildTabs();
             updateUI();
         }
 
-        // 5. RENDER THE CURRENT STATE
+        // Builds tabs in exact required order
+        function buildTabs() {
+            const tabsContainer = document.getElementById('session-tabs');
+            tabsContainer.innerHTML = '';
+            tabsContainer.style.display = "flex";
+
+            const event = groupedEvents[activeEventIndex];
+            const displayOrder = ["Qualification", "Sprint", "Feature"];
+            
+            // Only create tabs for sessions that actually exist in the JSON files
+            displayOrder.forEach(sessionName => {
+                if (event.sessions[sessionName]) {
+                    const btn = document.createElement('button');
+                    btn.className = `tab-btn ${activeSession === sessionName ? 'active' : ''}`;
+                    btn.onclick = () => {
+                        activeSession = sessionName;
+                        buildTabs(); // Refresh active state
+                        updateUI();
+                    };
+                    btn.innerText = sessionName;
+                    tabsContainer.appendChild(btn);
+                }
+            });
+        }
+
+        // RENDER THE CURRENT STATE
         function updateUI() {
             const event = groupedEvents[activeEventIndex];
-            
-            // Tab Buttons Logic (Disable if a file is missing for that weekend)
-            const hasQuali = !!event.sessions["Qualification"];
-            const hasRace = !!event.sessions["Race"];
-            
-            document.getElementById('tab-quali').disabled = !hasQuali;
-            document.getElementById('tab-race').disabled = !hasRace;
-            
-            document.getElementById('tab-quali').className = `tab-btn ${activeSession === 'Qualification' ? 'active' : ''}`;
-            document.getElementById('tab-race').className = `tab-btn ${activeSession === 'Race' ? 'active' : ''}`;
-
             const data = event.sessions[activeSession];
-            if (!data) return; // Guard clause
+            if (!data) return; 
 
             const isQuali = activeSession === "Qualification";
             
@@ -299,7 +346,10 @@
 
             document.getElementById('race-title').innerText = event.trackName;
             const raceDate = new Date(data.Date).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
-            document.getElementById('race-subtitle').innerText = `${isQuali ? 'Qualifying' : 'Race'} Classification | ${raceDate}`;
+            
+            // Dynamic Subtitle depending on Sprint/Feature/Quali
+            let subtitlePrefix = isQuali ? 'Qualifying' : `${activeSession} Race`;
+            document.getElementById('race-subtitle').innerText = `${subtitlePrefix} Classification | ${raceDate}`;
 
             // BUILD HEADERS
             document.getElementById('table-head').innerHTML = `
@@ -315,16 +365,21 @@
                 </tr>
             `;
 
-            // BUILD BODY
             const tbody = document.getElementById('results-body');
             tbody.innerHTML = ""; 
 
             const drivers = data.Drivers.sort((a, b) => a.Position - b.Position);
 
+            // Find winner's time to calculate gaps dynamically
+            let winnerTime = 0;
+            if (!isQuali) {
+                const winner = drivers.find(d => d.Position === 1);
+                if (winner) winnerTime = winner.TimeInt;
+            }
+
             drivers.forEach(driver => {
                 const isFastestLap = data.FastestLapDriver && data.FastestLapDriver.Name === driver.Driver.Name;
                 
-                // Format specific driver name for image loading (Removes spaces, e.g., 'Nuwie G' -> 'NuwieG')
                 const safeDriverName = driver.Driver.Name.replace(/\s+/g, '');
                 const driverPhotoUrl = `${photoBase}${safeDriverName}.png`;
                 
@@ -340,19 +395,25 @@
                         timeDisplay = formatMs(driver.FastestLapTimeInt);
                     }
                 } else {
+                    // Race Time/Gap Logic
                     if (driver.Status !== "Ok" && driver.Status !== "finished") {
                         timeDisplay = `<span class="dnf-text">${driver.Status === 'Dsq' ? 'DSQ' : 'DNF'}</span>`;
                     } else if (driver.Position === 1) {
                         timeDisplay = formatMs(driver.TimeInt); 
+                    } else if (driver.TimeInt > 0 && winnerTime > 0) {
+                        // Dynamically calculate gap by subtracting winner's time from their time
+                        timeDisplay = formatGap(driver.TimeInt - winnerTime);
+                    } else if (driver.Status && driver.Status.toLowerCase().includes("lap")) {
+                        timeDisplay = driver.Status; // Outputs "+1 Lap" etc.
                     } else {
-                        timeDisplay = "+" + (driver.GapInt / 1000).toFixed(3); 
+                        timeDisplay = `<span class="dnf-text">Unknown</span>`;
                     }
                 }
 
+                // Divide by 10 to correct the raw JSON scores
                 const truePoints = isQuali ? 0 : (driver.DriverPointsRaw / 10);
 
                 const tr = document.createElement('tr');
-                // If it is the race and they got fastest lap, assign the purple override class
                 if (!isQuali && isFastestLap) {
                     tr.classList.add('fl-row');
                 }
