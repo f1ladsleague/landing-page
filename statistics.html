@@ -17,10 +17,9 @@
         .page-logo { max-width: 220px; filter: drop-shadow(0px 4px 10px rgba(0,0,0,0.5)); transition: transform 0.3s ease; }
         .page-logo:hover { transform: scale(1.05); }
         .page-main-title { font-size: 42px; text-transform: uppercase; font-weight: 900; letter-spacing: 2px; color: #fff; margin: 10px 0 0 0; text-shadow: 0 4px 10px rgba(0,0,0,0.6); }
-        .page-subtitle { color: var(--f1-red); font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 3px; margin: 0; }
 
         /* Navigation Tabs */
-        .stat-nav { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 15px; flex-wrap: wrap;}
+        .stat-nav { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 15px; flex-wrap: wrap; margin-top: 15px;}
         .stat-tab { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #aaa; font-family: 'Titillium Web', sans-serif; font-size: 16px; font-weight: 700; text-transform: uppercase; padding: 10px 25px; cursor: pointer; transition: 0.3s; border-radius: 8px; display: flex; align-items: center; gap: 8px;}
         .stat-tab:hover { background: rgba(255,255,255,0.1); color: #fff; }
         .stat-tab.active { background: var(--f1-red); color: #fff; border-color: var(--f1-red); box-shadow: 0 4px 15px rgba(225, 6, 0, 0.4); }
@@ -46,12 +45,18 @@
 
         /* Profile UI */
         .profile-wrapper { background: var(--f1-card); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .profile-header { display: flex; align-items: center; gap: 25px; padding: 30px; background: rgba(0,0,0,0.4); border-bottom: 1px solid #333; flex-wrap: wrap; position: relative;}
+        .profile-nav-bar { background: rgba(0,0,0,0.6); padding: 15px 30px; border-bottom: 1px solid #333; display: flex; align-items: center; }
+        .back-btn { background: #333; color: #fff; text-decoration: none; padding: 8px 20px; border-radius: 6px; font-weight: 700; border: none; cursor: pointer; transition: 0.3s; font-family: 'Titillium Web'; text-transform: uppercase; display: inline-block;}
+        .back-btn:hover { background: var(--f1-red); }
+
+        .profile-header { display: flex; align-items: center; gap: 25px; padding: 30px; background: rgba(0,0,0,0.4); border-bottom: 1px solid #333; flex-wrap: wrap;}
         .profile-photo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; object-position: center top; border: 4px solid #444; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         .profile-info { flex: 1; min-width: 0; }
         .profile-name { font-size: 42px; font-weight: 900; text-transform: uppercase; margin: 0; letter-spacing: 1px; display: flex; align-items: center; gap: 15px; flex-wrap: wrap;}
         
         .flag-icon { height: 28px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        .track-profile-flag { height: 40px; border-radius: 4px; box-shadow: 0 3px 6px rgba(0,0,0,0.5); vertical-align: middle; }
+        
         .team-logo-main { height: 45px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); margin-left: 5px; }
         .rookie-badge { background: #00d2be; color: #000; font-size: 12px; font-weight: 900; padding: 4px 10px; border-radius: 4px; letter-spacing: 1px; vertical-align: middle; }
         
@@ -61,9 +66,6 @@
         .former-teams { display: flex; gap: 10px; align-items: center; margin-top: 15px; font-size: 12px; color: #888; text-transform: uppercase; font-weight: 700; letter-spacing: 1px;}
         .former-team-logo { height: 30px; object-fit: contain; opacity: 0.6; transition: 0.3s; }
         .former-team-logo:hover { opacity: 1; }
-
-        .back-btn { position: absolute; top: 20px; right: 20px; background: #333; color: #fff; text-decoration: none; padding: 8px 20px; border-radius: 6px; font-weight: 700; border: none; cursor: pointer; transition: 0.3s; font-family: 'Titillium Web'; text-transform: uppercase; z-index: 10;}
-        .back-btn:hover { background: var(--f1-red); }
 
         .track-layout-img { max-width: 300px; max-height: 150px; object-fit: contain; opacity: 0.8; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5)); margin-left: auto; display: block;}
 
@@ -139,7 +141,6 @@
             .profile-name { justify-content: center; font-size: 32px; flex-wrap: wrap;}
             .profile-meta { justify-content: center; }
             .former-teams { justify-content: center; }
-            .back-btn { position: relative; top: 0; right: 0; width: 100%; margin-bottom: 15px; }
             .track-layout-img { margin: 15px auto 0 auto; width: 100%; }
             .charts-section { grid-template-columns: 1fr; padding: 15px; }
             .history-section { padding: 15px; }
@@ -154,11 +155,10 @@
         <div class="top-brand-header">
             <a href="index.html"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Logo.png" alt="F1 Lads Logo" class="page-logo"></a>
             <h1 class="page-main-title">Statistics & Analysis</h1>
-            <p class="page-subtitle">Driver Database & League History</p>
         </div>
 
         <div class="stat-nav" id="main-nav" style="display: none;">
-            <button class="stat-tab active" onclick="switchMainTab('drivers')">👤 Driver Profiles</button>
+            <button class="stat-tab active" onclick="switchMainTab('drivers')">👤 Drivers</button>
             <button class="stat-tab" onclick="switchMainTab('tracks')">🏁 Track Analysis</button>
             <button class="stat-tab" onclick="openRacenet(event)">🎮 EA Racenet</button>
         </div>
@@ -336,7 +336,6 @@
                     else if (seasonNum !== 3 && maxPts <= 16) label = "Sprint";
                     if (race.RaceType === "Sprint") label = "Sprint";
 
-                    // Rename Spa 
                     let cleanTrackName = race.TrackName;
                     if (cleanTrackName === "Spa-Francorchamps") cleanTrackName = "Spa";
 
@@ -370,7 +369,6 @@
                     lapRecord: { time: 999999999, driver: "-" }
                 };
                 
-                // Count ALL sessions for the Track
                 trackStats[tNameStr].races++;
                 trackStats[tNameStr].sessions.push(ev);
 
@@ -400,13 +398,17 @@
                     if(!seasonStandings[ev.season].teams[tName]) seasonStandings[ev.season].teams[tName] = 0;
                     seasonStandings[ev.season].teams[tName] += pts;
 
-                    // Update Track Finishing Stats
-                    if (!trackStats[tNameStr].driverFinishes[dName]) trackStats[tNameStr].driverFinishes[dName] = { 1: 0, 2: 0, 3: 0, top6: 0, total: 0 };
+                    // NEW FINISH TRACKING FOR TRACK GRAPH
+                    if (!trackStats[tNameStr].driverFinishes[dName]) {
+                        trackStats[tNameStr].driverFinishes[dName] = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, "DNF": 0, total: 0 };
+                    }
                     trackStats[tNameStr].driverFinishes[dName].total++;
-                    if (pos === 1 && !isDnf) trackStats[tNameStr].driverFinishes[dName][1]++;
-                    if (pos === 2 && !isDnf) trackStats[tNameStr].driverFinishes[dName][2]++;
-                    if (pos === 3 && !isDnf) trackStats[tNameStr].driverFinishes[dName][3]++;
-                    if (pos >= 4 && pos <= 6 && !isDnf) trackStats[tNameStr].driverFinishes[dName].top6++;
+                    
+                    if (isDnf) {
+                        trackStats[tNameStr].driverFinishes[dName]["DNF"]++;
+                    } else if (pos >= 1 && pos <= 10) {
+                        trackStats[tNameStr].driverFinishes[dName][pos]++;
+                    }
                     
                     if (pos === 1 && ev.label === "Feature") trackStats[tNameStr].driverWins[dName] = (trackStats[tNameStr].driverWins[dName] || 0) + 1;
                     
@@ -565,8 +567,10 @@
 
             let html = `
                 <div class="profile-wrapper">
+                    <div class="profile-nav-bar">
+                        <button class="back-btn" onclick="exitToDirectory('drivers')">❮ Back to Directory</button>
+                    </div>
                     <div class="profile-header">
-                        <button class="back-btn" onclick="exitToDirectory('drivers')">Back</button>
                         <img src="${photoBase}${dName.replace(/\s+/g, '')}.png" class="profile-photo" style="background-color: ${bgHex};" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/blank.png'">
                         <div class="profile-info">
                             <h2 class="profile-name">
@@ -599,8 +603,14 @@
                     </div>
 
                     <div class="charts-section">
-                        <div class="chart-container"><h4 class="chart-title">Average Finish Position (By Season)</h4><canvas id="avgPosChart"></canvas></div>
-                        <div class="chart-container"><h4 class="chart-title">Race Finish Breakdown</h4><canvas id="distBarChart"></canvas></div>
+                        <div class="chart-container">
+                            <h4 class="chart-title">Average Finish Position (By Season)</h4>
+                            <div style="position: relative; height: 300px; width: 100%;"><canvas id="avgPosChart"></canvas></div>
+                        </div>
+                        <div class="chart-container">
+                            <h4 class="chart-title">Race Finish Breakdown</h4>
+                            <div style="position: relative; height: 300px; width: 100%;"><canvas id="distBarChart"></canvas></div>
+                        </div>
                     </div>
 
                     <div class="history-section">
@@ -725,7 +735,7 @@
 
             let lapRecText = t.lapRecord.time < 999999999 ? `${formatMs(t.lapRecord.time)}<br><span style="font-size:12px;color:#888;">${t.lapRecord.driver}</span>` : "-";
             
-            let flagImg = getTrackFlagUrl(tName) ? `<img src="${getTrackFlagUrl(tName)}" class="track-dir-flag" style="margin-right: 15px;">` : '';
+            let flagImg = getTrackFlagUrl(tName) ? `<img src="${getTrackFlagUrl(tName)}" class="track-profile-flag" style="margin-right: 15px;">` : '';
             let layoutImg = trackLayouts[tName] ? `<img src="${photoBase}Track%20Layouts/${trackLayouts[tName]}-track-layout.png" class="track-layout-img" onerror="this.style.display='none'">` : '';
 
             let sessionAccordions = t.sessions.map((ev, idx) => {
@@ -787,8 +797,10 @@
 
             let html = `
                 <div class="profile-wrapper">
+                    <div class="profile-nav-bar">
+                        <button class="back-btn" onclick="exitToDirectory('tracks')">❮ Back to Directory</button>
+                    </div>
                     <div class="profile-header">
-                        <button class="back-btn" onclick="exitToDirectory('tracks')">Back</button>
                         <div>
                             <h2 class="profile-name">${flagImg} ${tName} Circuit</h2>
                             <div class="profile-meta"><span class="meta-tag">Total Sessions Hosted: ${t.sessions.length}</span></div>
@@ -805,8 +817,8 @@
 
                     <div class="charts-section" style="grid-template-columns: 1fr;">
                         <div class="chart-container">
-                            <h4 class="chart-title">Top 5 Drivers by Finishes at ${tName}</h4>
-                            <div style="height: 350px; width: 100%;"><canvas id="trackPointsChart"></canvas></div>
+                            <h4 class="chart-title">Finishing Positions by Driver</h4>
+                            <div style="position: relative; height: 350px; width: 100%;"><canvas id="trackPointsChart"></canvas></div>
                         </div>
                     </div>
 
@@ -824,29 +836,29 @@
         function drawTrackChart(t) {
             if(myChart3) myChart3.destroy();
 
-            // Sort top 5 drivers by total podiums, then by top 6s
-            let topDrivers = Object.keys(t.driverFinishes).sort((a,b) => {
-                let pA = (t.driverFinishes[a][1]||0) + (t.driverFinishes[a][2]||0) + (t.driverFinishes[a][3]||0);
-                let pB = (t.driverFinishes[b][1]||0) + (t.driverFinishes[b][2]||0) + (t.driverFinishes[b][3]||0);
-                if (pA !== pB) return pB - pA;
-                return t.driverFinishes[b].top6 - t.driverFinishes[a].top6;
-            }).slice(0, 5);
+            // Only show drivers who have actually raced at this track, sorted by who raced there the most
+            let activeDrivers = Object.keys(t.driverFinishes)
+                .filter(d => t.driverFinishes[d].total > 0)
+                .sort((a,b) => t.driverFinishes[b].total - t.driverFinishes[a].total);
 
-            let d1 = topDrivers.map(d => t.driverFinishes[d][1] || 0);
-            let d2 = topDrivers.map(d => t.driverFinishes[d][2] || 0);
-            let d3 = topDrivers.map(d => t.driverFinishes[d][3] || 0);
-            let d4_6 = topDrivers.map(d => t.driverFinishes[d].top6 || 0);
+            // Create a dataset for each active driver
+            let datasets = activeDrivers.map(dName => {
+                let f = t.driverFinishes[dName];
+                let teamHex = driverStats[dName] ? teamColors[driverStats[dName].currentTeam] : '#888';
+                
+                return {
+                    label: dName,
+                    data: [f[1]||0, f[2]||0, f[3]||0, f[4]||0, f[5]||0, f[6]||0, f[7]||0, f[8]||0, f[9]||0, f[10]||0, f["DNF"]||0],
+                    backgroundColor: teamHex,
+                    borderRadius: 4
+                };
+            });
 
             myChart3 = new Chart(document.getElementById('trackPointsChart'), {
                 type: 'bar',
                 data: {
-                    labels: topDrivers,
-                    datasets: [
-                        { label: '1st', data: d1, backgroundColor: '#FFD700', borderRadius: 4 },
-                        { label: '2nd', data: d2, backgroundColor: '#C0C0C0', borderRadius: 4 },
-                        { label: '3rd', data: d3, backgroundColor: '#CD7F32', borderRadius: 4 },
-                        { label: '4th-6th', data: d4_6, backgroundColor: '#0090ff', borderRadius: 4 }
-                    ]
+                    labels: ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', 'DNF'],
+                    datasets: datasets
                 },
                 options: { 
                     responsive: true, maintainAspectRatio: false,
