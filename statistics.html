@@ -9,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
-        :root { --f1-red: #e10600; --f1-dark: #15151e; --f1-card: #1f1f27; --ferrari: #ef1a2d; --mclaren: #ff8000; --mercedes: #00d2be; --aston: #006f62; --redbull: #3671c6; --alpine: #0090ff; --alfaromeo: #900000; --alphatauri: #2b4562; --fastest-lap: #ae37de; }
+        :root { --f1-red: #e10600; --f1-dark: #15151e; --f1-card: #1f1f27; --ferrari: #ED1131; --mclaren: #F47600; --mercedes: #00D7B6; --aston: #229971; --redbull: #4781D7; --alpine: #00A1E8; --alfaromeo: #C92D4B; --alphatauri: #5E8FAA; --fastest-lap: #ae37de; }
         body { font-family: 'Titillium Web', sans-serif; background-color: var(--f1-dark); background-image: linear-gradient(rgba(21, 21, 30, 0.95), rgba(21, 21, 30, 0.98)), url('https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/background.jpg'); background-size: cover; background-position: center; background-attachment: fixed; color: #fff; margin: 0; padding: 20px; overflow-y: scroll; }
         .container { max-width: 1200px; margin: 0 auto; }
         
@@ -28,18 +28,24 @@
         .view-section.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Cross Linking */
+        .link-hover { cursor: pointer; text-decoration: underline; text-decoration-color: rgba(255,255,255,0.2); text-underline-offset: 4px; transition: 0.2s; }
+        .link-hover:hover { color: var(--f1-red) !important; text-decoration-color: var(--f1-red); }
+
         /* Directory UI */
-        .directory-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; }
-        .directory-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: 0.3s; text-decoration: none; color: inherit; display: block; position: relative; }
+        .directory-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; width: 100%; box-sizing: border-box;}
+        #track-directory { grid-template-columns: repeat(4, 1fr); } /* Forces exactly 4 across for 24 tracks */
+        
+        .directory-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: 0.3s; text-decoration: none; color: inherit; display: block; position: relative; box-sizing: border-box; }
         .directory-card:hover { background: rgba(255,255,255,0.08); border-color: var(--f1-red); transform: translateY(-5px); }
         .directory-photo { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; object-position: center top; border: 3px solid #444; margin-bottom: 15px; transition: 0.3s; }
         .directory-card:hover .directory-photo { border-color: #fff; }
         .directory-name { font-size: 20px; font-weight: 900; text-transform: uppercase; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; justify-content: center; gap: 8px;}
         .directory-sub { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
 
-        .data-card { background: rgba(0,0,0,0.4); border: 1px solid #333; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: 0.3s; }
+        .data-card { background: rgba(0,0,0,0.4); border: 1px solid #333; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: 0.3s; width: 100%; box-sizing: border-box; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
         .data-card:hover { border-color: var(--f1-red); background: rgba(225,6,0,0.1); }
-        .data-card-title { font-size: 20px; font-weight: 900; text-transform: uppercase; margin: 0 0 10px 0; color: #fff; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .data-card-title { font-size: 20px; font-weight: 900; text-transform: uppercase; margin: 0 0 10px 0; color: #fff; display: flex; align-items: center; justify-content: center; gap: 10px; word-break: break-word;}
         .data-card-stat { font-size: 14px; color: #aaa; }
         .track-dir-flag { width: 25px; border-radius: 3px; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 
@@ -70,11 +76,14 @@
         .track-layout-img { max-width: 300px; max-height: 150px; object-fit: contain; opacity: 0.8; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5)); margin-left: auto; display: block;}
 
         /* Stats Grid */
-        .stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: #333; border-bottom: 1px solid #333;}
-        .stat-box { background: var(--f1-card); padding: 25px 15px; text-align: center; display: flex; flex-direction: column; justify-content: center;}
+        .stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: #333; border-bottom: 1px solid #333; box-sizing: border-box;}
+        .stat-box { background: var(--f1-card); padding: 25px 15px; text-align: center; display: flex; flex-direction: column; justify-content: center; box-sizing: border-box;}
         .stat-value { font-size: 32px; font-weight: 900; color: #fff; line-height: 1; }
         .stat-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-top: 10px; }
+        
+        /* Lap Record Sizing */
         .stat-value.text-value { font-size: 20px; word-break: break-word; color: #ddd; }
+        .lap-record-time { font-family: monospace; font-size: 26px; font-weight: 900; line-height: 1; display: block; margin-bottom: 5px; color: #fff; }
 
         /* Charts Section */
         .charts-section { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 30px; background: rgba(0,0,0,0.2); width: 100%; box-sizing: border-box;}
@@ -87,7 +96,7 @@
         .track-finishes-grid::-webkit-scrollbar-thumb { background: var(--f1-red); border-radius: 4px; }
         .track-finishes-grid::-webkit-scrollbar-track { background: #333; border-radius: 4px; }
         
-        .finish-col { flex: 1; min-width: 65px; display: flex; flex-direction: column; align-items: center; gap: 8px; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 10px 5px; border-top: 3px solid #444; }
+        .finish-col { flex: 1; min-width: 70px; display: flex; flex-direction: column; align-items: center; gap: 8px; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 10px 5px; border-top: 3px solid #444; }
         .finish-col.pos-1 { border-top-color: gold; background: linear-gradient(to bottom, rgba(255,215,0,0.1), rgba(0,0,0,0.2)); }
         .finish-col.pos-2 { border-top-color: #C0C0C0; background: linear-gradient(to bottom, rgba(192,192,192,0.1), rgba(0,0,0,0.2)); }
         .finish-col.pos-3 { border-top-color: #CD7F32; background: linear-gradient(to bottom, rgba(205,127,50,0.1), rgba(0,0,0,0.2)); }
@@ -96,7 +105,7 @@
         .finish-col-title { font-weight: 900; font-size: 14px; color: #fff; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;}
         .finish-driver-card { position: relative; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: 0.2s; }
         .finish-driver-card:hover { transform: translateY(-3px); z-index: 2;}
-        .finish-photo { width: 42px; height: 42px; border-radius: 50%; border: 3px solid #444; object-fit: cover; object-position: center top; box-shadow: 0 4px 8px rgba(0,0,0,0.5);}
+        .finish-photo { width: 54px; height: 54px; border-radius: 50%; border: 3px solid #444; object-fit: cover; object-position: center top; box-shadow: 0 4px 8px rgba(0,0,0,0.5);}
         .finish-count-badge { position: absolute; bottom: -4px; right: -4px; background: #fff; color: #000; font-weight: 900; font-size: 11px; padding: 2px 5px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.8); border: 1px solid #ccc;}
 
         /* Accordion Season History */
@@ -149,11 +158,15 @@
 
         @media (max-width: 1000px) {
             .directory-grid { grid-template-columns: repeat(3, 1fr); }
+            #track-directory { grid-template-columns: repeat(3, 1fr); }
             .stats-grid { grid-template-columns: repeat(3, 1fr); }
         }
         @media (max-width: 768px) {
             .directory-grid { grid-template-columns: repeat(2, 1fr); }
+            #track-directory { grid-template-columns: repeat(2, 1fr); }
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .lap-record-time { font-size: 18px !important; }
+            .stat-value.text-value { font-size: 14px; }
             .profile-header { flex-direction: column; text-align: center; padding: 20px; }
             .profile-name { justify-content: center; font-size: 32px; flex-wrap: wrap;}
             .profile-meta { justify-content: center; }
@@ -224,7 +237,22 @@
 
     <script>
         const photoBase = "https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/";
-        const teamColors = { "Ferrari": "#ef1a2d", "McLaren": "#ff8000", "Mercedes": "#00d2be", "Aston Martin": "#006f62", "Red Bull": "#3671c6", "Alpine": "#0090ff", "Alfa Romeo": "#900000", "AlphaTauri": "#2b4562", "RB": "#1a3eb8", "Kick Sauber": "#00e701", "Williams": "#005aff", "Haas": "#ffffff" };
+        
+        // Exact Hex Codes requested
+        const teamColors = { 
+            "Mercedes": "#00D7B6", 
+            "Red Bull": "#4781D7", 
+            "Ferrari": "#ED1131", 
+            "McLaren": "#F47600", 
+            "Alpine": "#00A1E8", 
+            "Aston Martin": "#229971", 
+            "AlphaTauri": "#5E8FAA", 
+            "Alfa Romeo": "#C92D4B", 
+            "RB": "#1a3eb8", 
+            "Kick Sauber": "#00e701", 
+            "Williams": "#005aff", 
+            "Haas": "#ffffff" 
+        };
         
         let allEvents = [];
         let driverProfiles = {}; 
@@ -544,6 +572,7 @@
             document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
             const container = document.getElementById('driver-profile-container');
             container.classList.add('active');
+            window.scrollTo(0, 0);
 
             let s = driverStats[dName];
             let p = driverProfiles[dName] || {};
@@ -654,8 +683,10 @@
                     return `
                         <tr class="${rowClass}">
                             <td style="width:50px; text-align:center; font-weight:900;">${r.pos}</td>
-                            <td>${tFlag}${r.track} <span style="opacity: 0.6; font-size:11px; font-weight: normal;">(${r.label})</span></td>
-                            <td>${r.team}</td>
+                            <td onclick="renderTrackProfile('${r.track}')" class="link-hover" title="View ${r.track} Analytics">
+                                ${tFlag}${r.track} <span style="opacity: 0.6; font-size:11px; font-weight: normal; text-decoration: none;">(${r.label})</span>
+                            </td>
+                            <td><span style="color: ${teamColors[r.team] || '#fff'} !important; font-weight: 700;">${r.team}</span></td>
                             <td style="font-family:monospace;">${r.gap}</td>
                             <td class="${flClass}" style="font-family:monospace;">${formatMs(r.flTime)}</td>
                         </tr>
@@ -760,10 +791,10 @@
                 driversInPos.forEach(d => {
                     let s = driverStats[d.name];
                     let bgHex = s ? teamColors[s.currentTeam] : '#444';
-                    let photoUrl = `${photoBase}${d.name.replace(/\\s+/g, '')}.png`;
+                    let photoUrl = `${photoBase}${d.name.replace(/\s+/g, '')}.png`;
                     
                     html += `
-                        <div class="finish-driver-card" title="${d.name} (${d.count} times in ${posLabel})">
+                        <div class="finish-driver-card" title="${d.name} (${d.count} times in ${posLabel})" onclick="renderDriverProfile('${d.name}')">
                             <img src="${photoUrl}" class="finish-photo" style="border-color: ${bgHex}; background-color: ${bgHex};" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/blank.png'">
                             ${d.count > 1 ? `<div class="finish-count-badge">x${d.count}</div>` : ''}
                         </div>
@@ -782,6 +813,7 @@
             document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
             const container = document.getElementById('track-profile-container');
             container.classList.add('active');
+            window.scrollTo(0, 0);
 
             let t = trackStats[tName];
             
@@ -793,7 +825,9 @@
                 return podB - podA;
             })[0] || "-";
 
-            let lapRecText = t.lapRecord.time < 999999999 ? `${formatMs(t.lapRecord.time)}<br><span style="font-size:12px;color:#888;">${t.lapRecord.driver}</span>` : "-";
+            let lapRecText = t.lapRecord.time < 999999999 
+                ? `<span class="lap-record-time">${formatMs(t.lapRecord.time)}</span><span style="font-size:12px;color:#888; font-family: 'Titillium Web'; text-transform:uppercase;">${t.lapRecord.driver}</span>` 
+                : "-";
             
             let flagImg = getTrackFlagUrl(tName) ? `<img src="${getTrackFlagUrl(tName)}" class="track-profile-flag" style="margin-right: 15px;">` : '';
             let layoutImg = trackLayouts[tName] ? `<img src="${photoBase}Track%20Layouts/${trackLayouts[tName]}-track-layout.png" class="track-layout-img" onerror="this.style.display='none'">` : '';
@@ -819,12 +853,13 @@
                     else if (d.Position === 3) rowClass = "row-3";
                     
                     let flClass = isFL ? "fl-time" : "";
+                    let teamNameStr = d.Team ? d.Team.Name : "Unknown";
 
                     return `
                         <tr class="${rowClass}">
                             <td style="text-align:center; font-weight:900;">${d.Position}</td>
-                            <td>${d.Driver.Name}</td>
-                            <td>${d.Team ? d.Team.Name : "Unknown"}</td>
+                            <td onclick="renderDriverProfile('${d.Driver.Name}')" class="link-hover" title="View ${d.Driver.Name}'s Profile">${d.Driver.Name}</td>
+                            <td><span style="color: ${teamColors[teamNameStr] || '#fff'} !important; font-weight: 700;">${teamNameStr}</span></td>
                             <td style="font-family:monospace;">${gapStr}</td>
                             <td class="${flClass}" style="font-family:monospace;">${formatMs(d.FastestLapTimeInt || 0)}</td>
                             <td style="text-align:center; color:var(--f1-red); font-weight:900;">${(d.DriverPointsRaw || 0) / 10}</td>
@@ -855,7 +890,7 @@
                 `;
             }).join('');
 
-            // Inject the new custom pictogram HTML
+            // Inject the custom pictogram HTML
             let customGraphHtml = buildCustomTrackGraph(t);
 
             let html = `
@@ -874,7 +909,7 @@
                     <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr);">
                         <div class="stat-box"><div class="stat-value text-value">${topWinner}</div><div class="stat-label">Most Feature Wins</div></div>
                         <div class="stat-box"><div class="stat-value text-value">${topPodiumDriver}</div><div class="stat-label">Most Podiums</div></div>
-                        <div class="stat-box"><div class="stat-value text-value" style="font-family:monospace; line-height: 1.2;">${lapRecText}</div><div class="stat-label">All-Time Lap Record</div></div>
+                        <div class="stat-box" style="justify-content:center;"><div class="stat-value text-value" style="display:flex; flex-direction:column; align-items:center;">${lapRecText}</div><div class="stat-label">All-Time Lap Record</div></div>
                         <div class="stat-box"><div class="stat-value">${t.races}</div><div class="stat-label">Total Races Held</div></div>
                     </div>
 
@@ -902,6 +937,7 @@
             document.querySelectorAll('.stat-tab').forEach(t => t.classList.remove('active'));
             if(tabName === 'drivers') document.querySelectorAll('.stat-tab')[0].classList.add('active');
             if(tabName === 'tracks') document.querySelectorAll('.stat-tab')[1].classList.add('active');
+            window.scrollTo(0, 0);
         }
 
         window.onload = initData;
