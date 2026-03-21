@@ -23,11 +23,11 @@
         .season-tab.active::after { content: ''; position: absolute; bottom: -12px; left: 0; width: 100%; height: 4px; background: #fff; border-radius: 4px 4px 0 0; }
         
         .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; border-bottom: 2px solid #333; padding-bottom: 20px; flex-wrap: wrap; gap: 15px;}
-        .header-top-mobile { display: none; }
-        .header-left { display: flex; align-items: center; min-width: 0; flex: 1; }
-        .back-btn { background: #333; color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; transition: 0.3s; margin-right: 20px; text-transform: uppercase; white-space: nowrap;}
+        .header-left { display: flex; align-items: center; min-width: 0; flex: 1; gap: 20px;}
+        .back-btn { background: #333; color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; transition: 0.3s; margin: 0; text-transform: uppercase; white-space: nowrap; flex-shrink: 0;}
         .back-btn:hover { background: var(--f1-red); }
         
+        .title-wrapper { flex: 1; }
         .title-wrapper h2 { margin: 0; font-size: 24px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; color: var(--f1-red); display: flex; align-items: center; gap: 10px;}
         .title-wrapper p { margin: 5px 0 0 0; color: #aaa; font-size: 15px; }
         
@@ -49,7 +49,10 @@
         .fl-row td { color: var(--fastest-lap) !important; }
         .fl-row .pos-col, .fl-row .pts-col, .fl-row .team-text { color: var(--fastest-lap) !important; }
         .wdc-row td { background: rgba(255, 215, 0, 0.1); border-bottom: 1px solid rgba(255, 215, 0, 0.3); }
+        
         .pos-col { width: 50px; text-align: center; font-weight: 900; font-size: 18px; color: #aaa; }
+        .pts-col { font-weight: 900; color: var(--f1-red); text-align: center; font-size: 18px; width: 60px; }
+        .time-col { font-family: monospace; font-size: 15px; letter-spacing: 0.5px; width: 110px;}
         
         .driver-link { display: flex; align-items: center; gap: 15px; text-decoration: none; color: inherit; cursor: pointer; transition: transform 0.2s ease; padding: 4px; border-radius: 8px; position: relative; z-index: 5; }
         .driver-link:hover { transform: translateX(8px); background: rgba(255,255,255,0.05); }
@@ -62,8 +65,6 @@
         .team-cell { display: flex; align-items: center; gap: 10px; }
         .team-logo-small { height: 22px; width: auto; object-fit: contain; }
         .team-text { font-size: 14px; text-transform: uppercase; font-weight: 800; }
-        .time-col { font-family: monospace; font-size: 15px; letter-spacing: 0.5px; }
-        .pts-col { font-weight: 900; color: var(--f1-red); text-align: center; font-size: 18px; }
         .dnf-text { color: #888; font-style: italic; }
         #loader { text-align: center; padding: 50px; color: #888; font-style: italic; }
         #reverse-grid-footnote { padding: 15px 20px; font-size: 14px; color: #aaa; border-top: 1px solid #333; background: rgba(0,0,0,0.3); line-height: 1.5; }
@@ -78,22 +79,26 @@
             .season-tab.active::after { display: none; }
             .season-tab.active { border: 1px solid var(--f1-red); }
 
-            /* Centered Headers adjustments */
-            .header { flex-direction: column; align-items: center; gap: 10px;}
-            .header-top-mobile { display: block; width: 100%; margin-bottom: 5px; text-align: left; }
-            .header-left .back-btn { display: none; }
-            .header-left { width: 100%; display: flex; flex-direction: column; align-items: center; text-align: center; }
-            .title-wrapper h2 { font-size: 22px; white-space: normal; line-height: 1.2; word-break: break-word; justify-content: center; text-align: center; width: 100%;}
-            .title-wrapper p { text-align: center; width: 100%; }
-            .race-selector { width: 100%; max-width: 100%; margin-top: 5px; text-align: center;}
+            /* Mobile Header Fixes */
+            .header { flex-direction: column; align-items: flex-start; gap: 15px;}
+            .header-left { display: flex; flex-direction: row; align-items: flex-start; gap: 12px; width: 100%; justify-content: flex-start;}
+            .back-btn { padding: 8px 12px; font-size: 14px; margin: 0; white-space: nowrap; flex-shrink: 0; margin-top: 3px;}
+            .title-wrapper { flex: 1; }
+            .title-wrapper h2 { font-size: 19px; white-space: normal; line-height: 1.2; word-break: break-word;}
+            .title-wrapper p { font-size: 13px; margin-top: 4px; }
+            .race-selector { width: 100%; max-width: 100%; }
             
+            /* Table Formatting & Column Patching */
+            table { width: 100%; table-layout: auto; }
             th, td { padding: 10px; font-size: 14px; }
-            .hide-mobile { display: none; }
+            .hide-mobile { display: none !important; }
             .driver-col { font-size: 15px; }
             .driver-photo-wrapper { width: 35px; height: 35px; }
             
-            /* Strict Right Alignment for Points */
-            th.pts-col, td.pts-col { width: 45px; text-align: right !important; padding-right: 20px !important; }
+            /* Strict Right Alignment */
+            th.pts-col, td.pts-col { text-align: right !important; padding-right: 15px !important; width: 45px;}
+            th.time-col, td.time-col { text-align: right !important; padding-right: 15px !important; width: 85px;}
+            th.pos-col, td.pos-col { width: 35px; padding-left: 5px; padding-right: 5px;}
         }
     </style>
 </head>
@@ -113,18 +118,15 @@
         </div>
         
         <div class="header" id="main-header">
-            <div class="header-top-mobile">
-                <a href="results.html" class="back-btn" style="display: inline-block;">❮ Back</a>
-            </div>
             <div class="header-left">
                 <a href="results.html" class="back-btn">❮ Back</a>
                 <div class="title-wrapper">
                     <h2 id="race-title">Loading...</h2>
+                    <p id="race-subtitle">Fetching archive files.</p>
                 </div>
             </div>
             <select id="race-selector" class="race-selector" onchange="handleRaceSelection(this.value)" style="display: none;"></select>
         </div>
-        <p id="race-subtitle" style="color: #aaa; font-size: 15px; margin-top: -10px; margin-bottom: 15px; text-align: center;">Fetching archive files.</p>
 
         <div class="session-tabs" id="session-tabs" style="display: none;">
             <button id="tab-quali" class="tab-btn" onclick="switchSession('Qualification')">Qualification</button>
@@ -181,16 +183,32 @@
             "Bahrain": "bahrain", "Jeddah": "saudi_arabia", "Melbourne": "australia", 
             "Baku": "azerbaijan", "Miami": "united_states_of_america", "Imola": "italy", 
             "Monaco": "monaco", "Barcelona": "spain", "Spielberg": "austria", 
-            "Silverstone": "great_britain", "Silverstone2": "great_britain", 
-            "Hungaroring": "hungary", "Spa-Francorchamps": "belgium", "Spa": "belgium",
-            "Zandvoort": "netherlands", "Monza": "italy", "Singapore": "singapore", 
-            "Suzuka": "japan", "Losail": "qatar", "Austin": "united_states_of_america", "Austin2": "united_states_of_america",
+            "Silverstone": "great_britain", "Hungaroring": "hungary", 
+            "Spa-Francorchamps": "belgium", "Zandvoort": "netherlands", 
+            "Monza": "italy", "Singapore": "singapore", "Suzuka": "japan", 
+            "Losail": "qatar", "Austin": "united_states_of_america", 
             "Mexico": "mexico", "Interlagos": "brazil", "Las Vegas": "united_states_of_america", 
             "Yas Marina": "united_arab_emirates", "Shanghai": "china", "Montreal": "canada",
             "Portimão": "portugal", "Paul Ricard": "france"
         };
 
-        // CORRECTED SEASON 3 AND SEASON 4 TEAMS
+        const trackEmojis = {
+            "Bahrain": "🇧🇭", "Jeddah": "🇸🇦", "Melbourne": "🇦🇺", "Baku": "🇦🇿", 
+            "Miami": "🇺🇸", "Imola": "🇮🇹", "Monaco": "🇲🇨", "Barcelona": "🇪🇸", 
+            "Spielberg": "🇦🇹", "Silverstone": "🇬🇧", "Hungaroring": "🇭🇺", 
+            "Spa-Francorchamps": "🇧🇪", "Zandvoort": "🇳🇱", "Monza": "🇮🇹", 
+            "Singapore": "🇸🇬", "Suzuka": "🇯🇵", "Losail": "🇶🇦", "Austin": "🇺🇸", 
+            "Mexico": "🇲🇽", "Interlagos": "🇧🇷", "Las Vegas": "🇺🇸", "Yas Marina": "🇦🇪", 
+            "Shanghai": "🇨🇳", "Montreal": "🇨🇦", "Portimão": "🇵🇹", "Paul Ricard": "🇫🇷"
+        };
+
+        // --- HARDCODED SEASON ROSTER TEAMS ---
+        const S1_TEAMS = { "Mapa": "Red Bull Racing", "Nuwie G": "McLaren", "Sahan": "Alfa Romeo", "Rodda": "Alpine", "Kalpa": "AlphaTauri", "Shiyan": "Mercedes" };
+        const S2_TEAMS = { "Mapa": "Red Bull Racing", "Nuwie G": "McLaren", "Sahan": "Alfa Romeo", "Rodda": "Alpine", "Kalpa": "AlphaTauri", "Shiyan": "Mercedes", "Eranga": "Ferrari" };
+        const S3_TEAMS = { "Mapa": "Red Bull Racing", "Nuwie G": "McLaren", "Sahan": "Ferrari", "Shahan": "Ferrari", "Rodda": "Mercedes", "Kalpa": "Mercedes", "Shiyan": "Red Bull Racing", "Eranga": "McLaren" };
+        const S4_TEAMS_PRE = { "Mapa": "Red Bull Racing", "Nuwie G": "Ferrari", "Sahan": "McLaren", "Shahan": "Red Bull Racing", "Rodda": "Mercedes", "Kalpa": "Mercedes", "Shiyan": "Ferrari", "Eranga": "McLaren" };
+        const S4_TEAMS_POST = { "Mapa": "Ferrari", "Nuwie G": "Red Bull Racing", "Sahan": "McLaren", "Shahan": "Red Bull Racing", "Rodda": "Mercedes", "Kalpa": "Mercedes", "Shiyan": "McLaren", "Eranga": "Ferrari" };
+
         const finalStandings = {
             2: {
                 teams: [ {name: "Red Bull Racing", points: 149}, {name: "McLaren", points: 145}, {name: "Alfa Romeo", points: 128}, {name: "Alpine", points: 119}, {name: "AlphaTauri", points: 83}, {name: "Ferrari", points: 66}, {name: "Mercedes", points: 56} ],
@@ -198,66 +216,63 @@
             },
             3: {
                 teams: [ {name: "Ferrari", points: 201}, {name: "Red Bull Racing", points: 186}, {name: "Mercedes", points: 163}, {name: "McLaren", points: 152} ],
-                drivers: [ 
-                    {name: "Mapa", points: 152, team: "Red Bull Racing"}, 
-                    {name: "Nuwie G", points: 135, team: "McLaren"}, 
-                    {name: "Sahan", points: 116, team: "Ferrari"}, 
-                    {name: "Shahan", points: 85, team: "Ferrari"}, 
-                    {name: "Rodda", points: 83, team: "Mercedes"}, 
-                    {name: "Kalpa", points: 80, team: "Mercedes"}, 
-                    {name: "Shiyan", points: 34, team: "Red Bull Racing"}, 
-                    {name: "Eranga", points: 17, team: "McLaren"} 
-                ]
+                drivers: [ {name: "Mapa", points: 152, team: "Red Bull Racing"}, {name: "Nuwie G", points: 135, team: "McLaren"}, {name: "Sahan", points: 116, team: "Ferrari"}, {name: "Shahan", points: 85, team: "Ferrari"}, {name: "Rodda", points: 83, team: "Mercedes"}, {name: "Kalpa", points: 80, team: "Mercedes"}, {name: "Shiyan", points: 34, team: "Red Bull Racing"}, {name: "Eranga", points: 17, team: "McLaren"} ]
             },
             4: {
                 teams: [ {name: "Red Bull Racing", points: 310}, {name: "Mercedes", points: 308}, {name: "Ferrari", points: 199}, {name: "McLaren", points: 152} ],
-                drivers: [ 
-                    {name: "Mapa", points: 195, team: "Ferrari"}, 
-                    {name: "Rodda", points: 172, team: "Mercedes"}, 
-                    {name: "Nuwie G", points: 151, team: "Red Bull Racing"}, 
-                    {name: "Kalpa", points: 136, team: "Mercedes"}, 
-                    {name: "Sahan", points: 127, team: "Red Bull Racing"}, 
-                    {name: "Shahan", points: 110, team: "Ferrari"}, 
-                    {name: "Shiyan", points: 53, team: "McLaren"}, 
-                    {name: "Eranga", points: 25, team: "Ferrari"} 
-                ]
+                drivers: [ {name: "Mapa", points: 195, team: "Ferrari"}, {name: "Rodda", points: 172, team: "Mercedes"}, {name: "Nuwie G", points: 151, team: "Red Bull Racing"}, {name: "Kalpa", points: 136, team: "Mercedes"}, {name: "Sahan", points: 127, team: "McLaren"}, {name: "Shahan", points: 110, team: "Red Bull Racing"}, {name: "Shiyan", points: 53, team: "McLaren"}, {name: "Eranga", points: 25, team: "Ferrari"} ]
             }
         };
 
-        function getCorrectedTeam(seasonNum, driverName, trackName, originalTeam) {
+        // --- HARDCODED RACE ROUND MAPPER ---
+        const hardcodedRounds = {
+            "Season 2/results_miami_race.json": { round: 1, type: "Feature", track: "Miami" }, "Season 2/results_monza_race.json": { round: 2, type: "Feature", track: "Monza" },
+            "Season 2/results_spa-francorchamps_race.json": { round: 3, type: "Feature", track: "Spa-Francorchamps" }, "Season 2/results_barcelona_race.json": { round: 4, type: "Feature", track: "Barcelona" },
+            "Season 2/results_baku_race.json": { round: 5, type: "Feature", track: "Baku" }, "Season 2/results_losail_race.json": { round: 6, type: "Feature", track: "Losail" },
+            "Season 2/results_hungaroring_race.json": { round: 7, type: "Feature", track: "Hungaroring" }, "Season 2/results_singapore_race.json": { round: 8, type: "Feature", track: "Singapore" },
+            "Season 3/results_austin_sprint.json": { round: 1, type: "Sprint", track: "Austin" }, "Season 3/results_austin_race.json": { round: 2, type: "Feature", track: "Austin" },
+            "Season 3/results_shanghai_sprint.json": { round: 3, type: "Sprint", track: "Shanghai" }, "Season 3/results_shanghai_race.json": { round: 4, type: "Feature", track: "Shanghai" },
+            "Season 3/results_imola_race.json": { round: 5, type: "Feature", track: "Imola" }, "Season 3/results_interlagos_sprint.json": { round: 6, type: "Sprint", track: "Interlagos" },
+            "Season 3/results_interlagos_race.json": { round: 7, type: "Feature", track: "Interlagos" }, "Season 3/results_mexico_race.json": { round: 8, type: "Feature", track: "Mexico" },
+            "Season 3/results_las vegas_race.json": { round: 9, type: "Feature", track: "Las Vegas" }, "Season 3/results_yas marina_race.json": { round: 10, type: "Feature", track: "Yas Marina" },
+            "Season 4/results_imola_race.json": { round: 1, type: "Sprint", track: "Imola" }, "Season 4/results_melbourne_race.json": { round: 2, type: "Feature", track: "Melbourne" },
+            "Season 4/results_monaco_race.json": { round: 3, type: "Sprint", track: "Monaco" }, "Season 4/results_barcelona_race.json": { round: 4, type: "Feature", track: "Barcelona" },
+            "Season 4/results_baku_race.json": { round: 5, type: "Sprint", track: "Baku" }, "Season 4/results_losail_race.json": { round: 6, type: "Feature", track: "Losail" },
+            "Season 4/results_singapore_race.json": { round: 7, type: "Sprint", track: "Singapore" }, "Season 4/results_paul ricard_race.json": { round: 8, type: "Feature", track: "Paul Ricard" },
+            "Season 4/results_montreal_race.json": { round: 9, type: "Sprint", track: "Montreal" }, "Season 4/results_zandvoort_race.json": { round: 10, type: "Feature", track: "Zandvoort" },
+            "Season 4/results_portimão_race.json": { round: 11, type: "Sprint", track: "Portimão" }, "Season 4/results_shanghai_race.json": { round: 12, type: "Feature", track: "Shanghai" },
+            "Season 4/results_hungaroring_race.json": { round: 13, type: "Sprint", track: "Hungaroring" }, "Season 4/results_austin_race.json": { round: 14, type: "Feature", track: "Austin" },
+            "Season 4/results_mexico_race.json": { round: 15, type: "Sprint", track: "Mexico" }, "Season 4/results_suzuka_race.json": { round: 16, type: "Feature", track: "Suzuka" },
+            "Season 4/results_interlagos_race.json": { round: 17, type: "Sprint", track: "Interlagos" }, "Season 4/results_spa-francorchamps_race.json": { round: 18, type: "Feature", track: "Spa-Francorchamps" },
+            "Season 4/results_las vegas_race.json": { round: 19, type: "Sprint", track: "Las Vegas" }, "Season 4/results_silverstone_race.json": { round: 20, type: "Feature", track: "Silverstone" },
+            "Season 4/results_austin2_race.json": { round: 21, type: "Sprint", track: "Austin" }, "Season 4/results_silverstone2_race.json": { round: 22, type: "Sprint", track: "Silverstone" },
+            "Season 4/results_monza_race.json": { round: 23, type: "Sprint", track: "Monza" }, "Season 4/results_yas marina_race.json": { round: 24, type: "Feature", track: "Yas Marina" }
+        };
+
+        function getHardcodedTeam(seasonNum, driverName, trackName) {
+            if (seasonNum === 1) return S1_TEAMS[driverName] || "Unknown";
+            if (seasonNum === 2) return S2_TEAMS[driverName] || "Unknown";
+            if (seasonNum === 3) return S3_TEAMS[driverName] || "Unknown";
             if (seasonNum === 4) {
-                const postTrade = /portimão|portimao|shanghai|silverstone2|singapore|spa|suzuka|yas marina|zandvoort|las vegas|mexico|interlagos|losail|standings/i.test(trackName);
-                if (postTrade) {
-                    if (driverName === "Mapa") return "Ferrari";
-                    if (driverName === "Nuwie G") return "Red Bull Racing";
-                    if (driverName === "Shiyan") return "McLaren";
-                    if (driverName === "Eranga") return "Ferrari";
+                const preTradeTracks = ["Imola", "Melbourne", "Monaco", "Barcelona", "Baku", "Losail", "Singapore", "Paul Ricard", "Montreal", "Zandvoort"];
+                if (preTradeTracks.includes(trackName)) {
+                    return S4_TEAMS_PRE[driverName] || "Unknown";
                 } else {
-                    if (driverName === "Mapa") return "Red Bull Racing";
-                    if (driverName === "Nuwie G") return "Ferrari";
-                    if (driverName === "Shiyan") return "Ferrari";
-                    if (driverName === "Eranga") return "McLaren";
+                    return S4_TEAMS_POST[driverName] || "Unknown";
                 }
             }
-            if (seasonNum === 3) {
-                if (driverName === "Mapa") return "Red Bull Racing";
-                if (driverName === "Nuwie G") return "McLaren";
-                if (driverName === "Sahan" || driverName === "Shahan") return "Ferrari";
-                if (driverName === "Shiyan") return "Red Bull Racing";
-                if (driverName === "Eranga") return "McLaren";
-                if (driverName === "Rodda" || driverName === "Kalpa") return "Mercedes";
-            }
-            return originalTeam;
+            return "Unknown";
         }
 
         function getDriverPhotoUrl(seasonNum, driverName, trackName) {
             let safeName = driverName.replace(/\s+/g, '');
             if (seasonNum === 4) {
-                const postTrade = /portimão|portimao|shanghai|silverstone2|singapore|spa|suzuka|yas marina|zandvoort|las vegas|mexico|interlagos|losail|standings/i.test(trackName);
-                if (driverName === "Mapa") return `${photoBase}Season%204/Mapa_${postTrade ? 'Ferrari' : 'RedBull'}.png`;
-                if (driverName === "Nuwie G") return `${photoBase}Season%204/Nuwie${postTrade ? '_RedBull' : 'G_Ferrari'}.png`;
-                if (driverName === "Shiyan") return `${photoBase}Season%204/Shiyan_${postTrade ? 'Mclaren' : 'Ferrari'}.png`;
-                if (driverName === "Eranga") return `${photoBase}Season%204/Eranga_${postTrade ? 'Ferrari' : 'Mclaren'}.png`;
+                const preTradeTracks = ["Imola", "Melbourne", "Monaco", "Barcelona", "Baku", "Losail", "Singapore", "Paul Ricard", "Montreal", "Zandvoort"];
+                const isPreTrade = preTradeTracks.includes(trackName);
+                if (driverName === "Mapa") return `${photoBase}Season%204/Mapa_${isPreTrade ? 'RedBull' : 'Ferrari'}.png`;
+                if (driverName === "Nuwie G") return `${photoBase}Season%204/Nuwie${isPreTrade ? 'G_Ferrari' : '_RedBull'}.png`;
+                if (driverName === "Shiyan") return `${photoBase}Season%204/Shiyan_${isPreTrade ? 'Ferrari' : 'Mclaren'}.png`;
+                if (driverName === "Eranga") return `${photoBase}Season%204/Eranga_${isPreTrade ? 'Mclaren' : 'Ferrari'}.png`;
                 return `${photoBase}Season%204/${safeName}.png`;
             }
             if (seasonNum <= 2) {
@@ -301,67 +316,52 @@
             return `+${seconds}`;
         }
 
-        Promise.all(archiveFiles.map(file => fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/${file}${cacheBuster}`).then(r => r.ok ? r.json().then(data => ({ data, path: file })) : null)))
+        Promise.all(archiveFiles.map(file => fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/${file}${cacheBuster}`).then(r => r.ok ? r.json().then(data => ({ data, path: decodeURIComponent(file) })) : null)))
         .then(results => {
             results.filter(r => r !== null).forEach(fileObj => {
                 const race = fileObj.data; const path = fileObj.path;
                 if (race.SessionType !== "Race") return;
                 
-                let seasonNum = path.includes("Season%204") ? 4 : path.includes("Season%203") ? 3 : path.includes("Season%202") ? 2 : 1;
+                let seasonNum = path.includes("Season 4") ? 4 : path.includes("Season 3") ? 3 : path.includes("Season 2") ? 2 : 1;
                 
-                let maxPts = Math.max(0, ...race.Drivers.map(d => (d.DriverPointsRaw || 0) / 10));
-                let label = "Feature"; 
-                if (path.toLowerCase().includes("sprint") || race.RaceType === "Sprint" || (maxPts > 0 && maxPts <= 10)) {
-                    label = "Sprint";
-                }
+                let hc = hardcodedRounds[path];
+                let round = hc ? hc.round : 99;
+                let label = hc ? hc.type : "Feature";
+                let trackName = hc ? hc.track : race.TrackName;
                 
                 const matchingQuali = results.find(q => q && q.data.SessionType === "Qualification" && q.data.TrackName === race.TrackName && q.data.Date === race.Date);
                 
                 validRaces.push({
-                    season: seasonNum, trackName: race.TrackName, label: label, 
+                    season: seasonNum, roundNum: round, trackName: trackName, label: label, 
                     date: race.Date, raceData: race, qualiData: matchingQuali ? matchingQuali.data : null 
                 });
             });
 
+            // Strict Hardcoded Round Number Sorting
             validRaces.sort((a, b) => {
-                let dA = new Date(a.date).getTime();
-                let dB = new Date(b.date).getTime();
-                if (dA !== dB) return dA - dB;
-                if (a.label !== b.label) return a.label === "Sprint" ? -1 : 1;
-                
-                let order = {"austin": 1, "austin2": 1, "silverstone": 2, "silverstone2": 2, "great britain": 2, "monza": 3, "italy": 3, "yas marina": 4};
-                let tA = a.trackName.toLowerCase(); let tB = b.trackName.toLowerCase();
-                let vA = order[tA] || 99; let vB = order[tB] || 99;
-                return vA - vB;
+                if (a.season !== b.season) return a.season - b.season;
+                if (a.roundNum !== 99 && b.roundNum !== 99) return a.roundNum - b.roundNum;
+                // Fallback for Season 1 missing definitions
+                return new Date(a.date).getTime() - new Date(b.date).getTime();
             });
 
-            let currentSeason = 0; let roundCounter = 0; let lastTrack = "";
+            let currentSeason = 0; let s1Counter = 1;
 
             validRaces.forEach((ev) => {
-                let trackDisp = ev.trackName.replace(/2$/, '');
-                if (ev.season !== currentSeason) {
-                    currentSeason = ev.season;
-                    roundCounter = 1;
-                    lastTrack = trackDisp;
-                } else if (trackDisp !== lastTrack) {
-                    roundCounter++;
-                    lastTrack = trackDisp;
-                }
+                if (ev.season !== currentSeason) currentSeason = ev.season;
+                if (ev.season === 1) ev.roundNum = s1Counter++;
                 
-                ev.roundNum = roundCounter;
                 ev.globalIndex = groupedEvents.length;
                 groupedEvents.push(ev);
                 
                 if (ev.season === 1) {
                     ev.raceData.Drivers.forEach(d => {
                         let dName = d.Driver.Name;
-                        let tObj = d.Team || {};
-                        let tName = tObj.Name || "Unknown";
+                        let tName = getHardcodedTeam(1, dName, ev.trackName);
                         let pts = (d.DriverPointsRaw || 0) / 10;
                         
                         if(!calcStandings[1].drivers[dName]) calcStandings[1].drivers[dName] = {points:0, team: tName};
                         calcStandings[1].drivers[dName].points += pts;
-                        calcStandings[1].drivers[dName].team = tName; 
                         
                         if(!calcStandings[1].teams[tName]) calcStandings[1].teams[tName] = 0;
                         calcStandings[1].teams[tName] += pts;
@@ -372,7 +372,7 @@
             calcStandings[1].drivers = Object.keys(calcStandings[1].drivers).map(k => ({name: k, ...calcStandings[1].drivers[k]})).sort((a,b)=>b.points-a.points);
             calcStandings[1].teams = Object.keys(calcStandings[1].teams).map(k => ({name: k, points: calcStandings[1].teams[k]}));
 
-            document.getElementById('season-nav').style.display = "flex";
+            document.getElementById('season-nav').style.display = ""; // Defaults back to css rule
             document.getElementById('race-selector').style.display = "block";
             loadSeason(4);
         });
@@ -386,10 +386,9 @@
             const selector = document.getElementById('race-selector');
             selector.innerHTML = `<option value="standings">🏆 Season ${sNum} Final Standings</option>`;
             
-            // Notice: Emojis are deliberately excluded from this dropdown list due to Windows OS lacking support for Country Flag Emojis.
             seasonEvents.forEach((event) => {
-                let trackDisp = event.trackName.replace(/2$/, '');
-                selector.innerHTML += `<option value="${event.globalIndex}">Round ${event.roundNum} - ${trackDisp} (${event.label})</option>`;
+                let emoji = trackEmojis[event.trackName] || "🏁";
+                selector.innerHTML += `<option value="${event.globalIndex}">${emoji} Round ${event.roundNum} - ${event.trackName} (${event.label})</option>`;
             });
             
             selector.value = "standings"; 
@@ -423,7 +422,7 @@
                 if (!data) { tbody.innerHTML = "<tr><td colspan='4'>Calculation Pending...</td></tr>"; return; }
 
                 data.drivers.forEach((d, idx) => {
-                    let actualTeam = d.team || "Unknown";
+                    let actualTeam = getHardcodedTeam(activeSeasonNum, d.name, 'Standings');
                     let teamColor = getTeamColor(actualTeam);
                     
                     tbody.innerHTML += `
@@ -475,12 +474,11 @@
             reverseFootnote.style.display = (!isQuali && (event.season === 2 || event.season === 3)) ? "block" : "none";
             const hideGridPits = isQuali || event.season >= 2;
 
-            let trackDisp = event.trackName.replace(/2$/, '');
-            let flagImg = trackCountryFlags[trackDisp] ? `<img src="${photoBase}${trackCountryFlags[trackDisp]}.png" style="height:24px; border-radius:3px; vertical-align:middle; box-shadow:0 2px 4px rgba(0,0,0,0.5);">` : '';
+            let flagImg = trackCountryFlags[event.trackName] ? `<img src="${photoBase}${trackCountryFlags[event.trackName]}.png" style="height:24px; border-radius:3px; vertical-align:middle; box-shadow:0 2px 4px rgba(0,0,0,0.5);">` : '';
             
             document.getElementById('race-title').innerHTML = `
-                <a href="statistics.html?track=${encodeURIComponent(trackDisp)}" class="link-hover" style="color:inherit; text-decoration:none; display:flex; align-items:center; gap:10px;" title="View ${trackDisp} Analytics">
-                    ${flagImg} Round ${event.roundNum} - ${trackDisp}
+                <a href="statistics.html?track=${encodeURIComponent(event.trackName)}" class="link-hover" style="color:inherit; text-decoration:none; display:flex; align-items:center; gap:10px;" title="View ${event.trackName} Analytics">
+                    ${flagImg} Round ${event.roundNum} - ${event.trackName}
                 </a>
             `;
             
@@ -494,9 +492,7 @@
             data.Drivers.sort((a, b) => a.Position - b.Position).forEach(driver => {
                 const isFL = data.FastestLapDriver && data.FastestLapDriver.Name === driver.Driver.Name;
                 
-                const tObj = driver.Team || {};
-                const tNameRaw = tObj.Name || 'Unknown';
-                const actualTeam = getCorrectedTeam(event.season, driver.Driver.Name, event.trackName, tNameRaw);
+                const actualTeam = getHardcodedTeam(event.season, driver.Driver.Name, event.trackName);
                 const tColor = getTeamColor(actualTeam);
                 
                 let timeOrGapDisp = "DNF";
@@ -519,7 +515,7 @@
                             </a>
                         </td>
                         <td class="hide-mobile"><div class="team-cell"><img src="${photoBase}${getTeamLogoUrl(actualTeam)}" class="team-logo-small" onerror="this.style.display='none'"> <span class="team-text" style="color: ${tColor};">${actualTeam}</span></div></td>
-                        ${hideGridPits ? '' : `<td>${driver.GridPosition}</td><td>${driver.PitsCount}</td>`}
+                        ${hideGridPits ? '' : `<td class="hide-mobile">${driver.GridPosition}</td><td class="hide-mobile">${driver.PitsCount}</td>`}
                         <td class="time-col">${timeOrGapDisp}</td>
                         ${isQuali ? '' : `<td class="hide-mobile">${(driver.PenaltySecsStewards || 0) + (driver.PenaltySecsIngame || 0)}s</td><td class="pts-col">${(driver.DriverPointsRaw || 0) / 10}</td>`}
                     </tr>`;
