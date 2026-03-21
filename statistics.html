@@ -97,9 +97,11 @@
         .chart-selector { background: #333; color: #fff; border: 1px solid #555; padding: 5px 10px; border-radius: 4px; font-family: 'Titillium Web'; font-weight: 700; outline: none; cursor: pointer;}
         .chart-canvas-wrapper { position: relative; flex-grow: 1; min-height: 300px; width: 100%; }
         
-        /* Driver DNA Legend */
-        .dna-legend { font-size: 11px; color: #888; margin-top: 15px; text-align: center; line-height: 1.5; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px;}
-        .dna-legend span { color: #fff; font-weight: 700; margin-right: 4px;}
+        /* Scrollable graph container */
+        .scrollable-x { width: 100%; overflow-x: auto; scrollbar-width: thin; scrollbar-color: var(--f1-red) #333; }
+        .scrollable-x::-webkit-scrollbar { height: 8px; }
+        .scrollable-x::-webkit-scrollbar-thumb { background: var(--f1-red); border-radius: 4px; }
+        .scrollable-x::-webkit-scrollbar-track { background: #333; border-radius: 4px; }
 
         /* CUSTOM PHOTO GRAPH CSS */
         .track-finishes-grid { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: thin; scrollbar-color: var(--f1-red) #333; min-height: 120px;}
@@ -141,6 +143,11 @@
         tr.row-dnf td { color: var(--f1-red) !important; font-style: italic; }
         tr.row-standard td { color: #fff; }
         td.fl-time { color: var(--fastest-lap) !important; font-weight: 900; }
+
+        .analysis-table th { background: var(--f1-red); color: #fff; }
+        .analysis-table td { background: rgba(0,0,0,0.2); }
+        .analysis-table tr:hover td { background: rgba(255,255,255,0.05); }
+        .quali-header { padding: 15px 20px 5px 20px; font-size: 13px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: #aaa; }
 
         /* EXACT CUSTOM MODAL FOR EA RACENET */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
@@ -363,7 +370,7 @@
                     name: dName, currentTeam: "Unknown", starts: 0, wins: 0, podiums: 0, 
                     fls: 0, poles: 0, dnfs: 0, penPts: 0, totalPtsSort: 0,
                     sumPos: 0, sumGrid: 0, posGained: 0, bestPos: 999, teamsTracked: {}, tracksTracked: {}, seasons: {},
-                    allPositionsGained: [] // Format: {track, gained, label}
+                    allPositionsGained: [] // Format: {track, label, gained, sNum, grid, finish}
                 };
             }
         }
@@ -564,7 +571,7 @@
                             s.sumGrid += gridPos;
                             let gained = gridPos - pos; 
                             s.posGained += gained;
-                            s.allPositionsGained.push({ track: tNameStr, label: ev.label, gained: gained, sNum: ev.season });
+                            s.allPositionsGained.push({ track: tNameStr, label: ev.label, gained: gained, sNum: ev.season, grid: gridPos, finish: pos });
                         }
                     }
 
@@ -759,17 +766,14 @@
                         <div class="chart-container">
                             <h4 class="chart-title">Driver DNA</h4>
                             <div class="chart-canvas-wrapper" style="min-height:350px;"><canvas id="radarChart"></canvas></div>
-                            <div class="dna-legend">
-                                <div><span>One-Lap Pace:</span> Based on Average Quali Pos</div>
-                                <div><span>Racecraft:</span> Base Finish Rating + Bonus for Gained Positions</div>
-                                <div><span>Consistency:</span> Finish Rate vs DNF Rate</div>
-                                <div><span>Cleanliness:</span> Deductions for Penalty Points</div>
-                                <div><span>Clutch Factor:</span> Podium/Win Conversion Rate</div>
-                            </div>
                         </div>
                         <div class="chart-container">
                             <h4 class="chart-title">The Sunday Driver (Positions Gained)</h4>
-                            <div class="chart-canvas-wrapper" style="min-height:350px;"><canvas id="positionsGainedChart"></canvas></div>
+                            <div class="scrollable-x">
+                                <div id="pg-canvas-wrapper" style="position: relative; min-height:350px;">
+                                    <canvas id="positionsGainedChart"></canvas>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="chart-container">
@@ -886,21 +890,60 @@
                         pointBackgroundColor: '#fff', pointBorderColor: '#e10600', borderWidth: 3
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { angleLines: { color: 'rgba(255,255,255,0.1)' }, grid: { color: 'rgba(255,255,255,0.1)' }, pointLabels: { font: { size: 12, weight: 'bold' }, color: '#fff' }, ticks: { display: false, min: 0, max: 100 } } } }
+                options: { 
+                    responsive: true, maintainAspectRatio: false, 
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(c) { return `Score: ${c.raw}`; },
+                                afterLabel: function(c) {
+                                    let l = c.label;
+                                    if (l === 'One-Lap Pace') return "\nHow fast they are over a single lap (Qualifying).";
+                                    if (l === 'Racecraft') return "\nTheir ability to fight through the pack and finish high.";
+                                    if (l === 'Consistency') return "\nHow often they finish races without crashing out.";
+                                    if (l === 'Cleanliness') return "\nTheir ability to race cleanly without taking penalties.";
+                                    if (l === 'Clutch Factor') return "\nHow often they convert good drives into Podiums and Wins.";
+                                    return "";
+                                }
+                            }
+                        }
+                    }, 
+                    scales: { r: { angleLines: { color: 'rgba(255,255,255,0.1)' }, grid: { color: 'rgba(255,255,255,0.1)' }, pointLabels: { font: { size: 12, weight: 'bold' }, color: '#fff' }, ticks: { display: false, min: 0, max: 100 } } } 
+                }
             });
 
             // --- 2. Positions Gained/Lost (Sunday Driver) ---
-            let recentGained = stats.allPositionsGained.slice(-15); 
+            let recentGained = stats.allPositionsGained; // Removed the 15 race cap limit!
             let gLabels = recentGained.map(g => `${g.track} (S${g.sNum})`);
             let gData = recentGained.map(g => g.gained);
             
+            // Set dynamic width so it scrolls beautifully on large datasets
+            let minW = Math.max(100, recentGained.length * 35);
+            document.getElementById('pg-canvas-wrapper').style.minWidth = minW + 'px';
+
             // Gray out the 0 values so they are visible with minBarLength
             let gColors = gData.map(val => val > 0 ? 'rgba(0, 215, 182, 0.8)' : (val < 0 ? 'rgba(225, 6, 0, 0.8)' : 'rgba(255, 255, 255, 0.3)')); 
 
             activeCharts.gained = new Chart(document.getElementById('positionsGainedChart'), {
                 type: 'bar',
-                data: { labels: gLabels, datasets: [{ data: gData, backgroundColor: gColors, borderRadius: 4, minBarLength: 3 }] }, // minBarLength fixes the 0 blank spaces
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return c.raw > 0 ? `+${c.raw} positions` : (c.raw < 0 ? `${c.raw} positions` : `0 positions (Held Position)`); } } } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false }, ticks: { display: false } } } }
+                data: { labels: gLabels, datasets: [{ data: gData, backgroundColor: gColors, borderRadius: 4, minBarLength: 3 }] }, 
+                options: { 
+                    responsive: true, maintainAspectRatio: false, 
+                    plugins: { 
+                        legend: { display: false }, 
+                        tooltip: { 
+                            callbacks: { 
+                                label: function(c) { 
+                                    let dObj = stats.allPositionsGained[c.dataIndex];
+                                    let txt = c.raw > 0 ? `+${c.raw} positions` : (c.raw < 0 ? `${c.raw} positions` : `Held Position`); 
+                                    return `${txt} (Started P${dObj.grid}, Finished P${dObj.finish})`;
+                                } 
+                            } 
+                        } 
+                    }, 
+                    scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false }, ticks: { display: false } } } 
+                }
             });
 
             // --- 3. Average Finish Line Chart ---
@@ -914,7 +957,7 @@
             
             activeCharts.avgPos = new Chart(document.getElementById('avgPosChart'), {
                 type: 'line',
-                data: { labels: afLabels, datasets: [{ label: 'Average Finish', data: avgData, borderColor: '#e10600', backgroundColor: 'rgba(225, 6, 0, 0.2)', borderWidth: 3, tension: 0.3, fill: true, pointRadius: 5 }] },
+                data: { labels: afLabels, datasets: [{ label: 'Average Finish', data: avgData, borderColor: '#0090ff', backgroundColor: 'rgba(0, 144, 255, 0.2)', borderWidth: 3, tension: 0.3, fill: true, pointRadius: 5 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { reverse: true, min: 1, max: 10, ticks: { stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } }
             });
 
@@ -961,14 +1004,22 @@
                 });
                 
                 let isMain = drv === dName;
-                let team = seasonStandings[sNum].drivers[drv].team;
-                let color = teamColors[team] || '#888';
                 
                 datasets.push({
                     label: drv,
                     data: data,
-                    borderColor: color,
-                    backgroundColor: isMain ? 'rgba(255,255,255,0.1)' : 'transparent',
+                    segment: {
+                        borderColor: ctx => {
+                            let raceIdx = ctx.p1DataIndex !== undefined ? ctx.p1DataIndex : ctx.p0DataIndex;
+                            let race = seasonRaces[raceIdx];
+                            if(race) {
+                                let dData = race.raceData.Drivers.find(d => d.Driver.Name === drv);
+                                if(dData && dData.Team) return teamColors[dData.Team.Name] || '#888';
+                            }
+                            return '#888';
+                        }
+                    },
+                    backgroundColor: isMain ? 'rgba(255,255,255,0.05)' : 'transparent',
                     borderWidth: isMain ? 4 : 2,
                     borderDash: isMain ? [] : [5, 5],
                     pointRadius: isMain ? 4 : 0,
