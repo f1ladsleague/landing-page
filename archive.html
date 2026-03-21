@@ -192,16 +192,6 @@
             "Portimão": "portugal", "Paul Ricard": "france"
         };
 
-        const trackEmojis = {
-            "Bahrain": "🇧🇭", "Jeddah": "🇸🇦", "Melbourne": "🇦🇺", "Baku": "🇦🇿", 
-            "Miami": "🇺🇸", "Imola": "🇮🇹", "Monaco": "🇲🇨", "Barcelona": "🇪🇸", 
-            "Spielberg": "🇦🇹", "Silverstone": "🇬🇧", "Hungaroring": "🇭🇺", 
-            "Spa-Francorchamps": "🇧🇪", "Zandvoort": "🇳🇱", "Monza": "🇮🇹", 
-            "Singapore": "🇸🇬", "Suzuka": "🇯🇵", "Losail": "🇶🇦", "Austin": "🇺🇸", 
-            "Mexico": "🇲🇽", "Interlagos": "🇧🇷", "Las Vegas": "🇺🇸", "Yas Marina": "🇦🇪", 
-            "Shanghai": "🇨🇳", "Montreal": "🇨🇦", "Portimão": "🇵🇹", "Paul Ricard": "🇫🇷"
-        };
-
         // --- HARDCODED SEASON ROSTER TEAMS ---
         const S1_TEAMS = { "Mapa": "Red Bull Racing", "Nuwie G": "McLaren", "Sahan": "Alfa Romeo", "Rodda": "Alpine", "Kalpa": "AlphaTauri", "Shiyan": "Mercedes" };
         const S2_TEAMS = { "Mapa": "Red Bull Racing", "Nuwie G": "McLaren", "Sahan": "Alfa Romeo", "Rodda": "Alpine", "Kalpa": "AlphaTauri", "Shiyan": "Mercedes", "Eranga": "Ferrari" };
@@ -386,9 +376,9 @@
             const selector = document.getElementById('race-selector');
             selector.innerHTML = `<option value="standings">🏆 Season ${sNum} Final Standings</option>`;
             
+            // Emojis strictly removed here to prevent Windows "ES" text glitch on PC
             seasonEvents.forEach((event) => {
-                let emoji = trackEmojis[event.trackName] || "🏁";
-                selector.innerHTML += `<option value="${event.globalIndex}">${emoji} Round ${event.roundNum} - ${event.trackName} (${event.label})</option>`;
+                selector.innerHTML += `<option value="${event.globalIndex}">Round ${event.roundNum} - ${event.trackName} (${event.label})</option>`;
             });
             
             selector.value = "standings"; 
@@ -445,15 +435,18 @@
                     tbody.innerHTML += `<tr><td colspan="4" style="background: rgba(0,0,0,0.4); text-align: center; color: #888; font-weight: 900; letter-spacing: 2px; padding: 20px;">CONSTRUCTORS CHAMPIONSHIP</td></tr>`;
                     data.teams.sort((a,b)=>b.points-a.points).forEach((t, idx) => {
                         let tColor = getTeamColor(t.name);
+                        
+                        // Phantom Column Fix: Removed colspan="2" and explicitly added an empty td with hide-mobile class
                         tbody.innerHTML += `
                             <tr class="${idx===0?'wdc-row':''}">
                                 <td class="pos-col">${idx+1}</td>
-                                <td colspan="2">
+                                <td>
                                     <div class="team-cell">
                                         <img src="${photoBase}${getTeamLogoUrl(t.name)}" class="team-logo-small">
                                         <span class="driver-col" style="color:${tColor}">${t.name}${idx===0?' 🏆':''}</span>
                                     </div>
                                 </td>
+                                <td class="hide-mobile"></td>
                                 <td class="pts-col">${t.points}</td>
                             </tr>`;
                     });
