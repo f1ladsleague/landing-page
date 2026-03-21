@@ -78,7 +78,7 @@
 
         /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: #333; border-bottom: 1px solid #333; box-sizing: border-box;}
-        .track-stats-grid { grid-template-columns: repeat(5, 1fr); }
+        .track-stats-grid { grid-template-columns: repeat(4, 1fr); }
         .stat-box { background: var(--f1-card); padding: 25px 15px; text-align: center; display: flex; flex-direction: column; justify-content: center; box-sizing: border-box;}
         .stat-value { font-size: 32px; font-weight: 900; color: #fff; line-height: 1; }
         .stat-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-top: 10px; }
@@ -119,8 +119,8 @@
         summary:hover { background: rgba(255,255,255,0.05); }
         .summary-stats { font-size: 14px; color: #aaa; font-weight: 700; }
         
-        .table-wrap { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; text-align: left; table-layout: fixed;}
+        .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 5px; }
+        table { width: 100%; min-width: 700px; border-collapse: collapse; text-align: left; table-layout: fixed;}
         th { background: rgba(0,0,0,0.6); padding: 12px 10px; color: #888; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; border-bottom: 1px solid #333; }
         td { padding: 12px 10px; border-bottom: 1px solid #2a2a35; font-size: 15px; font-weight: 600; color: inherit; transition: background 0.2s;}
         tr:last-child td { border-bottom: none; }
@@ -136,6 +136,7 @@
         .analysis-table th { background: var(--f1-red); color: #fff; }
         .analysis-table td { background: rgba(0,0,0,0.2); }
         .analysis-table tr:hover td { background: rgba(255,255,255,0.05); }
+        .quali-header { padding: 15px 20px 5px 20px; font-size: 13px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: #aaa; }
 
         /* EXACT CUSTOM MODAL FOR EA RACENET */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
@@ -363,10 +364,28 @@
             if (!trackStats[tNameStr]) {
                 trackStats[tNameStr] = { 
                     name: tNameStr, races: 0, sessions: [],
-                    driverFinishes: {}, driverWins: {}, driverSprintWins: {}, driverFeatureWins: {}, driverPoles: {},
+                    driverFinishes: {}, driverWins: {}, driverSprintWins: {}, driverFeatureWins: {}, driverPoles: {}, driverFastestLaps: {},
                     lapRecord: { time: 999999999, driver: "-" }
                 };
             }
+        }
+
+        // TIE BREAKER FUNCTION
+        function getTopStat(statObj, labelSuffix = "") {
+            let maxVal = -1;
+            let leaders = [];
+            for (let d in statObj) {
+                if (statObj[d] > maxVal && statObj[d] > 0) { maxVal = statObj[d]; leaders = [d]; }
+                else if (statObj[d] === maxVal && maxVal > 0) { leaders.push(d); }
+            }
+            if (maxVal <= 0 || leaders.length === 0) return "-";
+            
+            let nameStr = leaders.join(", ");
+            let sizeStr = nameStr.length > 25 ? "15px" : (nameStr.length > 15 ? "18px" : "26px");
+            return `<span style="font-size:${sizeStr}; display:flex; flex-direction:column; align-items:center; line-height:1.2;">
+                        <span style="white-space:normal; text-align:center; padding: 0 5px;">${nameStr}</span>
+                        <span style="font-size:14px; color:#888; font-weight:700; margin-top:4px;">(${maxVal}${labelSuffix})</span>
+                    </span>`;
         }
 
         async function initData() {
@@ -386,7 +405,7 @@
                 const results = await Promise.all(fetchPromises);
                 const validFiles = results.filter(r => r !== null);
                 
-                // --- Parse Qualifications natively for accurate Pole Positions ---
+                // Parse Qualifications natively for accurate Pole Positions
                 const qualis = validFiles.filter(f => f.data.SessionType === "Qualification");
                 qualis.forEach(fileObj => {
                     let q = fileObj.data;
@@ -403,7 +422,7 @@
                     }
                 });
 
-                // --- Process Main Races & Sprints ---
+                // Process Main Races & Sprints
                 const racesAndSprints = validFiles.filter(f => f.data.SessionType === "Race");
 
                 racesAndSprints.forEach(fileObj => {
@@ -428,7 +447,10 @@
                     let cleanTrackName = race.TrackName;
                     if (cleanTrackName === "Spa-Francorchamps") cleanTrackName = "Spa";
 
-                    allEvents.push({ season: seasonNum, trackName: cleanTrackName, label: label, date: dateObj, raceData: race });
+                    // Bind Quali file to this event for UI
+                    let qData = qualis.find(q => q.data.TrackName === race.TrackName && q.data.Date === race.Date)?.data;
+
+                    allEvents.push({ season: seasonNum, trackName: cleanTrackName, label: label, date: dateObj, raceData: race, qualiData: qData });
                 });
 
                 allEvents.sort((a, b) => a.date - b.date);
@@ -495,10 +517,6 @@
                         if (ev.label === "Sprint") trackStats[tNameStr].driverSprintWins[dName] = (trackStats[tNameStr].driverSprintWins[dName] || 0) + 1;
                         else trackStats[tNameStr].driverFeatureWins[dName] = (trackStats[tNameStr].driverFeatureWins[dName] || 0) + 1;
                     }
-                    
-                    if (flTime > 0 && flTime < trackStats[tNameStr].lapRecord.time) {
-                        trackStats[tNameStr].lapRecord = { time: flTime, driver: dName };
-                    }
 
                     let s = driverStats[dName];
                     s.currentTeam = tName; 
@@ -514,7 +532,15 @@
 
                     if (pos === 1) s.wins++;
                     if (pos <= 3) s.podiums++;
-                    if (isFL) s.fls++;
+                    
+                    if (isFL) {
+                        s.fls++;
+                        trackStats[tNameStr].driverFastestLaps[dName] = (trackStats[tNameStr].driverFastestLaps[dName] || 0) + 1;
+                    }
+                    
+                    if (flTime > 0 && flTime < trackStats[tNameStr].lapRecord.time) {
+                        trackStats[tNameStr].lapRecord = { time: flTime, driver: dName };
+                    }
                     
                     if (isDnf) s.dnfs++;
                     else {
@@ -743,7 +769,7 @@
                             <span class="summary-stats" style="color:#fff;">${champStatus} &nbsp;|&nbsp; Grid Size: ${sGridSize}</span>
                         </summary>
                         <div class="table-wrap">
-                            <table style="width: 100%; table-layout: fixed;">
+                            <table>
                                 <thead><tr>
                                     <th style="width:10%; text-align:center;">Pos</th>
                                     <th style="width:35%;">Track</th>
@@ -856,19 +882,60 @@
 
             let t = trackStats[tName];
             
-            let topWinner = Object.keys(t.driverWins).sort((a,b) => t.driverWins[b] - t.driverWins[a])[0] || "-";
-            let topSprintWinner = Object.keys(t.driverSprintWins).sort((a,b) => t.driverSprintWins[b] - t.driverSprintWins[a])[0] || "-";
-            let topFeatureWinner = Object.keys(t.driverFeatureWins).sort((a,b) => t.driverFeatureWins[b] - t.driverFeatureWins[a])[0] || "-";
-            let topPoleSitter = Object.keys(t.driverPoles).sort((a,b) => t.driverPoles[b] - t.driverPoles[a])[0] || "-";
+            // Build tie-breaker object for podiums & DNFs
+            let podObj = {}; let dnfObj = {};
+            for (let d in t.driverFinishes) {
+                podObj[d] = (t.driverFinishes[d][1]||0) + (t.driverFinishes[d][2]||0) + (t.driverFinishes[d][3]||0);
+                dnfObj[d] = t.driverFinishes[d]["DNF"]||0;
+            }
+
+            let topWinner = getTopStat(t.driverWins);
+            let topSprintWinner = getTopStat(t.driverSprintWins);
+            let topFeatureWinner = getTopStat(t.driverFeatureWins);
+            let topPoleSitter = getTopStat(t.driverPoles);
+            let topPodiums = getTopStat(podObj);
+            let topFastestLaps = getTopStat(t.driverFastestLaps);
+            let topDnfs = getTopStat(dnfObj);
 
             let lapRecText = t.lapRecord.time < 999999999 
-                ? `<span class="lap-record-time">${formatMs(t.lapRecord.time)}</span><span style="font-size:12px;color:#888; font-family: 'Titillium Web'; text-transform:uppercase;">${t.lapRecord.driver}</span>` 
+                ? `<span class="lap-record-time">${formatMs(t.lapRecord.time)}</span><span style="font-size:12px;color:#888; font-family: 'Titillium Web'; text-transform:uppercase; margin-top:4px;">${t.lapRecord.driver}</span>` 
                 : "-";
             
             let flagImg = getTrackFlagUrl(tName) ? `<img src="${getTrackFlagUrl(tName)}" class="track-profile-flag" style="margin-right: 15px;">` : '';
             let layoutImg = trackLayouts[tName] ? `<img src="${photoBase}Track%20Layouts/${trackLayouts[tName]}-track-layout.png" class="track-layout-img" onerror="this.style.display='none'">` : '';
 
             let sessionAccordions = t.sessions.map((ev, idx) => {
+                
+                // --- QUALIFYING INTEGRATION ---
+                let qualiHtml = "";
+                if (ev.qualiData) {
+                    let qRows = ev.qualiData.Drivers.sort((a,b)=>a.Position - b.Position).map(d => {
+                        let teamStr = d.Team ? d.Team.Name : "Unknown";
+                        return `<tr>
+                            <td style="width:10%; text-align:center; font-weight:900;">${d.Position}</td>
+                            <td style="width:40%;" class="link-hover" onclick="renderDriverProfile('${d.Driver.Name}')">${d.Driver.Name}</td>
+                            <td style="width:25%;"><span style="color: ${teamColors[teamStr]||'#fff'}; font-weight:700;">${teamStr}</span></td>
+                            <td style="width:25%; font-family:monospace;">${formatMs(d.BestLapTimeInt || d.FastestLapTimeInt)}</td>
+                        </tr>`;
+                    }).join('');
+                    
+                    qualiHtml = `
+                        <div class="quali-header">Qualifying Classification</div>
+                        <div class="table-wrap">
+                            <table>
+                                <thead><tr>
+                                    <th style="width:10%; text-align:center;">Pos</th>
+                                    <th style="width:40%;">Driver</th>
+                                    <th style="width:25%;">Car</th>
+                                    <th style="width:25%;">Best Lap</th>
+                                </tr></thead>
+                                <tbody>${qRows}</tbody>
+                            </table>
+                        </div>
+                    `;
+                }
+
+                // --- RACE INTEGRATION ---
                 let sortedDrivers = ev.raceData.Drivers.sort((a, b) => a.Position - b.Position);
                 let winnerTime = sortedDrivers.find(d => d.Position === 1)?.TimeInt || 0;
 
@@ -908,8 +975,12 @@
                             <span>Season ${ev.season} - ${ev.label}</span>
                             <span class="summary-stats">Grid Size: ${sortedDrivers.length}</span>
                         </summary>
+                        
+                        ${qualiHtml}
+
+                        <div class="quali-header">Race Classification</div>
                         <div class="table-wrap">
-                            <table class="analysis-table" style="width: 100%; table-layout: fixed;">
+                            <table class="analysis-table">
                                 <thead><tr>
                                     <th style="width:10%; text-align:center;">Pos</th>
                                     <th style="width:35%;">Driver</th>
@@ -944,7 +1015,11 @@
                         <div class="stat-box"><div class="stat-value text-value">${topSprintWinner}</div><div class="stat-label">Most Sprint Wins</div></div>
                         <div class="stat-box"><div class="stat-value text-value">${topFeatureWinner}</div><div class="stat-label">Most Feature Wins</div></div>
                         <div class="stat-box"><div class="stat-value text-value">${topPoleSitter}</div><div class="stat-label">Most Poles</div></div>
-                        <div class="stat-box" style="justify-content:center;"><div class="stat-value text-value" style="display:flex; flex-direction:column; align-items:center;">${lapRecText}</div><div class="stat-label">Lap Record</div></div>
+                        
+                        <div class="stat-box"><div class="stat-value text-value">${topPodiums}</div><div class="stat-label">Most Podiums</div></div>
+                        <div class="stat-box"><div class="stat-value text-value">${topFastestLaps}</div><div class="stat-label">Most Fastest Laps</div></div>
+                        <div class="stat-box"><div class="stat-value text-value" style="color:var(--f1-red);">${topDnfs}</div><div class="stat-label">Most DNFs</div></div>
+                        <div class="stat-box" style="justify-content:center;"><div class="stat-value text-value" style="display:flex; flex-direction:column; align-items:center;">${lapRecText}</div><div class="stat-label">All-Time Lap Record</div></div>
                     </div>
 
                     <div class="charts-section" style="grid-template-columns: 1fr;">
