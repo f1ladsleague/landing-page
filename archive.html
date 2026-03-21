@@ -40,8 +40,8 @@
         .tab-btn.active { background: var(--f1-red); color: #fff; border-color: var(--f1-red); box-shadow: 0 4px 15px rgba(225, 6, 0, 0.4); }
         .tab-btn:disabled { opacity: 0.3; cursor: not-allowed; }
         
-        .results-wrapper { background: var(--f1-card); border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
+        .results-wrapper { background: var(--f1-card); border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); width: 100%; box-sizing: border-box;}
+        table { width: 100%; border-collapse: collapse; text-align: left; table-layout: auto; }
         th { background: rgba(0,0,0,0.4); padding: 15px 20px; color: #888; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; font-weight: 700; border-bottom: 1px solid #333; }
         td { padding: 12px 20px; border-bottom: 1px solid #2a2a35; font-size: 16px; font-weight: 600; vertical-align: middle; transition: background 0.2s; }
         tr:last-child td { border-bottom: none; }
@@ -73,18 +73,19 @@
 
         @media (max-width: 768px) {
             /* 2x2 Grid for Season Tabs */
-            .season-nav { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding-bottom: 20px;}
-            .season-tab { width: 100%; box-sizing: border-box; font-size: 16px; padding: 12px 10px; }
+            .season-nav { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding-bottom: 20px; width: 100%;}
+            .season-tab { width: 100%; box-sizing: border-box; font-size: 16px; padding: 12px 10px; margin: 0;}
             .season-tab.active::after { display: none; }
             .season-tab.active { border: 1px solid var(--f1-red); }
 
-            /* Header adjustments */
-            .header { flex-direction: column; align-items: flex-start; gap: 10px;}
-            .header-top-mobile { display: block; width: 100%; margin-bottom: 5px; }
+            /* Centered Headers adjustments */
+            .header { flex-direction: column; align-items: center; gap: 10px;}
+            .header-top-mobile { display: block; width: 100%; margin-bottom: 5px; text-align: left; }
             .header-left .back-btn { display: none; }
-            .header-left { width: 100%; }
-            .title-wrapper h2 { font-size: 24px; white-space: normal; line-height: 1.2; word-break: break-word;}
-            .race-selector { width: 100%; max-width: 100%; margin-top: 5px;}
+            .header-left { width: 100%; display: flex; flex-direction: column; align-items: center; text-align: center; }
+            .title-wrapper h2 { font-size: 22px; white-space: normal; line-height: 1.2; word-break: break-word; justify-content: center; text-align: center; width: 100%;}
+            .title-wrapper p { text-align: center; width: 100%; }
+            .race-selector { width: 100%; max-width: 100%; margin-top: 5px; text-align: center;}
             
             th, td { padding: 10px; font-size: 14px; }
             .hide-mobile { display: none; }
@@ -92,7 +93,7 @@
             .driver-photo-wrapper { width: 35px; height: 35px; }
             
             /* Strict Right Alignment for Points */
-            th.pts-col, td.pts-col { text-align: right !important; padding-right: 15px !important; }
+            th.pts-col, td.pts-col { width: 45px; text-align: right !important; padding-right: 20px !important; }
         }
     </style>
 </head>
@@ -123,7 +124,7 @@
             </div>
             <select id="race-selector" class="race-selector" onchange="handleRaceSelection(this.value)" style="display: none;"></select>
         </div>
-        <p id="race-subtitle" style="color: #aaa; font-size: 15px; margin-top: -10px; margin-bottom: 15px;">Fetching archive files.</p>
+        <p id="race-subtitle" style="color: #aaa; font-size: 15px; margin-top: -10px; margin-bottom: 15px; text-align: center;">Fetching archive files.</p>
 
         <div class="session-tabs" id="session-tabs" style="display: none;">
             <button id="tab-quali" class="tab-btn" onclick="switchSession('Qualification')">Qualification</button>
@@ -189,18 +190,7 @@
             "Portimão": "portugal", "Paul Ricard": "france"
         };
 
-        const trackEmojis = {
-            "Bahrain": "🇧🇭", "Jeddah": "🇸🇦", "Melbourne": "🇦🇺", "Baku": "🇦🇿", 
-            "Miami": "🇺🇸", "Imola": "🇮🇹", "Monaco": "🇲🇨", "Barcelona": "🇪🇸", 
-            "Spielberg": "🇦🇹", "Silverstone": "🇬🇧", "Silverstone2": "🇬🇧", 
-            "Hungaroring": "🇭🇺", "Spa-Francorchamps": "🇧🇪", "Spa": "🇧🇪",
-            "Zandvoort": "🇳🇱", "Monza": "🇮🇹", "Singapore": "🇸🇬", "Suzuka": "🇯🇵", 
-            "Losail": "🇶🇦", "Austin": "🇺🇸", "Austin2": "🇺🇸", "Mexico": "🇲🇽", 
-            "Interlagos": "🇧🇷", "Las Vegas": "🇺🇸", "Yas Marina": "🇦🇪", 
-            "Shanghai": "🇨🇳", "Montreal": "🇨🇦", "Portimão": "🇵🇹", "Paul Ricard": "🇫🇷"
-        };
-
-        // FIXED: RE-ADDED EXPLICIT TEAMS TO FIX 'UNKNOWN' CONSTRUCTORS IN STANDINGS
+        // CORRECTED SEASON 3 AND SEASON 4 TEAMS
         const finalStandings = {
             2: {
                 teams: [ {name: "Red Bull Racing", points: 149}, {name: "McLaren", points: 145}, {name: "Alfa Romeo", points: 128}, {name: "Alpine", points: 119}, {name: "AlphaTauri", points: 83}, {name: "Ferrari", points: 66}, {name: "Mercedes", points: 56} ],
@@ -208,11 +198,29 @@
             },
             3: {
                 teams: [ {name: "Ferrari", points: 201}, {name: "Red Bull Racing", points: 186}, {name: "Mercedes", points: 163}, {name: "McLaren", points: 152} ],
-                drivers: [ {name: "Mapa", points: 152, team: "McLaren"}, {name: "Nuwie G", points: 135, team: "Ferrari"}, {name: "Sahan", points: 116, team: "Red Bull Racing"}, {name: "Shahan", points: 85, team: "Red Bull Racing"}, {name: "Rodda", points: 83, team: "Mercedes"}, {name: "Kalpa", points: 80, team: "Mercedes"}, {name: "Shiyan", points: 34, team: "Ferrari"}, {name: "Eranga", points: 17, team: "McLaren"} ]
+                drivers: [ 
+                    {name: "Mapa", points: 152, team: "Red Bull Racing"}, 
+                    {name: "Nuwie G", points: 135, team: "McLaren"}, 
+                    {name: "Sahan", points: 116, team: "Ferrari"}, 
+                    {name: "Shahan", points: 85, team: "Ferrari"}, 
+                    {name: "Rodda", points: 83, team: "Mercedes"}, 
+                    {name: "Kalpa", points: 80, team: "Mercedes"}, 
+                    {name: "Shiyan", points: 34, team: "Red Bull Racing"}, 
+                    {name: "Eranga", points: 17, team: "McLaren"} 
+                ]
             },
             4: {
                 teams: [ {name: "Red Bull Racing", points: 310}, {name: "Mercedes", points: 308}, {name: "Ferrari", points: 199}, {name: "McLaren", points: 152} ],
-                drivers: [ {name: "Mapa", points: 195, team: "Ferrari"}, {name: "Rodda", points: 172, team: "Mercedes"}, {name: "Nuwie G", points: 151, team: "Red Bull Racing"}, {name: "Kalpa", points: 136, team: "Mercedes"}, {name: "Sahan", points: 127, team: "Red Bull Racing"}, {name: "Shahan", points: 110, team: "Ferrari"}, {name: "Shiyan", points: 53, team: "McLaren"}, {name: "Eranga", points: 25, team: "Ferrari"} ]
+                drivers: [ 
+                    {name: "Mapa", points: 195, team: "Ferrari"}, 
+                    {name: "Rodda", points: 172, team: "Mercedes"}, 
+                    {name: "Nuwie G", points: 151, team: "Red Bull Racing"}, 
+                    {name: "Kalpa", points: 136, team: "Mercedes"}, 
+                    {name: "Sahan", points: 127, team: "Red Bull Racing"}, 
+                    {name: "Shahan", points: 110, team: "Ferrari"}, 
+                    {name: "Shiyan", points: 53, team: "McLaren"}, 
+                    {name: "Eranga", points: 25, team: "Ferrari"} 
+                ]
             }
         };
 
@@ -230,6 +238,14 @@
                     if (driverName === "Shiyan") return "Ferrari";
                     if (driverName === "Eranga") return "McLaren";
                 }
+            }
+            if (seasonNum === 3) {
+                if (driverName === "Mapa") return "Red Bull Racing";
+                if (driverName === "Nuwie G") return "McLaren";
+                if (driverName === "Sahan" || driverName === "Shahan") return "Ferrari";
+                if (driverName === "Shiyan") return "Red Bull Racing";
+                if (driverName === "Eranga") return "McLaren";
+                if (driverName === "Rodda" || driverName === "Kalpa") return "Mercedes";
             }
             return originalTeam;
         }
@@ -370,10 +386,10 @@
             const selector = document.getElementById('race-selector');
             selector.innerHTML = `<option value="standings">🏆 Season ${sNum} Final Standings</option>`;
             
+            // Notice: Emojis are deliberately excluded from this dropdown list due to Windows OS lacking support for Country Flag Emojis.
             seasonEvents.forEach((event) => {
                 let trackDisp = event.trackName.replace(/2$/, '');
-                let emoji = trackEmojis[trackDisp] || "🏁";
-                selector.innerHTML += `<option value="${event.globalIndex}">${emoji} Round ${event.roundNum} - ${trackDisp} (${event.label})</option>`;
+                selector.innerHTML += `<option value="${event.globalIndex}">Round ${event.roundNum} - ${trackDisp} (${event.label})</option>`;
             });
             
             selector.value = "standings"; 
@@ -470,7 +486,6 @@
             
             document.getElementById('race-subtitle').innerText = `Season ${event.season} ${isQuali ? 'Qualifying' : event.label} | ${new Date(data.Date).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}`;
             
-            // Quali Table excludes Penalties/Pts, formats alignment perfectly
             document.getElementById('table-head').innerHTML = `<tr><th class="pos-col">Pos</th><th>Driver</th><th class="hide-mobile">Constructor</th>${hideGridPits ? '' : '<th class="hide-mobile">Grid</th><th class="hide-mobile">Pits</th>'}<th>${isQuali ? 'Best Lap' : 'Time / Gap'}</th>${isQuali ? '' : '<th class="hide-mobile">Penalties</th><th class="pts-col">Pts</th>'}</tr>`;
 
             let winner = data.Drivers.find(x => x.Position === 1);
