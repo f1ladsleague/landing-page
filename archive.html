@@ -20,7 +20,9 @@
         .season-tab:hover { color: #fff; background: rgba(255,255,255,0.05); }
         .season-tab.active { color: #fff; background: rgba(255,255,255,0.15); box-shadow: 0 4px 15px rgba(255,255,255,0.1); }
         .season-tab.active::after { content: ''; position: absolute; bottom: -12px; left: 0; width: 100%; height: 4px; background: #fff; border-radius: 4px 4px 0 0; }
+        
         .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; border-bottom: 2px solid #333; padding-bottom: 20px; flex-wrap: wrap; gap: 15px;}
+        .header-top-mobile { display: none; }
         .header-left { display: flex; align-items: center; min-width: 0; flex: 1; }
         .back-btn { background: #333; color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; transition: 0.3s; margin-right: 20px; text-transform: uppercase; white-space: nowrap;}
         .back-btn:hover { background: var(--f1-red); }
@@ -69,12 +71,17 @@
 
         @media (max-width: 768px) {
             .header { flex-direction: column; align-items: flex-start; }
+            .header-top-mobile { display: block; width: 100%; margin-bottom: 10px; }
+            .header-left .back-btn { display: none; }
             .header-left { width: 100%; margin-bottom: 10px; }
+            .title-wrapper h2 { font-size: 19px; white-space: normal; line-height: 1.2; word-break: break-word;}
+            .season-tab { font-size: 15px; padding: 8px 12px; }
             .race-selector { width: 100%; max-width: 100%; }
             th, td { padding: 10px; font-size: 14px; }
             .hide-mobile { display: none; }
             .driver-col { font-size: 15px; }
             .driver-photo-wrapper { width: 35px; height: 35px; }
+            .pts-col { text-align: right; padding-right: 15px; }
         }
     </style>
 </head>
@@ -91,7 +98,11 @@
             <button id="tab-s3" class="season-tab" onclick="loadSeason(3)">Season 3</button>
             <button id="tab-s4" class="season-tab" onclick="loadSeason(4)">Season 4</button>
         </div>
+        
         <div class="header" id="main-header">
+            <div class="header-top-mobile">
+                <a href="results.html" class="back-btn" style="display: inline-block;">❮ Back</a>
+            </div>
             <div class="header-left">
                 <a href="results.html" class="back-btn">❮ Back</a>
                 <div class="title-wrapper">
@@ -106,6 +117,7 @@
             <button id="tab-quali" class="tab-btn" onclick="switchSession('Qualification')">Qualification</button>
             <button id="tab-race" class="tab-btn" onclick="switchSession('Race')">Race</button>
         </div>
+        
         <div class="results-wrapper">
             <div id="loader">Compiling historical race data...</div>
             <table id="results-table" style="display: none;">
@@ -180,6 +192,25 @@
             }
         };
 
+        // Enforce Correct Team Data Pre & Post Trade
+        function getCorrectedTeam(seasonNum, driverName, trackName, originalTeam) {
+            if (seasonNum === 4) {
+                const postTrade = /portimão|portimao|shanghai|silverstone2|singapore|spa|suzuka|yas marina|zandvoort|las vegas|mexico|interlagos|losail|standings/i.test(trackName);
+                if (postTrade) {
+                    if (driverName === "Mapa") return "Ferrari";
+                    if (driverName === "Nuwie G") return "Red Bull Racing";
+                    if (driverName === "Shiyan") return "McLaren";
+                    if (driverName === "Eranga") return "Ferrari";
+                } else {
+                    if (driverName === "Mapa") return "Red Bull Racing";
+                    if (driverName === "Nuwie G") return "Ferrari";
+                    if (driverName === "Shiyan") return "Ferrari";
+                    if (driverName === "Eranga") return "McLaren";
+                }
+            }
+            return originalTeam;
+        }
+
         function getDriverPhotoUrl(seasonNum, driverName, trackName) {
             let safeName = driverName.replace(/\s+/g, '');
             if (seasonNum === 4) {
@@ -231,16 +262,6 @@
             return `+${seconds}`;
         }
 
-        // Dynamically locate the driver's most recent team to ensure flawless background colors
-        function getLatestTeam(seasonNum, driverName) {
-            let seasonRaces = validRaces.filter(r => r.season === seasonNum);
-            for(let i = seasonRaces.length - 1; i >= 0; i--) {
-                let d = seasonRaces[i].raceData.Drivers.find(x => x.Driver.Name === driverName);
-                if(d && d.Team && d.Team.Name) return d.Team.Name;
-            }
-            return null;
-        }
-
         Promise.all(archiveFiles.map(file => fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/${file}${cacheBuster}`).then(r => r.ok ? r.json().then(data => ({ data, path: file })) : null)))
         .then(results => {
             results.filter(r => r !== null).forEach(fileObj => {
@@ -252,7 +273,8 @@
                 // Bulletproof Sprint vs Feature logic
                 let maxPts = Math.max(0, ...race.Drivers.map(d => (d.DriverPointsRaw || 0) / 10));
                 let label = "Feature"; 
-                if (path.toLowerCase().includes("sprint") || race.RaceType === "Sprint" || (maxPts > 0 && maxPts <= 16)) {
+                // Any race giving out 10 or fewer points to the winner is a Sprint.
+                if (path.toLowerCase().includes("sprint") || race.RaceType === "Sprint" || (maxPts > 0 && maxPts <= 10)) {
                     label = "Sprint";
                 }
                 
@@ -364,7 +386,7 @@
                 document.getElementById('reverse-grid-footnote').style.display = "none";
                 document.getElementById('race-title').innerHTML = `Season ${activeSeasonNum} Final Standings`;
                 document.getElementById('race-subtitle').innerText = "World Drivers & Constructors Championship";
-                document.getElementById('table-head').innerHTML = `<tr><th class="pos-col">Pos</th><th>Driver</th><th class="hide-mobile">Constructor</th><th class="pts-col">Pts</th></tr>`;
+                document.getElementById('table-head').innerHTML = `<tr><th class="pos-col">Pos</th><th>Driver</th><th class="hide-mobile">Constructor</th><th class="pts-col" style="text-align: right; padding-right: 20px;">Pts</th></tr>`;
 
                 let data = finalStandings[activeSeasonNum];
                 if (activeSeasonNum === 1) data = calcStandings[1];
@@ -372,8 +394,7 @@
                 if (!data) { tbody.innerHTML = "<tr><td colspan='4'>Calculation Pending...</td></tr>"; return; }
 
                 data.drivers.forEach((d, idx) => {
-                    // Inject Dynamic Team verification
-                    let actualTeam = getLatestTeam(activeSeasonNum, d.name) || d.team;
+                    let actualTeam = getCorrectedTeam(activeSeasonNum, d.name, 'standings', d.team || "Unknown");
                     let teamColor = getTeamColor(actualTeam);
                     
                     tbody.innerHTML += `
@@ -388,7 +409,7 @@
                                 </a>
                             </td>
                             <td class="hide-mobile"><div class="team-cell"><span class="team-text" style="color: ${teamColor};">${actualTeam}</span></div></td>
-                            <td class="pts-col">${d.points}</td>
+                            <td class="pts-col" style="text-align: right; padding-right: 20px;">${d.points}</td>
                         </tr>`;
                 });
 
@@ -405,7 +426,7 @@
                                         <span class="driver-col" style="color:${tColor}">${t.name}${idx===0?' 🏆':''}</span>
                                     </div>
                                 </td>
-                                <td class="pts-col">${t.points}</td>
+                                <td class="pts-col" style="text-align: right; padding-right: 20px;">${t.points}</td>
                             </tr>`;
                     });
                 }
@@ -436,7 +457,9 @@
             `;
             
             document.getElementById('race-subtitle').innerText = `Season ${event.season} ${isQuali ? 'Qualifying' : event.label} | ${new Date(data.Date).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}`;
-            document.getElementById('table-head').innerHTML = `<tr><th class="pos-col">Pos</th><th>Driver</th><th class="hide-mobile">Constructor</th>${hideGridPits ? '' : '<th class="hide-mobile">Grid</th><th class="hide-mobile">Pits</th>'}<th>${isQuali ? 'Best Lap' : 'Time / Gap'}</th><th class="hide-mobile">Penalties</th>${isQuali ? '' : '<th>Pts</th>'}</tr>`;
+            
+            // Dynamic Table Head: Remove Pts/Penalties for Quali
+            document.getElementById('table-head').innerHTML = `<tr><th class="pos-col">Pos</th><th>Driver</th><th class="hide-mobile">Constructor</th>${hideGridPits ? '' : '<th class="hide-mobile">Grid</th><th class="hide-mobile">Pits</th>'}<th>${isQuali ? 'Best Lap' : 'Time / Gap'}</th>${isQuali ? '' : '<th class="hide-mobile">Penalties</th><th class="pts-col" style="text-align: right; padding-right: 20px;">Pts</th>'}</tr>`;
 
             let winner = data.Drivers.find(x => x.Position === 1);
             let winnerTime = winner ? (winner.TimeInt || 0) : 0;
@@ -444,14 +467,19 @@
             data.Drivers.sort((a, b) => a.Position - b.Position).forEach(driver => {
                 const isFL = data.FastestLapDriver && data.FastestLapDriver.Name === driver.Driver.Name;
                 
-                // Safe lookup handling for missing/undefined team objects
+                // Fetch correct team utilizing Trade checking logic
                 const tObj = driver.Team || {};
-                const tNameStr = tObj.Name || 'Unknown';
-                const tColor = getTeamColor(tNameStr);
+                const tNameRaw = tObj.Name || 'Unknown';
+                const actualTeam = getCorrectedTeam(event.season, driver.Driver.Name, event.trackName, tNameRaw);
+                const tColor = getTeamColor(actualTeam);
                 
-                let gapStr = "DNF";
-                if (driver.Status === "finished" || driver.Status === "Ok") {
-                    gapStr = (driver.Position === 1) ? formatMs(driver.TimeInt) : formatGap((driver.TimeInt || 0) - winnerTime);
+                // Determine time or gap based on session type
+                let timeOrGapDisp = "DNF";
+                if (isQuali) {
+                    let bestLapMs = driver.TimeInt || driver.FastestLapTimeInt;
+                    timeOrGapDisp = formatMs(bestLapMs);
+                } else if (driver.Status === "finished" || driver.Status === "Ok") {
+                    timeOrGapDisp = (driver.Position === 1) ? formatMs(driver.TimeInt) : formatGap((driver.TimeInt || 0) - winnerTime);
                 }
                 
                 tbody.innerHTML += `
@@ -465,11 +493,10 @@
                                 <span class="driver-col">${driver.Driver.Name}</span>
                             </a>
                         </td>
-                        <td class="hide-mobile"><div class="team-cell"><img src="${photoBase}${getTeamLogoUrl(tNameStr)}" class="team-logo-small" onerror="this.style.display='none'"> <span class="team-text" style="color: ${tColor};">${tNameStr}</span></div></td>
+                        <td class="hide-mobile"><div class="team-cell"><img src="${photoBase}${getTeamLogoUrl(actualTeam)}" class="team-logo-small" onerror="this.style.display='none'"> <span class="team-text" style="color: ${tColor};">${actualTeam}</span></div></td>
                         ${hideGridPits ? '' : `<td>${driver.GridPosition}</td><td>${driver.PitsCount}</td>`}
-                        <td class="time-col">${gapStr}</td>
-                        <td class="hide-mobile">${(driver.PenaltySecsStewards || 0) + (driver.PenaltySecsIngame || 0)}s</td>
-                        ${isQuali ? '' : `<td class="pts-col">${(driver.DriverPointsRaw || 0) / 10}</td>`}
+                        <td class="time-col">${timeOrGapDisp}</td>
+                        ${isQuali ? '' : `<td class="hide-mobile">${(driver.PenaltySecsStewards || 0) + (driver.PenaltySecsIngame || 0)}s</td><td class="pts-col" style="text-align: right; padding-right: 20px;">${(driver.DriverPointsRaw || 0) / 10}</td>`}
                     </tr>`;
             });
         }
