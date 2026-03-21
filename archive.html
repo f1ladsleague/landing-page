@@ -15,7 +15,8 @@
         .page-logo:hover { transform: scale(1.05); }
         .page-main-title { font-size: 42px; text-transform: uppercase; font-weight: 900; letter-spacing: 2px; color: #fff; margin: 0; text-shadow: 0 4px 10px rgba(0,0,0,0.6); }
         .page-subtitle { color: #888; font-size: 18px; font-weight: 700; text-transform: uppercase; letter-spacing: 3px; margin: -5px 0 0 0; }
-        .season-nav { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 10px; flex-wrap: wrap; }
+        
+        .season-nav { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 15px; flex-wrap: wrap; }
         .season-tab { background: transparent; border: none; color: #888; font-family: 'Titillium Web', sans-serif; font-size: 20px; font-weight: 900; text-transform: uppercase; padding: 10px 20px; cursor: pointer; transition: 0.3s; position: relative; border-radius: 8px; }
         .season-tab:hover { color: #fff; background: rgba(255,255,255,0.05); }
         .season-tab.active { color: #fff; background: rgba(255,255,255,0.15); box-shadow: 0 4px 15px rgba(255,255,255,0.1); }
@@ -27,7 +28,7 @@
         .back-btn { background: #333; color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; transition: 0.3s; margin-right: 20px; text-transform: uppercase; white-space: nowrap;}
         .back-btn:hover { background: var(--f1-red); }
         
-        .title-wrapper h2 { margin: 0; font-size: 24px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; color: var(--f1-red); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 10px;}
+        .title-wrapper h2 { margin: 0; font-size: 24px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; color: var(--f1-red); display: flex; align-items: center; gap: 10px;}
         .title-wrapper p { margin: 5px 0 0 0; color: #aaa; font-size: 15px; }
         
         .race-selector { background: var(--f1-card); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 12px 20px; font-family: 'Titillium Web', sans-serif; font-size: 16px; font-weight: 700; border-radius: 8px; outline: none; cursor: pointer; transition: 0.3s; max-width: 450px; }
@@ -38,6 +39,7 @@
         .tab-btn:hover:not(:disabled) { background: rgba(255,255,255,0.1); color: #fff; }
         .tab-btn.active { background: var(--f1-red); color: #fff; border-color: var(--f1-red); box-shadow: 0 4px 15px rgba(225, 6, 0, 0.4); }
         .tab-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        
         .results-wrapper { background: var(--f1-card); border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); }
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th { background: rgba(0,0,0,0.4); padding: 15px 20px; color: #888; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; font-weight: 700; border-bottom: 1px solid #333; }
@@ -70,18 +72,27 @@
         .link-hover:hover { color: #fff !important; text-decoration-color: var(--f1-red); }
 
         @media (max-width: 768px) {
-            .header { flex-direction: column; align-items: flex-start; }
-            .header-top-mobile { display: block; width: 100%; margin-bottom: 10px; }
+            /* 2x2 Grid for Season Tabs */
+            .season-nav { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding-bottom: 20px;}
+            .season-tab { width: 100%; box-sizing: border-box; font-size: 16px; padding: 12px 10px; }
+            .season-tab.active::after { display: none; }
+            .season-tab.active { border: 1px solid var(--f1-red); }
+
+            /* Header adjustments */
+            .header { flex-direction: column; align-items: flex-start; gap: 10px;}
+            .header-top-mobile { display: block; width: 100%; margin-bottom: 5px; }
             .header-left .back-btn { display: none; }
-            .header-left { width: 100%; margin-bottom: 10px; }
-            .title-wrapper h2 { font-size: 19px; white-space: normal; line-height: 1.2; word-break: break-word;}
-            .season-tab { font-size: 15px; padding: 8px 12px; }
-            .race-selector { width: 100%; max-width: 100%; }
+            .header-left { width: 100%; }
+            .title-wrapper h2 { font-size: 24px; white-space: normal; line-height: 1.2; word-break: break-word;}
+            .race-selector { width: 100%; max-width: 100%; margin-top: 5px;}
+            
             th, td { padding: 10px; font-size: 14px; }
             .hide-mobile { display: none; }
             .driver-col { font-size: 15px; }
             .driver-photo-wrapper { width: 35px; height: 35px; }
-            .pts-col { text-align: right; padding-right: 15px; }
+            
+            /* Strict Right Alignment for Points */
+            th.pts-col, td.pts-col { text-align: right !important; padding-right: 15px !important; }
         }
     </style>
 </head>
@@ -92,6 +103,7 @@
             <h1 class="page-main-title">Race Results</h1>
             <p class="page-subtitle">(Previous Seasons)</p>
         </div>
+        
         <div class="season-nav" id="season-nav" style="display: none;">
             <button id="tab-s1" class="season-tab" onclick="loadSeason(1)">Season 1</button>
             <button id="tab-s2" class="season-tab" onclick="loadSeason(2)">Season 2</button>
@@ -177,22 +189,33 @@
             "Portimão": "portugal", "Paul Ricard": "france"
         };
 
+        const trackEmojis = {
+            "Bahrain": "🇧🇭", "Jeddah": "🇸🇦", "Melbourne": "🇦🇺", "Baku": "🇦🇿", 
+            "Miami": "🇺🇸", "Imola": "🇮🇹", "Monaco": "🇲🇨", "Barcelona": "🇪🇸", 
+            "Spielberg": "🇦🇹", "Silverstone": "🇬🇧", "Silverstone2": "🇬🇧", 
+            "Hungaroring": "🇭🇺", "Spa-Francorchamps": "🇧🇪", "Spa": "🇧🇪",
+            "Zandvoort": "🇳🇱", "Monza": "🇮🇹", "Singapore": "🇸🇬", "Suzuka": "🇯🇵", 
+            "Losail": "🇶🇦", "Austin": "🇺🇸", "Austin2": "🇺🇸", "Mexico": "🇲🇽", 
+            "Interlagos": "🇧🇷", "Las Vegas": "🇺🇸", "Yas Marina": "🇦🇪", 
+            "Shanghai": "🇨🇳", "Montreal": "🇨🇦", "Portimão": "🇵🇹", "Paul Ricard": "🇫🇷"
+        };
+
+        // FIXED: RE-ADDED EXPLICIT TEAMS TO FIX 'UNKNOWN' CONSTRUCTORS IN STANDINGS
         const finalStandings = {
             2: {
                 teams: [ {name: "Red Bull Racing", points: 149}, {name: "McLaren", points: 145}, {name: "Alfa Romeo", points: 128}, {name: "Alpine", points: 119}, {name: "AlphaTauri", points: 83}, {name: "Ferrari", points: 66}, {name: "Mercedes", points: 56} ],
-                drivers: [ {name: "Mapa", points: 149}, {name: "Nuwie G", points: 145}, {name: "Sahan", points: 128}, {name: "Rodda", points: 119}, {name: "Kalpa", points: 83}, {name: "Eranga", points: 66}, {name: "Shiyan", points: 56} ]
+                drivers: [ {name: "Mapa", points: 149, team: "Red Bull Racing"}, {name: "Nuwie G", points: 145, team: "McLaren"}, {name: "Sahan", points: 128, team: "Alfa Romeo"}, {name: "Rodda", points: 119, team: "Alpine"}, {name: "Kalpa", points: 83, team: "AlphaTauri"}, {name: "Eranga", points: 66, team: "Ferrari"}, {name: "Shiyan", points: 56, team: "Mercedes"} ]
             },
             3: {
                 teams: [ {name: "Ferrari", points: 201}, {name: "Red Bull Racing", points: 186}, {name: "Mercedes", points: 163}, {name: "McLaren", points: 152} ],
-                drivers: [ {name: "Mapa", points: 152}, {name: "Nuwie G", points: 135}, {name: "Sahan", points: 116}, {name: "Shahan", points: 85}, {name: "Rodda", points: 83}, {name: "Kalpa", points: 80}, {name: "Shiyan", points: 34}, {name: "Eranga", points: 17} ]
+                drivers: [ {name: "Mapa", points: 152, team: "McLaren"}, {name: "Nuwie G", points: 135, team: "Ferrari"}, {name: "Sahan", points: 116, team: "Red Bull Racing"}, {name: "Shahan", points: 85, team: "Red Bull Racing"}, {name: "Rodda", points: 83, team: "Mercedes"}, {name: "Kalpa", points: 80, team: "Mercedes"}, {name: "Shiyan", points: 34, team: "Ferrari"}, {name: "Eranga", points: 17, team: "McLaren"} ]
             },
             4: {
                 teams: [ {name: "Red Bull Racing", points: 310}, {name: "Mercedes", points: 308}, {name: "Ferrari", points: 199}, {name: "McLaren", points: 152} ],
-                drivers: [ {name: "Mapa", points: 195}, {name: "Rodda", points: 172}, {name: "Nuwie G", points: 151}, {name: "Kalpa", points: 136}, {name: "Sahan", points: 127}, {name: "Shahan", points: 110}, {name: "Shiyan", points: 53}, {name: "Eranga", points: 25} ]
+                drivers: [ {name: "Mapa", points: 195, team: "Ferrari"}, {name: "Rodda", points: 172, team: "Mercedes"}, {name: "Nuwie G", points: 151, team: "Red Bull Racing"}, {name: "Kalpa", points: 136, team: "Mercedes"}, {name: "Sahan", points: 127, team: "Red Bull Racing"}, {name: "Shahan", points: 110, team: "Ferrari"}, {name: "Shiyan", points: 53, team: "McLaren"}, {name: "Eranga", points: 25, team: "Ferrari"} ]
             }
         };
 
-        // Enforce Correct Team Data Pre & Post Trade
         function getCorrectedTeam(seasonNum, driverName, trackName, originalTeam) {
             if (seasonNum === 4) {
                 const postTrade = /portimão|portimao|shanghai|silverstone2|singapore|spa|suzuka|yas marina|zandvoort|las vegas|mexico|interlagos|losail|standings/i.test(trackName);
@@ -270,10 +293,8 @@
                 
                 let seasonNum = path.includes("Season%204") ? 4 : path.includes("Season%203") ? 3 : path.includes("Season%202") ? 2 : 1;
                 
-                // Bulletproof Sprint vs Feature logic
                 let maxPts = Math.max(0, ...race.Drivers.map(d => (d.DriverPointsRaw || 0) / 10));
                 let label = "Feature"; 
-                // Any race giving out 10 or fewer points to the winner is a Sprint.
                 if (path.toLowerCase().includes("sprint") || race.RaceType === "Sprint" || (maxPts > 0 && maxPts <= 10)) {
                     label = "Sprint";
                 }
@@ -281,24 +302,17 @@
                 const matchingQuali = results.find(q => q && q.data.SessionType === "Qualification" && q.data.TrackName === race.TrackName && q.data.Date === race.Date);
                 
                 validRaces.push({
-                    season: seasonNum, 
-                    trackName: race.TrackName, 
-                    label: label, 
-                    date: race.Date, 
-                    raceData: race, 
-                    qualiData: matchingQuali ? matchingQuali.data : null 
+                    season: seasonNum, trackName: race.TrackName, label: label, 
+                    date: race.Date, raceData: race, qualiData: matchingQuali ? matchingQuali.data : null 
                 });
             });
 
-            // Date + Sprint Grouping Sorting Logic
             validRaces.sort((a, b) => {
                 let dA = new Date(a.date).getTime();
                 let dB = new Date(b.date).getTime();
                 if (dA !== dB) return dA - dB;
-                
                 if (a.label !== b.label) return a.label === "Sprint" ? -1 : 1;
                 
-                // Final week special manual override for 3 sprints in a day
                 let order = {"austin": 1, "austin2": 1, "silverstone": 2, "silverstone2": 2, "great britain": 2, "monza": 3, "italy": 3, "yas marina": 4};
                 let tA = a.trackName.toLowerCase(); let tB = b.trackName.toLowerCase();
                 let vA = order[tA] || 99; let vB = order[tB] || 99;
@@ -308,7 +322,7 @@
             let currentSeason = 0; let roundCounter = 0; let lastTrack = "";
 
             validRaces.forEach((ev) => {
-                let trackDisp = ev.trackName.replace(/2$/, ''); // Strip 2 from Silverstone2
+                let trackDisp = ev.trackName.replace(/2$/, '');
                 if (ev.season !== currentSeason) {
                     currentSeason = ev.season;
                     roundCounter = 1;
@@ -322,7 +336,6 @@
                 ev.globalIndex = groupedEvents.length;
                 groupedEvents.push(ev);
                 
-                // Autocalculate Season 1 Constructors Table
                 if (ev.season === 1) {
                     ev.raceData.Drivers.forEach(d => {
                         let dName = d.Driver.Name;
@@ -359,7 +372,8 @@
             
             seasonEvents.forEach((event) => {
                 let trackDisp = event.trackName.replace(/2$/, '');
-                selector.innerHTML += `<option value="${event.globalIndex}">Round ${event.roundNum} - ${trackDisp} (${event.label})</option>`;
+                let emoji = trackEmojis[trackDisp] || "🏁";
+                selector.innerHTML += `<option value="${event.globalIndex}">${emoji} Round ${event.roundNum} - ${trackDisp} (${event.label})</option>`;
             });
             
             selector.value = "standings"; 
@@ -367,7 +381,6 @@
             updateUI();
         }
 
-        // Dropdown Click Handler
         function handleRaceSelection(val) {
             activeEventIndex = val;
             activeSession = "Race";
@@ -386,7 +399,7 @@
                 document.getElementById('reverse-grid-footnote').style.display = "none";
                 document.getElementById('race-title').innerHTML = `Season ${activeSeasonNum} Final Standings`;
                 document.getElementById('race-subtitle').innerText = "World Drivers & Constructors Championship";
-                document.getElementById('table-head').innerHTML = `<tr><th class="pos-col">Pos</th><th>Driver</th><th class="hide-mobile">Constructor</th><th class="pts-col" style="text-align: right; padding-right: 20px;">Pts</th></tr>`;
+                document.getElementById('table-head').innerHTML = `<tr><th class="pos-col">Pos</th><th>Driver</th><th class="hide-mobile">Constructor</th><th class="pts-col">Pts</th></tr>`;
 
                 let data = finalStandings[activeSeasonNum];
                 if (activeSeasonNum === 1) data = calcStandings[1];
@@ -394,7 +407,7 @@
                 if (!data) { tbody.innerHTML = "<tr><td colspan='4'>Calculation Pending...</td></tr>"; return; }
 
                 data.drivers.forEach((d, idx) => {
-                    let actualTeam = getCorrectedTeam(activeSeasonNum, d.name, 'standings', d.team || "Unknown");
+                    let actualTeam = d.team || "Unknown";
                     let teamColor = getTeamColor(actualTeam);
                     
                     tbody.innerHTML += `
@@ -409,7 +422,7 @@
                                 </a>
                             </td>
                             <td class="hide-mobile"><div class="team-cell"><span class="team-text" style="color: ${teamColor};">${actualTeam}</span></div></td>
-                            <td class="pts-col" style="text-align: right; padding-right: 20px;">${d.points}</td>
+                            <td class="pts-col">${d.points}</td>
                         </tr>`;
                 });
 
@@ -426,7 +439,7 @@
                                         <span class="driver-col" style="color:${tColor}">${t.name}${idx===0?' 🏆':''}</span>
                                     </div>
                                 </td>
-                                <td class="pts-col" style="text-align: right; padding-right: 20px;">${t.points}</td>
+                                <td class="pts-col">${t.points}</td>
                             </tr>`;
                     });
                 }
@@ -449,7 +462,6 @@
             let trackDisp = event.trackName.replace(/2$/, '');
             let flagImg = trackCountryFlags[trackDisp] ? `<img src="${photoBase}${trackCountryFlags[trackDisp]}.png" style="height:24px; border-radius:3px; vertical-align:middle; box-shadow:0 2px 4px rgba(0,0,0,0.5);">` : '';
             
-            // Interactive Link for the Track Name
             document.getElementById('race-title').innerHTML = `
                 <a href="statistics.html?track=${encodeURIComponent(trackDisp)}" class="link-hover" style="color:inherit; text-decoration:none; display:flex; align-items:center; gap:10px;" title="View ${trackDisp} Analytics">
                     ${flagImg} Round ${event.roundNum} - ${trackDisp}
@@ -458,8 +470,8 @@
             
             document.getElementById('race-subtitle').innerText = `Season ${event.season} ${isQuali ? 'Qualifying' : event.label} | ${new Date(data.Date).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}`;
             
-            // Dynamic Table Head: Remove Pts/Penalties for Quali
-            document.getElementById('table-head').innerHTML = `<tr><th class="pos-col">Pos</th><th>Driver</th><th class="hide-mobile">Constructor</th>${hideGridPits ? '' : '<th class="hide-mobile">Grid</th><th class="hide-mobile">Pits</th>'}<th>${isQuali ? 'Best Lap' : 'Time / Gap'}</th>${isQuali ? '' : '<th class="hide-mobile">Penalties</th><th class="pts-col" style="text-align: right; padding-right: 20px;">Pts</th>'}</tr>`;
+            // Quali Table excludes Penalties/Pts, formats alignment perfectly
+            document.getElementById('table-head').innerHTML = `<tr><th class="pos-col">Pos</th><th>Driver</th><th class="hide-mobile">Constructor</th>${hideGridPits ? '' : '<th class="hide-mobile">Grid</th><th class="hide-mobile">Pits</th>'}<th>${isQuali ? 'Best Lap' : 'Time / Gap'}</th>${isQuali ? '' : '<th class="hide-mobile">Penalties</th><th class="pts-col">Pts</th>'}</tr>`;
 
             let winner = data.Drivers.find(x => x.Position === 1);
             let winnerTime = winner ? (winner.TimeInt || 0) : 0;
@@ -467,13 +479,11 @@
             data.Drivers.sort((a, b) => a.Position - b.Position).forEach(driver => {
                 const isFL = data.FastestLapDriver && data.FastestLapDriver.Name === driver.Driver.Name;
                 
-                // Fetch correct team utilizing Trade checking logic
                 const tObj = driver.Team || {};
                 const tNameRaw = tObj.Name || 'Unknown';
                 const actualTeam = getCorrectedTeam(event.season, driver.Driver.Name, event.trackName, tNameRaw);
                 const tColor = getTeamColor(actualTeam);
                 
-                // Determine time or gap based on session type
                 let timeOrGapDisp = "DNF";
                 if (isQuali) {
                     let bestLapMs = driver.TimeInt || driver.FastestLapTimeInt;
@@ -496,7 +506,7 @@
                         <td class="hide-mobile"><div class="team-cell"><img src="${photoBase}${getTeamLogoUrl(actualTeam)}" class="team-logo-small" onerror="this.style.display='none'"> <span class="team-text" style="color: ${tColor};">${actualTeam}</span></div></td>
                         ${hideGridPits ? '' : `<td>${driver.GridPosition}</td><td>${driver.PitsCount}</td>`}
                         <td class="time-col">${timeOrGapDisp}</td>
-                        ${isQuali ? '' : `<td class="hide-mobile">${(driver.PenaltySecsStewards || 0) + (driver.PenaltySecsIngame || 0)}s</td><td class="pts-col" style="text-align: right; padding-right: 20px;">${(driver.DriverPointsRaw || 0) / 10}</td>`}
+                        ${isQuali ? '' : `<td class="hide-mobile">${(driver.PenaltySecsStewards || 0) + (driver.PenaltySecsIngame || 0)}s</td><td class="pts-col">${(driver.DriverPointsRaw || 0) / 10}</td>`}
                     </tr>`;
             });
         }
