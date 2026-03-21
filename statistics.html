@@ -966,12 +966,21 @@
             window.scrollTo(0, 0);
         }
 
+        // --- THE FIX ---
         window.onload = async () => {
             await initData();
+            
+            // Check the URL for target instructions
             const urlParams = new URLSearchParams(window.location.search);
             const targetDriver = urlParams.get('driver');
+            const targetTrack = urlParams.get('track'); // Now looking for track parameter!
+            
             if (targetDriver && driverStats[targetDriver]) {
                 renderDriverProfile(targetDriver);
+            } 
+            else if (targetTrack && trackStats[targetTrack]) {
+                // If the track is found in the URL, immediately render the track profile
+                renderTrackProfile(targetTrack);
             }
         };
     </script>
