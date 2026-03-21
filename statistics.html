@@ -33,27 +33,28 @@
         .link-hover:hover { color: var(--f1-red) !important; text-decoration-color: var(--f1-red); }
 
         /* Directory UI */
-        .directory-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; width: 100%; box-sizing: border-box;}
-        #track-directory { grid-template-columns: repeat(4, 1fr); } /* Forces exactly 4 across for 24 tracks */
+        .directory-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; width: 100%; box-sizing: border-box;}
+        #driver-directory .directory-card { width: calc(20% - 15px); } 
+        #track-directory .data-card { width: calc(25% - 15px); } 
         
-        .directory-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: 0.3s; text-decoration: none; color: inherit; display: block; position: relative; box-sizing: border-box; }
+        .directory-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: 0.3s; text-decoration: none; color: inherit; display: block; position: relative; box-sizing: border-box; flex-grow: 0; flex-shrink: 0;}
         .directory-card:hover { background: rgba(255,255,255,0.08); border-color: var(--f1-red); transform: translateY(-5px); }
         .directory-photo { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; object-position: center top; border: 3px solid #444; margin-bottom: 15px; transition: 0.3s; }
         .directory-card:hover .directory-photo { border-color: #fff; }
-        .directory-name { font-size: 20px; font-weight: 900; text-transform: uppercase; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; justify-content: center; gap: 8px;}
+        .directory-name { font-size: 20px; font-weight: 900; text-transform: uppercase; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; text-align: center;}
         .directory-sub { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
 
-        .data-card { background: rgba(0,0,0,0.4); border: 1px solid #333; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: 0.3s; width: 100%; box-sizing: border-box; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
+        .data-card { background: rgba(0,0,0,0.4); border: 1px solid #333; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: 0.3s; box-sizing: border-box; overflow: hidden; display: flex; flex-direction: column; justify-content: center; flex-grow: 0; flex-shrink: 0;}
         .data-card:hover { border-color: var(--f1-red); background: rgba(225,6,0,0.1); }
-        .data-card-title { font-size: 20px; font-weight: 900; text-transform: uppercase; margin: 0 0 10px 0; color: #fff; display: flex; align-items: center; justify-content: center; gap: 10px; word-break: break-word;}
+        .data-card-title { font-size: 20px; font-weight: 900; text-transform: uppercase; margin: 0 0 10px 0; color: #fff; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%;}
+        .data-card-title span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; max-width: 80%; }
         .data-card-stat { font-size: 14px; color: #aaa; }
-        .track-dir-flag { width: 25px; border-radius: 3px; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .track-dir-flag { width: 25px; border-radius: 3px; box-shadow: 0 2px 4px rgba(0,0,0,0.5); flex-shrink: 0;}
 
         /* Profile UI */
         .profile-wrapper { background: var(--f1-card); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .profile-nav-bar { background: rgba(0,0,0,0.6); padding: 15px 30px; border-bottom: 1px solid #333; display: flex; align-items: center; }
-        .back-btn { background: #333; color: #fff; text-decoration: none; padding: 8px 20px; border-radius: 6px; font-weight: 700; border: none; cursor: pointer; transition: 0.3s; font-family: 'Titillium Web'; text-transform: uppercase; display: inline-block;}
-        .back-btn:hover { background: var(--f1-red); }
+        .back-btn { background: #333; color: #fff; text-decoration: none; padding: 8px 20px; border-radius: 6px; font-weight: 700; border: none; cursor: pointer; transition: 0.3s; font-family: 'Titillium Web'; text-transform: uppercase; display: inline-flex; align-items: center; gap: 8px;}
+        .back-btn:hover { background: var(--f1-red); transform: translateX(-3px);}
 
         .profile-header { display: flex; align-items: center; gap: 25px; padding: 30px; background: rgba(0,0,0,0.4); border-bottom: 1px solid #333; flex-wrap: wrap;}
         .profile-photo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; object-position: center top; border: 4px solid #444; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
@@ -77,13 +78,14 @@
 
         /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: #333; border-bottom: 1px solid #333; box-sizing: border-box;}
+        .track-stats-grid { grid-template-columns: repeat(5, 1fr); }
         .stat-box { background: var(--f1-card); padding: 25px 15px; text-align: center; display: flex; flex-direction: column; justify-content: center; box-sizing: border-box;}
         .stat-value { font-size: 32px; font-weight: 900; color: #fff; line-height: 1; }
         .stat-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-top: 10px; }
         
-        /* Lap Record Sizing */
-        .stat-value.text-value { font-size: 20px; word-break: break-word; color: #ddd; }
-        .lap-record-time { font-family: monospace; font-size: 26px; font-weight: 900; line-height: 1; display: block; margin-bottom: 5px; color: #fff; }
+        /* Lap Record & Text Values */
+        .stat-value.text-value { font-size: 32px; word-break: break-word; line-height: 1.1; }
+        .lap-record-time { font-family: monospace; font-size: 26px; font-weight: 900; line-height: 1; display: block; margin-bottom: 5px; color: #fff; white-space: nowrap;}
 
         /* Charts Section */
         .charts-section { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 30px; background: rgba(0,0,0,0.2); width: 100%; box-sizing: border-box;}
@@ -118,9 +120,9 @@
         .summary-stats { font-size: 14px; color: #aaa; font-weight: 700; }
         
         .table-wrap { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { background: rgba(0,0,0,0.6); padding: 12px 20px; color: #888; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; border-bottom: 1px solid #333; }
-        td { padding: 12px 20px; border-bottom: 1px solid #2a2a35; font-size: 15px; font-weight: 600; color: inherit; transition: background 0.2s;}
+        table { width: 100%; border-collapse: collapse; text-align: left; table-layout: fixed;}
+        th { background: rgba(0,0,0,0.6); padding: 12px 10px; color: #888; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; border-bottom: 1px solid #333; }
+        td { padding: 12px 10px; border-bottom: 1px solid #2a2a35; font-size: 15px; font-weight: 600; color: inherit; transition: background 0.2s;}
         tr:last-child td { border-bottom: none; }
 
         /* Color Overrides for Rows */
@@ -157,16 +159,20 @@
         #loader { text-align: center; padding: 50px; font-size: 18px; color: #aaa; font-style: italic; }
 
         @media (max-width: 1000px) {
-            .directory-grid { grid-template-columns: repeat(3, 1fr); }
-            #track-directory { grid-template-columns: repeat(3, 1fr); }
-            .stats-grid { grid-template-columns: repeat(3, 1fr); }
+            #driver-directory .directory-card { width: calc(33.333% - 15px); }
+            #track-directory .data-card { width: calc(33.333% - 15px); }
         }
         @media (max-width: 768px) {
-            .directory-grid { grid-template-columns: repeat(2, 1fr); }
-            #track-directory { grid-template-columns: repeat(2, 1fr); }
+            #driver-directory .directory-card { width: calc(50% - 15px); }
+            #track-directory .data-card { width: calc(50% - 15px); }
+            
+            .data-card-title { font-size: 16px; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .track-stats-grid { grid-template-columns: repeat(2, 1fr); }
+            
+            .stat-value.text-value { font-size: 22px; }
             .lap-record-time { font-size: 18px !important; }
-            .stat-value.text-value { font-size: 14px; }
+            
             .profile-header { flex-direction: column; text-align: center; padding: 20px; }
             .profile-name { justify-content: center; font-size: 32px; flex-wrap: wrap;}
             .profile-meta { justify-content: center; }
@@ -238,7 +244,6 @@
     <script>
         const photoBase = "https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/";
         
-        // Exact Hex Codes requested
         const teamColors = { 
             "Mercedes": "#00D7B6", 
             "Red Bull": "#4781D7", 
@@ -269,7 +274,7 @@
           { "Name": "Nuwie G", "RealName": "Nuwantha Gamage", "InGameName": "Nuwie_G", "Nationality": "Saudi Arabia", "RaceNumber": 11, "GamePlatform": "PS5" },
           { "Name": "Shahan", "RealName": "Shahan Withanage", "InGameName": "ShahanW", "Nationality": "Pakistan", "RaceNumber": 13, "GamePlatform": "PS5" },
           { "Name": "Sameera", "RealName": "Sameera Malimbada", "InGameName": "S. Malimbada", "Nationality": "Sri Lanka", "RaceNumber": 98, "GamePlatform": "PC" },
-          { "Name": "Sahan", "RealName": "Sahan Wimalagunaratna", "InGameName": "Laforet", "RaceNumber": 15, "GamePlatform": "PC" },
+          { "Name": "Sahan", "RealName": "Sahan Wimalagunaratna", "InGameName": "Laforet", "Nationality": "Barbados", "RaceNumber": 15, "GamePlatform": "PC" },
           { "Name": "Nippa E", "RealName": "Nippa Ekanayake", "InGameName": "Racer4965", "Nationality": "Fiji", "RaceNumber": 69, "GamePlatform": "PS5" },
           { "Name": "Eranga", "RealName": "Eranga Pelpola", "InGameName": "BiGDaddyE3002", "RaceNumber": 91, "GamePlatform": "Xbox" },
           { "Name": "Rodda", "RealName": "Nuwi Rodrigo", "InGameName": "NuwiRODDA", "Nationality": "Germany", "RaceNumber": 92, "GamePlatform": "PS5" },
@@ -277,6 +282,8 @@
         ];
 
         const driverAwards = {
+            "Mapa": ["Season 1 - World Drivers Champion", "Season 2 - World Drivers Champion", "Season 3 - World Drivers Champion", "Season 4 - World Drivers Champion"],
+            "Shahan": ["Season 3 - Drivers MVP", "Season 3 - Most Improved Driver", "Season 3 - Rookie of the Season"],
             "Rodda": ["Season 4 - Cleanest Driver", "Season 4 - Drivers MVP", "Season 4 - Overtake of the Season"],
             "Kalpa": ["Season 4 - Most Improved Driver"]
         };
@@ -308,30 +315,7 @@
             "Season%202/results_miami_race.json", "Season%202/results_imola_race.json", "Season%202/results_monza_race.json", "Season%202/results_spa-francorchamps_race.json", "Season%202/results_barcelona_race.json", "Season%202/results_baku_race.json", "Season%202/results_losail_race.json", "Season%202/results_hungaroring_race.json", "Season%202/results_singapore_race.json",
             "Season%203/results_imola_race.json", "Season%203/results_shanghai_sprint.json", "Season%203/results_shanghai_race.json", "Season%203/results_austin_sprint.json", "Season%203/results_austin_race.json", "Season%203/results_zandvoort_race.json", "Season%203/results_mexico_race.json", "Season%203/results_interlagos_sprint.json", "Season%203/results_interlagos_race.json", "Season%203/results_las%20vegas_race.json", "Season%203/results_yas%20marina_race.json",
             
-            "Season%204/results_austin2_race.json",
-            "Season%204/results_austin_race.json",
-            "Season%204/results_baku_race.json",
-            "Season%204/results_barcelona_race.json",
-            "Season%204/results_hungaroring_race.json",
-            "Season%204/results_imola_race.json",
-            "Season%204/results_interlagos_race.json",
-            "Season%204/results_las%20vegas_race.json",
-            "Season%204/results_losail_race.json",
-            "Season%204/results_melbourne_race.json",
-            "Season%204/results_mexico_race.json",
-            "Season%204/results_monaco_race.json",
-            "Season%204/results_montreal_race.json",
-            "Season%204/results_monza_race.json",
-            "Season%204/results_paul%20ricard_race.json",
-            "Season%204/results_portimão_race.json",
-            "Season%204/results_shanghai_race.json",
-            "Season%204/results_silverstone2_race.json",
-            "Season%204/results_silverstone_race.json",
-            "Season%204/results_singapore_race.json",
-            "Season%204/results_spa-francorchamps_race.json",
-            "Season%204/results_suzuka_race.json",
-            "Season%204/results_yas%20marina_race.json",
-            "Season%204/results_zandvoort_race.json"
+            "Season%204/results_austin2_qualification.json", "Season%204/results_austin2_race.json", "Season%204/results_austin_qualification.json", "Season%204/results_austin_race.json", "Season%204/results_baku_qualification.json", "Season%204/results_baku_race.json", "Season%204/results_barcelona_qualification.json", "Season%204/results_barcelona_race.json", "Season%204/results_hungaroring_qualification.json", "Season%204/results_hungaroring_race.json", "Season%204/results_imola_qualification.json", "Season%204/results_imola_race.json", "Season%204/results_interlagos_qualification.json", "Season%204/results_interlagos_race.json", "Season%204/results_las%20vegas_qualification.json", "Season%204/results_las%20vegas_race.json", "Season%204/results_losail_qualification.json", "Season%204/results_losail_race.json", "Season%204/results_melbourne_qualification.json", "Season%204/results_melbourne_race.json", "Season%204/results_mexico_qualification.json", "Season%204/results_mexico_race.json", "Season%204/results_monaco_qualification.json", "Season%204/results_monaco_race.json", "Season%204/results_montreal_qualification.json", "Season%204/results_montreal_race.json", "Season%204/results_monza_qualification.json", "Season%204/results_monza_race.json", "Season%204/results_paul%20ricard_qualification.json", "Season%204/results_paul%20ricard_race.json", "Season%204/results_portimão_qualification.json", "Season%204/results_portimão_race.json", "Season%204/results_shanghai_qualification.json", "Season%204/results_shanghai_race.json", "Season%204/results_silverstone2_qualification.json", "Season%204/results_silverstone2_race.json", "Season%204/results_silverstone_qualification.json", "Season%204/results_silverstone_race.json", "Season%204/results_singapore_qualification.json", "Season%204/results_singapore_race.json", "Season%204/results_spa-francorchamps_qualification.json", "Season%204/results_spa-francorchamps_race.json", "Season%204/results_suzuka_qualification.json", "Season%204/results_suzuka_race.json", "Season%204/results_yas%20marina_qualification.json", "Season%204/results_yas%20marina_race.json", "Season%204/results_zandvoort_qualification.json", "Season%204/results_zandvoort_race.json"
         ];
         const cacheBuster = `?v=${new Date().getTime()}`;
 
@@ -365,6 +349,26 @@
             }).catch(err => { alert("Failed to copy. Please manually select the text."); });
         }
 
+        function ensureDriverStats(dName) {
+            if (!driverStats[dName]) {
+                driverStats[dName] = { 
+                    name: dName, currentTeam: "Unknown", starts: 0, wins: 0, podiums: 0, 
+                    fls: 0, poles: 0, dnfs: 0, penPts: 0, totalPtsSort: 0,
+                    sumPos: 0, bestPos: 999, teamsTracked: {}, tracksTracked: {}, seasons: {}
+                };
+            }
+        }
+
+        function ensureTrackStats(tNameStr) {
+            if (!trackStats[tNameStr]) {
+                trackStats[tNameStr] = { 
+                    name: tNameStr, races: 0, sessions: [],
+                    driverFinishes: {}, driverWins: {}, driverSprintWins: {}, driverFeatureWins: {}, driverPoles: {},
+                    lapRecord: { time: 999999999, driver: "-" }
+                };
+            }
+        }
+
         async function initData() {
             try {
                 staticDriverProfiles.forEach(d => driverProfiles[d.Name] = d);
@@ -382,6 +386,24 @@
                 const results = await Promise.all(fetchPromises);
                 const validFiles = results.filter(r => r !== null);
                 
+                // --- Parse Qualifications natively for accurate Pole Positions ---
+                const qualis = validFiles.filter(f => f.data.SessionType === "Qualification");
+                qualis.forEach(fileObj => {
+                    let q = fileObj.data;
+                    let tNameStr = q.TrackName;
+                    if (tNameStr === "Spa-Francorchamps") tNameStr = "Spa";
+                    
+                    let p1 = q.Drivers.find(d => d.Position === 1);
+                    if (p1) {
+                        let dName = p1.Driver.Name;
+                        ensureDriverStats(dName);
+                        ensureTrackStats(tNameStr);
+                        driverStats[dName].poles++;
+                        trackStats[tNameStr].driverPoles[dName] = (trackStats[tNameStr].driverPoles[dName] || 0) + 1;
+                    }
+                });
+
+                // --- Process Main Races & Sprints ---
                 const racesAndSprints = validFiles.filter(f => f.data.SessionType === "Race");
 
                 racesAndSprints.forEach(fileObj => {
@@ -426,15 +448,7 @@
         function computeStatistics() {
             allEvents.forEach((ev) => {
                 let tNameStr = ev.trackName;
-                
-                if (!trackStats[tNameStr]) trackStats[tNameStr] = { 
-                    name: tNameStr, 
-                    races: 0, 
-                    sessions: [],
-                    driverFinishes: {},
-                    driverWins: {},
-                    lapRecord: { time: 999999999, driver: "-" }
-                };
+                ensureTrackStats(tNameStr);
                 
                 trackStats[tNameStr].races++;
                 trackStats[tNameStr].sessions.push(ev);
@@ -445,6 +459,8 @@
 
                 ev.raceData.Drivers.forEach(d => {
                     let dName = d.Driver.Name;
+                    ensureDriverStats(dName);
+
                     let tName = d.Team ? d.Team.Name : "Unknown";
                     let pts = (d.DriverPointsRaw / 10) || 0;
                     let pos = d.Position;
@@ -471,24 +487,17 @@
                     }
                     trackStats[tNameStr].driverFinishes[dName].total++;
                     
-                    if (isDnf) {
-                        trackStats[tNameStr].driverFinishes[dName]["DNF"]++;
-                    } else if (pos >= 1 && pos <= 10) {
-                        trackStats[tNameStr].driverFinishes[dName][pos]++;
-                    }
+                    if (isDnf) trackStats[tNameStr].driverFinishes[dName]["DNF"]++;
+                    else if (pos >= 1 && pos <= 10) trackStats[tNameStr].driverFinishes[dName][pos]++;
                     
-                    if (pos === 1 && ev.label === "Feature") trackStats[tNameStr].driverWins[dName] = (trackStats[tNameStr].driverWins[dName] || 0) + 1;
+                    if (pos === 1) {
+                        trackStats[tNameStr].driverWins[dName] = (trackStats[tNameStr].driverWins[dName] || 0) + 1;
+                        if (ev.label === "Sprint") trackStats[tNameStr].driverSprintWins[dName] = (trackStats[tNameStr].driverSprintWins[dName] || 0) + 1;
+                        else trackStats[tNameStr].driverFeatureWins[dName] = (trackStats[tNameStr].driverFeatureWins[dName] || 0) + 1;
+                    }
                     
                     if (flTime > 0 && flTime < trackStats[tNameStr].lapRecord.time) {
                         trackStats[tNameStr].lapRecord = { time: flTime, driver: dName };
-                    }
-
-                    if (!driverStats[dName]) {
-                        driverStats[dName] = { 
-                            name: dName, currentTeam: tName, starts: 0, wins: 0, podiums: 0, 
-                            fls: 0, poles: 0, dnfs: 0, penPts: 0, totalPtsSort: 0,
-                            sumPos: 0, bestPos: 999, teamsTracked: {}, tracksTracked: {}, seasons: {}
-                        };
                     }
 
                     let s = driverStats[dName];
@@ -497,6 +506,12 @@
                     s.penPts += penPts;
                     s.totalPtsSort += pts; 
                     
+                    // Fallback Pole Position for Season 1 (No Quali files exist for S1)
+                    if (ev.season === 1 && d.GridPosition === 1) {
+                        s.poles++;
+                        trackStats[tNameStr].driverPoles[dName] = (trackStats[tNameStr].driverPoles[dName] || 0) + 1;
+                    }
+
                     if (pos === 1) s.wins++;
                     if (pos <= 3) s.podiums++;
                     if (isFL) s.fls++;
@@ -586,7 +601,7 @@
                 let flagImg = getTrackFlagUrl(t.name) ? `<img src="${getTrackFlagUrl(t.name)}" class="track-dir-flag">` : '';
                 tDir.innerHTML += `
                     <div class="data-card" onclick="renderTrackProfile('${t.name}')">
-                        <h3 class="data-card-title">${flagImg} ${t.name}</h3>
+                        <h3 class="data-card-title">${flagImg} <span>${t.name}</span></h3>
                         <div class="data-card-stat">Races Hosted: ${t.races}</div>
                     </div>
                 `;
@@ -624,7 +639,7 @@
             if (driverAwards[dName]) {
                 let list = driverAwards[dName].map(aw => `<li>🏆 ${aw}</li>`).join('');
                 awardsHtml = `
-                    <div style="margin-top: 15px; background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); padding: 15px; border-radius: 8px; width: 100%;">
+                    <div style="margin-top: 15px; background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); padding: 15px; border-radius: 8px; width: 100%; box-sizing: border-box;">
                         <h4 style="color: gold; margin: 0 0 10px 0; text-transform: uppercase; font-size: 13px; letter-spacing: 1px;">Awards & Accolades</h4>
                         <ul style="list-style: none; padding: 0; margin: 0; font-size: 14px; color: #ddd; display: flex; flex-direction: column; gap: 6px;">
                             ${list}
@@ -634,10 +649,10 @@
             }
 
             let html = `
+                <div style="margin-bottom: 20px;">
+                    <button class="back-btn" onclick="exitToDirectory('drivers')">❮ Back to Drivers</button>
+                </div>
                 <div class="profile-wrapper">
-                    <div class="profile-nav-bar">
-                        <button class="back-btn" onclick="exitToDirectory('drivers')">❮ Back to Directory</button>
-                    </div>
                     <div class="profile-header">
                         <img src="${photoBase}${dName.replace(/\s+/g, '')}.png" class="profile-photo" style="background-color: ${bgHex};" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/blank.png'">
                         <div class="profile-info">
@@ -667,7 +682,7 @@
                         <div class="stat-box"><div class="stat-value text-value">Season ${debutSeason}</div><div class="stat-label">Debut Season</div></div>
                         <div class="stat-box"><div class="stat-value" style="color:#ff8000;">${s.dnfs}</div><div class="stat-label">Total DNFs</div></div>
                         <div class="stat-box"><div class="stat-value" style="color:var(--f1-red);">${s.penPts}</div><div class="stat-label">Penalty Points</div></div>
-                        <div class="stat-box"><div class="stat-value text-value" style="font-size:18px;">${bestTrack}</div><div class="stat-label">Best Track</div></div>
+                        <div class="stat-box"><div class="stat-value text-value" style="font-size: 26px;">${bestTrack}</div><div class="stat-label">Best Track</div></div>
                     </div>
 
                     <div class="charts-section">
@@ -708,13 +723,13 @@
 
                     return `
                         <tr class="${rowClass}">
-                            <td style="width:50px; text-align:center; font-weight:900;">${r.pos}</td>
-                            <td onclick="renderTrackProfile('${r.track}')" class="link-hover" title="View ${r.track} Analytics">
+                            <td style="width:10%; text-align:center; font-weight:900;">${r.pos}</td>
+                            <td style="width:35%;" onclick="renderTrackProfile('${r.track}')" class="link-hover" title="View ${r.track} Analytics">
                                 ${tFlag}${r.track} <span style="opacity: 0.6; font-size:11px; font-weight: normal; text-decoration: none;">(${r.label})</span>
                             </td>
-                            <td><span style="color: ${teamColors[r.team] || '#fff'} !important; font-weight: 700;">${r.team}</span></td>
-                            <td style="font-family:monospace;">${r.gap}</td>
-                            <td class="${flClass}" style="font-family:monospace;">${formatMs(r.flTime)}</td>
+                            <td style="width:20%;"><span style="color: ${teamColors[r.team] || '#fff'} !important; font-weight: 700;">${r.team}</span></td>
+                            <td style="width:20%; font-family:monospace;">${r.gap}</td>
+                            <td class="${flClass}" style="width:15%; font-family:monospace;">${formatMs(r.flTime)}</td>
                         </tr>
                     `;
                 }).join('');
@@ -728,13 +743,13 @@
                             <span class="summary-stats" style="color:#fff;">${champStatus} &nbsp;|&nbsp; Grid Size: ${sGridSize}</span>
                         </summary>
                         <div class="table-wrap">
-                            <table>
+                            <table style="width: 100%; table-layout: fixed;">
                                 <thead><tr>
-                                    <th style="text-align:center;">Pos</th>
-                                    <th>Track</th>
-                                    <th>Car</th>
-                                    <th>Gap to Leader</th>
-                                    <th>Fastest Lap</th>
+                                    <th style="width:10%; text-align:center;">Pos</th>
+                                    <th style="width:35%;">Track</th>
+                                    <th style="width:20%;">Car</th>
+                                    <th style="width:20%;">Gap to Leader</th>
+                                    <th style="width:15%;">Fastest Lap</th>
                                 </tr></thead>
                                 <tbody>${rows}</tbody>
                             </table>
@@ -787,7 +802,6 @@
             });
         }
 
-        // GENERATE CUSTOM HTML PICTOGRAM GRID FOR TRACKS
         function buildCustomTrackGraph(t) {
             const positions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, "DNF"];
             let html = '<div class="track-finishes-grid">';
@@ -808,7 +822,6 @@
                 html += `<div class="finish-col ${colClass}">
                             <div class="finish-col-title">${posLabel}</div>`;
                 
-                // Collect drivers who finished in this pos
                 let driversInPos = Object.keys(t.driverFinishes)
                     .map(dName => ({ name: dName, count: t.driverFinishes[dName][pos] || 0 }))
                     .filter(d => d.count > 0)
@@ -844,12 +857,9 @@
             let t = trackStats[tName];
             
             let topWinner = Object.keys(t.driverWins).sort((a,b) => t.driverWins[b] - t.driverWins[a])[0] || "-";
-            
-            let topPodiumDriver = Object.keys(t.driverFinishes).sort((a,b) => {
-                let podA = (t.driverFinishes[a][1]||0) + (t.driverFinishes[a][2]||0) + (t.driverFinishes[a][3]||0);
-                let podB = (t.driverFinishes[b][1]||0) + (t.driverFinishes[b][2]||0) + (t.driverFinishes[b][3]||0);
-                return podB - podA;
-            })[0] || "-";
+            let topSprintWinner = Object.keys(t.driverSprintWins).sort((a,b) => t.driverSprintWins[b] - t.driverSprintWins[a])[0] || "-";
+            let topFeatureWinner = Object.keys(t.driverFeatureWins).sort((a,b) => t.driverFeatureWins[b] - t.driverFeatureWins[a])[0] || "-";
+            let topPoleSitter = Object.keys(t.driverPoles).sort((a,b) => t.driverPoles[b] - t.driverPoles[a])[0] || "-";
 
             let lapRecText = t.lapRecord.time < 999999999 
                 ? `<span class="lap-record-time">${formatMs(t.lapRecord.time)}</span><span style="font-size:12px;color:#888; font-family: 'Titillium Web'; text-transform:uppercase;">${t.lapRecord.driver}</span>` 
@@ -883,12 +893,11 @@
 
                     return `
                         <tr class="${rowClass}">
-                            <td style="text-align:center; font-weight:900;">${d.Position}</td>
-                            <td onclick="renderDriverProfile('${d.Driver.Name}')" class="link-hover" title="View ${d.Driver.Name}'s Profile">${d.Driver.Name}</td>
-                            <td><span style="color: ${teamColors[teamNameStr] || '#fff'} !important; font-weight: 700;">${teamNameStr}</span></td>
-                            <td style="font-family:monospace;">${gapStr}</td>
-                            <td class="${flClass}" style="font-family:monospace;">${formatMs(d.FastestLapTimeInt || 0)}</td>
-                            <td style="text-align:center; color:var(--f1-red); font-weight:900;">${(d.DriverPointsRaw || 0) / 10}</td>
+                            <td style="width:10%; text-align:center; font-weight:900;">${d.Position}</td>
+                            <td style="width:35%;" onclick="renderDriverProfile('${d.Driver.Name}')" class="link-hover" title="View ${d.Driver.Name}'s Profile">${d.Driver.Name}</td>
+                            <td style="width:20%;"><span style="color: ${teamColors[teamNameStr] || '#fff'} !important; font-weight: 700;">${teamNameStr}</span></td>
+                            <td style="width:20%; font-family:monospace;">${gapStr}</td>
+                            <td class="${flClass}" style="width:15%; font-family:monospace;">${formatMs(d.FastestLapTimeInt || 0)}</td>
                         </tr>
                     `;
                 }).join('');
@@ -900,14 +909,13 @@
                             <span class="summary-stats">Grid Size: ${sortedDrivers.length}</span>
                         </summary>
                         <div class="table-wrap">
-                            <table class="analysis-table">
+                            <table class="analysis-table" style="width: 100%; table-layout: fixed;">
                                 <thead><tr>
-                                    <th style="text-align:center;">Pos</th>
-                                    <th>Driver</th>
-                                    <th>Car</th>
-                                    <th>Time / Gap</th>
-                                    <th>Fastest Lap</th>
-                                    <th style="text-align:center;">Pts</th>
+                                    <th style="width:10%; text-align:center;">Pos</th>
+                                    <th style="width:35%;">Driver</th>
+                                    <th style="width:20%;">Car</th>
+                                    <th style="width:20%;">Time / Gap</th>
+                                    <th style="width:15%;">Fastest Lap</th>
                                 </tr></thead>
                                 <tbody>${sessionRows}</tbody>
                             </table>
@@ -916,14 +924,13 @@
                 `;
             }).join('');
 
-            // Inject the custom pictogram HTML
             let customGraphHtml = buildCustomTrackGraph(t);
 
             let html = `
+                <div style="margin-bottom: 20px;">
+                    <button class="back-btn" onclick="exitToDirectory('tracks')">❮ Back to Tracks</button>
+                </div>
                 <div class="profile-wrapper">
-                    <div class="profile-nav-bar">
-                        <button class="back-btn" onclick="exitToDirectory('tracks')">❮ Back to Directory</button>
-                    </div>
                     <div class="profile-header">
                         <div>
                             <h2 class="profile-name">${flagImg} ${tName} Circuit</h2>
@@ -932,11 +939,12 @@
                         ${layoutImg}
                     </div>
                     
-                    <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr);">
-                        <div class="stat-box"><div class="stat-value text-value">${topWinner}</div><div class="stat-label">Most Feature Wins</div></div>
-                        <div class="stat-box"><div class="stat-value text-value">${topPodiumDriver}</div><div class="stat-label">Most Podiums</div></div>
-                        <div class="stat-box" style="justify-content:center;"><div class="stat-value text-value" style="display:flex; flex-direction:column; align-items:center;">${lapRecText}</div><div class="stat-label">All-Time Lap Record</div></div>
-                        <div class="stat-box"><div class="stat-value">${t.races}</div><div class="stat-label">Total Races Held</div></div>
+                    <div class="stats-grid track-stats-grid">
+                        <div class="stat-box"><div class="stat-value text-value">${topWinner}</div><div class="stat-label">Most Races Won</div></div>
+                        <div class="stat-box"><div class="stat-value text-value">${topSprintWinner}</div><div class="stat-label">Most Sprint Wins</div></div>
+                        <div class="stat-box"><div class="stat-value text-value">${topFeatureWinner}</div><div class="stat-label">Most Feature Wins</div></div>
+                        <div class="stat-box"><div class="stat-value text-value">${topPoleSitter}</div><div class="stat-label">Most Poles</div></div>
+                        <div class="stat-box" style="justify-content:center;"><div class="stat-value text-value" style="display:flex; flex-direction:column; align-items:center;">${lapRecText}</div><div class="stat-label">Lap Record</div></div>
                     </div>
 
                     <div class="charts-section" style="grid-template-columns: 1fr;">
@@ -966,20 +974,17 @@
             window.scrollTo(0, 0);
         }
 
-        // --- THE FIX ---
         window.onload = async () => {
             await initData();
             
-            // Check the URL for target instructions
             const urlParams = new URLSearchParams(window.location.search);
             const targetDriver = urlParams.get('driver');
-            const targetTrack = urlParams.get('track'); // Now looking for track parameter!
+            const targetTrack = urlParams.get('track');
             
             if (targetDriver && driverStats[targetDriver]) {
                 renderDriverProfile(targetDriver);
             } 
             else if (targetTrack && trackStats[targetTrack]) {
-                // If the track is found in the URL, immediately render the track profile
                 renderTrackProfile(targetTrack);
             }
         };
