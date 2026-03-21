@@ -7,7 +7,7 @@
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/f1ladsleague/sidebetting/6f14ca658f9c288fd8ca8a79df5c658c97c8ac92/favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --f1-red: #e10600; --f1-dark: #15151e; --f1-card: #1f1f27; --ferrari: #ef1a2d; --mclaren: #ff8000; --mercedes: #00d2be; --aston: #006f62; --redbull: #3671c6; --alpine: #0090ff; --alfaromeo: #900000; --alphatauri: #2b4562; --fastest-lap: #ae37de; }
+        :root { --f1-red: #e10600; --f1-dark: #15151e; --f1-card: #1f1f27; --fastest-lap: #ae37de; }
         body { font-family: 'Titillium Web', sans-serif; background-color: var(--f1-dark); background-image: linear-gradient(rgba(21, 21, 30, 0.95), rgba(21, 21, 30, 0.98)), url('https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/background.jpg'); background-size: cover; background-position: center; background-attachment: fixed; color: #fff; margin: 0; padding: 20px; overflow-y: scroll; }
         .container { max-width: 1100px; margin: 0 auto; }
         .top-brand-header { text-align: center; margin-bottom: 25px; }
@@ -26,8 +26,11 @@
         .back-btn:hover { background: var(--f1-red); }
         .title-wrapper h2 { margin: 0; font-size: 24px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; color: var(--f1-red); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         .title-wrapper p { margin: 5px 0 0 0; color: #aaa; font-size: 15px; }
+        
+        /* Updated Race Selector */
         .race-selector { background: var(--f1-card); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 12px 20px; font-family: 'Titillium Web', sans-serif; font-size: 16px; font-weight: 700; border-radius: 8px; outline: none; cursor: pointer; transition: 0.3s; max-width: 450px; }
         .race-selector:hover { border-color: var(--f1-red); }
+        
         .session-tabs { display: flex; gap: 15px; margin-bottom: 20px; }
         .tab-btn { background: rgba(255,255,255,0.05); color: #888; border: 1px solid rgba(255,255,255,0.1); padding: 10px 25px; border-radius: 6px; font-size: 16px; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: 0.3s; flex: 1; text-align: center; }
         .tab-btn:hover:not(:disabled) { background: rgba(255,255,255,0.1); color: #fff; }
@@ -55,7 +58,7 @@
         .driver-col { font-size: 18px; font-weight: 700; text-transform: uppercase; margin: 0; transition: 0.2s; }
         .team-cell { display: flex; align-items: center; gap: 10px; }
         .team-logo-small { height: 22px; width: auto; object-fit: contain; }
-        .team-text { color: #ccc; font-size: 14px; text-transform: uppercase; }
+        .team-text { font-size: 14px; text-transform: uppercase; font-weight: 800; }
         .time-col { font-family: monospace; font-size: 15px; letter-spacing: 0.5px; }
         .pts-col { font-weight: 900; color: var(--f1-red); text-align: center; font-size: 18px; }
         .dnf-text { color: #888; font-style: italic; }
@@ -93,7 +96,7 @@
                     <p id="race-subtitle">Fetching archive files.</p>
                 </div>
             </div>
-            <select id="race-selector" class="race-selector" style="display: none;"></select>
+            <select id="race-selector" class="race-selector" onchange="handleRaceSelection(this.value)" style="display: none;"></select>
         </div>
         <div class="session-tabs" id="session-tabs" style="display: none;">
             <button id="tab-quali" class="tab-btn" onclick="switchSession('Qualification')">Qualification</button>
@@ -114,40 +117,56 @@
     <script>
         const photoBase = "https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/";
         
-        // Corrected Hex Colors
-        const teamColors = { 
-            "Ferrari": "#ED1131", "McLaren": "#F47600", "Mercedes": "#00D7B6", 
-            "Aston Martin": "#229971", "Red Bull": "#4781D7", "Alpine": "#00A1E8", 
-            "Alfa Romeo": "#C92D4B", "AlphaTauri": "#5E8FAA" 
-        };
-        
-        // Team Logos mapping
-        const teamLogos = { 
-            "Ferrari": "FER.png", "McLaren": "MCL.png", "Mercedes": "MER.png", 
-            "Aston Martin": "AM.png", "Red Bull": "RB.png", "Alpine": "alpine.png", 
-            "Alfa Romeo": "alfaromeo.png", "AlphaTauri": "alphatauri.png" 
-        };
+        // FIX 4 & 6: Robust Hex Color & Logo Matchers
+        function getTeamColor(teamName) {
+            if(!teamName) return '#444';
+            const t = teamName.toLowerCase();
+            if(t.includes('mercedes')) return '#00D7B6';
+            if(t.includes('red bull') || t.includes('rb')) return '#4781D7';
+            if(t.includes('ferrari')) return '#ED1131';
+            if(t.includes('mclaren')) return '#F47600';
+            if(t.includes('alpine')) return '#00A1E8';
+            if(t.includes('aston martin')) return '#229971';
+            if(t.includes('alphatauri')) return '#5E8FAA';
+            if(t.includes('alfa romeo')) return '#C92D4B';
+            if(t.includes('williams')) return '#005aff';
+            if(t.includes('haas')) return '#ffffff';
+            if(t.includes('sauber')) return '#00e701';
+            return '#444';
+        }
 
-        // CORRECTED HARDCODED STANDINGS DATA
+        function getTeamLogoUrl(teamName) {
+            if(!teamName) return 'blank.png';
+            const t = teamName.toLowerCase();
+            if(t.includes('mercedes')) return 'MER.png';
+            if(t.includes('red bull') || t.includes('rb')) return 'RB.png';
+            if(t.includes('ferrari')) return 'FER.png';
+            if(t.includes('mclaren')) return 'MCL.png';
+            if(t.includes('alpine')) return 'alpine.png';
+            if(t.includes('aston martin')) return 'AM.png';
+            if(t.includes('alphatauri')) return 'alphatauri.png';
+            if(t.includes('alfa romeo')) return 'alfaromeo.png';
+            return 'blank.png';
+        }
+
         const finalStandings = {
             2: {
-                teams: [ {name: "Red Bull", points: 149}, {name: "McLaren", points: 145}, {name: "Alfa Romeo", points: 128}, {name: "Alpine", points: 119}, {name: "AlphaTauri", points: 83}, {name: "Ferrari", points: 66}, {name: "Mercedes", points: 56} ],
-                drivers: [ {name: "Mapa", points: 149, team: "Red Bull"}, {name: "Nuwie G", points: 145, team: "McLaren"}, {name: "Sahan", points: 128, team: "Alfa Romeo"}, {name: "Rodda", points: 119, team: "Alpine"}, {name: "Kalpa", points: 83, team: "AlphaTauri"}, {name: "Eranga", points: 66, team: "Ferrari"}, {name: "Shiyan", points: 56, team: "Mercedes"} ]
+                teams: [ {name: "Red Bull Racing", points: 149}, {name: "McLaren", points: 145}, {name: "Alfa Romeo", points: 128}, {name: "Alpine", points: 119}, {name: "AlphaTauri", points: 83}, {name: "Ferrari", points: 66}, {name: "Mercedes", points: 56} ],
+                drivers: [ {name: "Mapa", points: 149, team: "Red Bull Racing"}, {name: "Nuwie G", points: 145, team: "McLaren"}, {name: "Sahan", points: 128, team: "Alfa Romeo"}, {name: "Rodda", points: 119, team: "Alpine"}, {name: "Kalpa", points: 83, team: "AlphaTauri"}, {name: "Eranga", points: 66, team: "Ferrari"}, {name: "Shiyan", points: 56, team: "Mercedes"} ]
             },
             3: {
-                teams: [ {name: "Ferrari", points: 201}, {name: "Red Bull", points: 186}, {name: "Mercedes", points: 163}, {name: "McLaren", points: 152} ],
-                drivers: [ {name: "Mapa", points: 152, team: "McLaren"}, {name: "Nuwie G", points: 135, team: "Ferrari"}, {name: "Sahan", points: 116, team: "Red Bull"}, {name: "Shahan", points: 85, team: "Red Bull"}, {name: "Rodda", points: 83, team: "Mercedes"}, {name: "Kalpa", points: 80, team: "Mercedes"}, {name: "Shiyan", points: 34, team: "Ferrari"}, {name: "Eranga", points: 17, team: "McLaren"} ]
+                teams: [ {name: "Ferrari", points: 201}, {name: "Red Bull Racing", points: 186}, {name: "Mercedes", points: 163}, {name: "McLaren", points: 152} ],
+                drivers: [ {name: "Mapa", points: 152, team: "McLaren"}, {name: "Nuwie G", points: 135, team: "Ferrari"}, {name: "Sahan", points: 116, team: "Red Bull Racing"}, {name: "Shahan", points: 85, team: "Red Bull Racing"}, {name: "Rodda", points: 83, team: "Mercedes"}, {name: "Kalpa", points: 80, team: "Mercedes"}, {name: "Shiyan", points: 34, team: "Ferrari"}, {name: "Eranga", points: 17, team: "McLaren"} ]
             },
             4: {
-                teams: [ {name: "Red Bull", points: 310}, {name: "Mercedes", points: 308}, {name: "Ferrari", points: 199}, {name: "McLaren", points: 152} ],
-                drivers: [ {name: "Mapa", points: 195, team: "Ferrari"}, {name: "Rodda", points: 172, team: "Mercedes"}, {name: "Nuwie G", points: 151, team: "Red Bull"}, {name: "Kalpa", points: 136, team: "Mercedes"}, {name: "Sahan", points: 127, team: "Red Bull"}, {name: "Shahan", points: 110, team: "Ferrari"}, {name: "Shiyan", points: 53, team: "McLaren"}, {name: "Eranga", points: 25, team: "Ferrari"} ]
+                teams: [ {name: "Red Bull Racing", points: 310}, {name: "Mercedes", points: 308}, {name: "Ferrari", points: 199}, {name: "McLaren", points: 152} ],
+                drivers: [ {name: "Mapa", points: 195, team: "Ferrari"}, {name: "Rodda", points: 172, team: "Mercedes"}, {name: "Nuwie G", points: 151, team: "Red Bull Racing"}, {name: "Kalpa", points: 136, team: "Mercedes"}, {name: "Sahan", points: 127, team: "Red Bull Racing"}, {name: "Shahan", points: 110, team: "Ferrari"}, {name: "Shiyan", points: 53, team: "McLaren"}, {name: "Eranga", points: 25, team: "Ferrari"} ]
             }
         };
 
         function getDriverPhotoUrl(seasonNum, driverName, trackName) {
             let safeName = driverName.replace(/\s+/g, '');
             if (seasonNum === 4) {
-                // Post-Trade strictly Portimão onwards
                 const postTrade = /portimão|portimao|shanghai|silverstone2|singapore|spa|suzuka|yas marina|zandvoort|las vegas|mexico|interlagos|losail/i.test(trackName);
                 if (driverName === "Mapa") return `${photoBase}Season%204/Mapa_${postTrade ? 'Ferrari' : 'RedBull'}.png`;
                 if (driverName === "Nuwie G") return `${photoBase}Season%204/Nuwie${postTrade ? '_RedBull' : 'G_Ferrari'}.png`;
@@ -176,29 +195,76 @@
 
         Promise.all(archiveFiles.map(file => fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/${file}${cacheBuster}`).then(r => r.ok ? r.json().then(data => ({ data, path: file })) : null)))
         .then(results => {
+            let validRaces = [];
+            
             results.filter(r => r !== null).forEach(fileObj => {
                 const race = fileObj.data; const path = fileObj.path;
-                let seasonNum = path.includes("Season%204") ? 4 : path.includes("Season%203") ? 3 : path.includes("Season%202") ? 2 : 1;
-                let maxPts = Math.max(0, ...race.Drivers.map(d => (d.DriverPointsRaw || 0) / 10));
+                if (race.SessionType !== "Race") return;
                 
+                let seasonNum = path.includes("Season%204") ? 4 : path.includes("Season%203") ? 3 : path.includes("Season%202") ? 2 : 1;
+                
+                // FIX 3: Stricter Sprint/Feature Calculation
+                let maxPts = Math.max(0, ...race.Drivers.map(d => (d.DriverPointsRaw || 0) / 10));
                 let label = "Feature"; 
-                if (seasonNum === 4) label = (maxPts > 12) ? "Feature" : "Sprint";
-                else if (seasonNum === 3 && maxPts <= 10) label = "Sprint";
-                else if (seasonNum < 3 && maxPts <= 16) label = "Sprint";
+                if (path.toLowerCase().includes("sprint") || race.RaceType === "Sprint" || (maxPts > 0 && maxPts <= 15)) {
+                    label = "Sprint";
+                }
                 
                 const matchingQuali = results.find(q => q && q.data.SessionType === "Qualification" && q.data.TrackName === race.TrackName && q.data.Date === race.Date);
                 
-                if (race.SessionType === "Race") {
-                    groupedEvents.push({ season: seasonNum, trackName: race.TrackName, label: label, date: race.Date, raceData: race, qualiData: matchingQuali ? matchingQuali.data : null, globalIndex: groupedEvents.length });
-                    
-                    if (seasonNum === 1) {
-                        race.Drivers.forEach(d => {
-                            if(!calcStandings[1].drivers[d.Driver.Name]) calcStandings[1].drivers[d.Driver.Name] = {points:0, team: d.Team.Name};
-                            calcStandings[1].drivers[d.Driver.Name].points += (d.DriverPointsRaw/10);
-                        });
-                    }
+                validRaces.push({
+                    season: seasonNum, 
+                    trackName: race.TrackName, 
+                    label: label, 
+                    date: race.Date, 
+                    raceData: race, 
+                    qualiData: matchingQuali ? matchingQuali.data : null 
+                });
+            });
+
+            // FIX 3: Sort all races accurately by Date
+            validRaces.sort((a,b) => new Date(a.date) - new Date(b.date));
+
+            let currentSeason = 0;
+            let roundCounter = 0;
+            let lastTrack = "";
+
+            // FIX 3: Properly Assign Round Numbers
+            validRaces.forEach((ev) => {
+                if (ev.season !== currentSeason) {
+                    currentSeason = ev.season;
+                    roundCounter = 1;
+                    lastTrack = ev.trackName;
+                } else if (ev.trackName !== lastTrack) {
+                    roundCounter++;
+                    lastTrack = ev.trackName;
+                }
+                
+                ev.roundNum = roundCounter;
+                ev.globalIndex = groupedEvents.length;
+                groupedEvents.push(ev);
+                
+                // FIX 5: Calculate Season 1 Constructor Points Automatically
+                if (ev.season === 1) {
+                    ev.raceData.Drivers.forEach(d => {
+                        let dName = d.Driver.Name;
+                        let tName = d.Team.Name;
+                        let pts = (d.DriverPointsRaw || 0) / 10;
+                        
+                        if(!calcStandings[1].drivers[dName]) calcStandings[1].drivers[dName] = {points:0, team: tName};
+                        calcStandings[1].drivers[dName].points += pts;
+                        calcStandings[1].drivers[dName].team = tName; 
+                        
+                        if(!calcStandings[1].teams[tName]) calcStandings[1].teams[tName] = 0;
+                        calcStandings[1].teams[tName] += pts;
+                    });
                 }
             });
+
+            // Finalize Season 1 Arrays
+            calcStandings[1].drivers = Object.keys(calcStandings[1].drivers).map(k => ({name: k, ...calcStandings[1].drivers[k]})).sort((a,b)=>b.points-a.points);
+            calcStandings[1].teams = Object.keys(calcStandings[1].teams).map(k => ({name: k, points: calcStandings[1].teams[k]}));
+
             document.getElementById('season-nav').style.display = "flex";
             document.getElementById('race-selector').style.display = "block";
             loadSeason(4);
@@ -208,13 +274,25 @@
             activeSeasonNum = sNum;
             document.querySelectorAll('.season-tab').forEach(t => t.classList.remove('active'));
             document.getElementById(`tab-s${sNum}`).classList.add('active');
+            
             let seasonEvents = groupedEvents.filter(e => e.season === sNum);
             const selector = document.getElementById('race-selector');
             selector.innerHTML = `<option value="standings">🏆 Season ${sNum} Final Standings</option>`;
+            
             seasonEvents.forEach((event) => {
-                selector.innerHTML += `<option value="${event.globalIndex}">Round - ${event.trackName} (${event.label})</option>`;
+                selector.innerHTML += `<option value="${event.globalIndex}">Round ${event.roundNum} - ${event.trackName} (${event.label})</option>`;
             });
-            selector.value = "standings"; activeEventIndex = "standings"; updateUI();
+            
+            selector.value = "standings"; 
+            activeEventIndex = "standings"; 
+            updateUI();
+        }
+
+        // FIX 1: Handler for Dropdown Selection Change
+        function handleRaceSelection(val) {
+            activeEventIndex = val;
+            activeSession = "Race";
+            updateUI();
         }
 
         function switchSession(type) { activeSession = type; updateUI(); }
@@ -232,15 +310,12 @@
                 document.getElementById('table-head').innerHTML = `<tr><th class="pos-col">Pos</th><th>Driver</th><th class="hide-mobile">Constructor</th><th class="pts-col">Pts</th></tr>`;
 
                 let data = finalStandings[activeSeasonNum];
-                if (activeSeasonNum === 1) {
-                    let sorted = Object.keys(calcStandings[1].drivers).map(k => ({name: k, ...calcStandings[1].drivers[k]})).sort((a,b)=>b.points-a.points);
-                    data = { drivers: sorted, teams: [] };
-                }
+                if (activeSeasonNum === 1) data = calcStandings[1];
 
                 if (!data) { tbody.innerHTML = "<tr><td colspan='4'>Calculation Pending...</td></tr>"; return; }
 
                 data.drivers.forEach((d, idx) => {
-                    let teamColor = teamColors[d.team] || '#222';
+                    let teamColor = getTeamColor(d.team);
                     tbody.innerHTML += `
                         <tr class="${idx === 0 ? 'wdc-row' : ''}">
                             <td class="pos-col">${idx+1}</td>
@@ -252,7 +327,7 @@
                                     <span class="driver-col">${d.name}${idx===0?' 👑':''}</span>
                                 </a>
                             </td>
-                            <td class="hide-mobile"><div class="team-cell"><span class="team-text">${d.team}</span></div></td>
+                            <td class="hide-mobile"><div class="team-cell"><span class="team-text" style="color: ${teamColor};">${d.team}</span></div></td>
                             <td class="pts-col">${d.points}</td>
                         </tr>`;
                 });
@@ -260,13 +335,14 @@
                 if (data.teams.length > 0) {
                     tbody.innerHTML += `<tr><td colspan="4" style="background: rgba(0,0,0,0.4); text-align: center; color: #888; font-weight: 900; letter-spacing: 2px; padding: 20px;">CONSTRUCTORS CHAMPIONSHIP</td></tr>`;
                     data.teams.sort((a,b)=>b.points-a.points).forEach((t, idx) => {
+                        let tColor = getTeamColor(t.name);
                         tbody.innerHTML += `
                             <tr class="${idx===0?'wdc-row':''}">
                                 <td class="pos-col">${idx+1}</td>
                                 <td colspan="2">
                                     <div class="team-cell">
-                                        <img src="${photoBase}${teamLogos[t.name] || 'blank.png'}" class="team-logo-small">
-                                        <span class="driver-col" style="color:${teamColors[t.name]}">${t.name}${idx===0?' 🏆':''}</span>
+                                        <img src="${photoBase}${getTeamLogoUrl(t.name)}" class="team-logo-small">
+                                        <span class="driver-col" style="color:${tColor}">${t.name}${idx===0?' 🏆':''}</span>
                                     </div>
                                 </td>
                                 <td class="pts-col">${t.points}</td>
@@ -276,22 +352,26 @@
                 return;
             }
 
-            const event = groupedEvents[activeEventIndex]; const data = activeSession === "Qualification" ? event.qualiData : event.raceData;
+            const event = groupedEvents[activeEventIndex]; 
+            const data = activeSession === "Qualification" ? event.qualiData : event.raceData;
             const isQuali = activeSession === "Qualification";
+            
             document.getElementById('session-tabs').style.display = "flex";
-            document.getElementById('tab-quali').disabled = !event.qualiData; document.getElementById('tab-quali').className = `tab-btn ${isQuali ? 'active' : ''}`; document.getElementById('tab-race').className = `tab-btn ${!isQuali ? 'active' : ''}`;
+            document.getElementById('tab-quali').disabled = !event.qualiData; 
+            document.getElementById('tab-quali').className = `tab-btn ${isQuali ? 'active' : ''}`; 
+            document.getElementById('tab-race').className = `tab-btn ${!isQuali ? 'active' : ''}`;
             
             const reverseFootnote = document.getElementById('reverse-grid-footnote');
             reverseFootnote.style.display = (!isQuali && (event.season === 2 || event.season === 3)) ? "block" : "none";
             const hideGridPits = isQuali || event.season >= 2;
 
-            document.getElementById('race-title').innerText = event.trackName;
+            document.getElementById('race-title').innerText = `Round ${event.roundNum} - ${event.trackName}`;
             document.getElementById('race-subtitle').innerText = `Season ${event.season} ${isQuali ? 'Qualifying' : event.label} | ${new Date(data.Date).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}`;
             document.getElementById('table-head').innerHTML = `<tr><th class="pos-col">Pos</th><th>Driver</th><th class="hide-mobile">Constructor</th>${hideGridPits ? '' : '<th class="hide-mobile">Grid</th><th class="hide-mobile">Pits</th>'}<th>${isQuali ? 'Best Lap' : 'Time / Gap'}</th><th class="hide-mobile">Penalties</th>${isQuali ? '' : '<th>Pts</th>'}</tr>`;
 
             data.Drivers.sort((a, b) => a.Position - b.Position).forEach(driver => {
                 const isFL = data.FastestLapDriver && data.FastestLapDriver.Name === driver.Driver.Name;
-                const tColor = teamColors[driver.Team.Name] || '#222';
+                const tColor = getTeamColor(driver.Team.Name);
                 
                 tbody.innerHTML += `
                     <tr class="${!isQuali && isFL ? 'fl-row' : ''}">
@@ -304,7 +384,7 @@
                                 <span class="driver-col">${driver.Driver.Name}</span>
                             </a>
                         </td>
-                        <td class="hide-mobile"><div class="team-cell"><img src="${photoBase}${teamLogos[driver.Team.Name]}" class="team-logo-small"> <span class="team-text">${driver.Team.Name}</span></div></td>
+                        <td class="hide-mobile"><div class="team-cell"><img src="${photoBase}${getTeamLogoUrl(driver.Team.Name)}" class="team-logo-small"> <span class="team-text" style="color: ${tColor};">${driver.Team.Name}</span></div></td>
                         ${hideGridPits ? '' : `<td>${driver.GridPosition}</td><td>${driver.PitsCount}</td>`}
                         <td class="time-col">${driver.Status === "finished" || driver.Status === "Ok" ? (driver.Position === 1 ? formatMs(driver.TimeInt) : formatGap(driver.TimeInt - data.Drivers.find(x=>x.Position===1).TimeInt)) : "DNF"}</td>
                         <td class="hide-mobile">${(driver.PenaltySecsStewards || 0) + (driver.PenaltySecsIngame || 0)}s</td>
