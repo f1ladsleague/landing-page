@@ -63,19 +63,38 @@
             text-shadow: 0 4px 10px rgba(0,0,0,0.6);
         }
 
+        /* CROSS-LINKING STYLES */
+        .link-hover {
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            transition: color 0.2s ease, transform 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+        .link-hover:hover {
+            color: var(--f1-red) !important;
+        }
+        .driver-cell.link-hover:hover .driver-col {
+            color: var(--f1-red);
+        }
+        .driver-cell.link-hover:hover .driver-photo-wrapper {
+            border-color: #fff;
+            transform: scale(1.05);
+        }
+
         /* HEADER & NAVIGATION */
         .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; border-bottom: 2px solid #333; padding-bottom: 20px; flex-wrap: wrap; gap: 15px;}
         .header-left { display: flex; align-items: center; min-width: 0; flex: 1; }
         .header-right { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
         
         .back-btn { background: #333; color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; transition: 0.3s; margin-right: 20px; text-transform: uppercase; white-space: nowrap;}
-        .back-btn:hover { background: var(--f1-red); }
+        .back-btn:hover { background: var(--f1-red); transform: translateX(-3px); }
         
-        .archive-btn { background: transparent; color: #aaa; border: 1px solid #555; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; transition: 0.3s; text-transform: uppercase; white-space: nowrap; }
-        .archive-btn:hover { background: #333; color: #fff; border-color: #888; }
-
-        .title-wrapper h2 { margin: 0; font-size: 24px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; color: var(--f1-red); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        .title-wrapper h2 { margin: 0; font-size: 24px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; color: var(--f1-red); display: flex; align-items: center; gap: 10px;}
         .title-wrapper p { margin: 5px 0 0 0; color: #aaa; font-size: 15px; }
+
+        .track-flag { height: 24px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
 
         /* DROPDOWN SELECTOR */
         .race-selector {
@@ -131,13 +150,14 @@
         /* SPECIFIC COLUMNS */
         .pos-col { width: 50px; text-align: center; font-weight: 900; font-size: 18px; color: #aaa; }
         
-        .driver-cell { display: flex; align-items: center; gap: 15px; }
+        .driver-cell { display: inline-flex; align-items: center; gap: 15px; }
         
         /* ZOOMED DRIVER PHOTO WRAPPER */
         .driver-photo-wrapper {
             width: 45px; height: 45px; border-radius: 50%; overflow: hidden; 
             border: 2px solid #444; background: #222; flex-shrink: 0;
             display: flex; align-items: flex-start; justify-content: center;
+            transition: 0.2s ease;
         }
         .driver-photo { 
             width: 100%; height: 100%; 
@@ -147,7 +167,7 @@
             transform: scale(1.6); 
         }
         
-        .driver-col { font-size: 18px; font-weight: 700; text-transform: uppercase; margin: 0; }
+        .driver-col { font-size: 18px; font-weight: 700; text-transform: uppercase; margin: 0; transition: color 0.2s ease; }
         
         .team-cell { display: flex; align-items: center; gap: 10px; }
         .team-logo { width: 35px; height: 35px; object-fit: contain; }
@@ -171,7 +191,6 @@
             .header-left { width: 100%; margin-bottom: 10px; }
             .header-right { width: 100%; flex-direction: column; align-items: stretch; }
             .race-selector { width: 100%; max-width: 100%; }
-            .archive-btn { text-align: center; }
             th, td { padding: 10px 10px; font-size: 14px; }
             .hide-mobile { display: none; }
             .driver-col { font-size: 15px; }
@@ -184,7 +203,7 @@
 
     <div class="container">
         <div class="top-brand-header">
-            <a href="https://f1lads.com">
+            <a href="index.html">
                 <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Logo.png" alt="F1 Lads Logo" class="page-logo">
             </a>
             <h1 class="page-main-title">Race Results</h1>
@@ -194,14 +213,13 @@
             <div class="header-left">
                 <a href="index.html" class="back-btn">❮ Back</a>
                 <div class="title-wrapper">
-                    <h2 id="race-title">Loading...</h2>
+                    <h2 id="race-title-container">Loading...</h2>
                     <p id="race-subtitle">Fetching telemetry data.</p>
                 </div>
             </div>
             
             <div class="header-right">
                 <select id="race-selector" class="race-selector" style="display: none;"></select>
-                
             </div>
         </div>
 
@@ -213,18 +231,15 @@
         <div class="results-wrapper">
             <div id="loader">Compiling historical race data...</div>
             <table id="results-table" style="display: none;">
-                <thead id="table-head">
-                    </thead>
-                <tbody id="results-body">
-                    </tbody>
+                <thead id="table-head"></thead>
+                <tbody id="results-body"></tbody>
             </table>
         </div>
-    </div>
-
-    <div class="archive-footer">
+        
+        <div class="archive-footer">
             <a href="archive.html">View Previous Seasons</a>
         </div>
-        </div> 
+    </div> 
     
     <script>
         // ASSETS MAPPING
@@ -243,6 +258,24 @@
             "Aston Martin": "var(--aston)",
             "Red Bull": "var(--redbull)"
         };
+        
+        const trackCountryFlags = {
+            "Bahrain": "bahrain", "Jeddah": "saudi_arabia", "Melbourne": "australia", 
+            "Baku": "azerbaijan", "Miami": "united_states_of_america", "Imola": "italy", 
+            "Monaco": "monaco", "Barcelona": "spain", "Spielberg": "austria", 
+            "Silverstone": "great_britain", "Hungaroring": "hungary", "Spa": "belgium", 
+            "Zandvoort": "netherlands", "Monza": "italy", "Singapore": "singapore", 
+            "Suzuka": "japan", "Losail": "qatar", "Austin": "united_states_of_america", 
+            "Mexico": "mexico", "Interlagos": "brazil", "Las Vegas": "united_states_of_america", 
+            "Yas Marina": "united_arab_emirates", "Shanghai": "china", "Montreal": "canada", "Portimão": "portugal", "Paul Ricard": "france"
+        };
+
+        function getTrackFlagUrl(trackName) {
+            let cleanName = trackName === "Spa-Francorchamps" ? "Spa" : trackName;
+            let fName = trackCountryFlags[cleanName];
+            if (!fName) return "";
+            return `${photoBase}${fName}.png`;
+        }
 
         function formatMs(ms) {
             if (!ms || ms === 0) return "-";
@@ -364,9 +397,18 @@
             document.getElementById('loader').style.display = "none";
             document.getElementById('results-table').style.display = "table";
 
-            document.getElementById('race-title').innerText = event.trackName;
-            const raceDate = new Date(data.Date).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+            // Add Clickable Track Title & Flag
+            let cleanTrackName = event.trackName === "Spa-Francorchamps" ? "Spa" : event.trackName;
+            let flagUrl = getTrackFlagUrl(cleanTrackName);
+            let flagHtml = flagUrl ? `<img src="${flagUrl}" class="track-flag" alt="Flag">` : '';
             
+            document.getElementById('race-title-container').innerHTML = `
+                <a href="statistics.html?track=${encodeURIComponent(cleanTrackName)}" class="link-hover" title="View ${cleanTrackName} Statistics">
+                    ${flagHtml} ${event.trackName}
+                </a>
+            `;
+
+            const raceDate = new Date(data.Date).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
             let subtitlePrefix = isQuali ? 'Qualifying' : `${event.label} Race`;
             document.getElementById('race-subtitle').innerText = `${subtitlePrefix} Classification | ${raceDate}`;
 
@@ -434,15 +476,17 @@
                     tr.classList.add('fl-row');
                 }
 
+                let profileUrl = `statistics.html?driver=${encodeURIComponent(driver.Driver.Name)}`;
+
                 tr.innerHTML = `
                     <td class="pos-col">${driver.Position}</td>
                     <td>
-                        <div class="driver-cell">
+                        <a href="${profileUrl}" class="driver-cell link-hover" title="View ${driver.Driver.Name}'s Profile">
                             <div class="driver-photo-wrapper" style="background-color: ${teamColor};">
                                 <img src="${driverPhotoUrl}" alt="${driver.Driver.Name}" class="driver-photo" onerror="this.parentElement.style.display='none'">
                             </div>
                             <span class="driver-col">${driver.Driver.Name}</span>
-                        </div>
+                        </a>
                     </td>
                     <td class="hide-mobile">
                         <div class="team-cell">
