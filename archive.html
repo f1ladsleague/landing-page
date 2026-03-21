@@ -43,13 +43,10 @@
         .fl-row .pos-col, .fl-row .pts-col, .fl-row .team-text { color: var(--fastest-lap) !important; }
         .wdc-row td { background: rgba(255, 215, 0, 0.1); border-bottom: 1px solid rgba(255, 215, 0, 0.3); }
         .pos-col { width: 50px; text-align: center; font-weight: 900; font-size: 18px; color: #aaa; }
-        
-        /* NEW CLEAN HOVER EFFECT FOR LINKS */
         .driver-link { display: flex; align-items: center; gap: 15px; text-decoration: none; color: inherit; cursor: pointer; transition: transform 0.2s ease; padding: 4px; border-radius: 8px; }
         .driver-link:hover { transform: translateX(8px); background: rgba(255,255,255,0.05); }
         .driver-link:hover .driver-col { color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
         .driver-link:hover .driver-photo-wrapper { border-color: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.2); }
-        
         .driver-photo-wrapper { width: 45px; height: 45px; border-radius: 50%; overflow: hidden; border: 2px solid #444; background: #222; flex-shrink: 0; display: flex; align-items: flex-start; justify-content: center; transition: 0.2s; }
         .driver-photo { width: 100%; height: 100%; object-fit: cover; object-position: center top; transform-origin: top center; transform: scale(1.6); }
         .driver-col { font-size: 18px; font-weight: 700; text-transform: uppercase; margin: 0; transition: 0.2s; }
@@ -112,55 +109,53 @@
     <script>
         const photoBase = "https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/";
         const teamColors = { "Ferrari": "var(--ferrari)", "McLaren": "var(--mclaren)", "Mercedes": "var(--mercedes)", "Aston Martin": "var(--aston)", "Red Bull": "var(--redbull)", "Alpine": "var(--alpine)", "Alfa Romeo": "var(--alfaromeo)", "AlphaTauri": "var(--alphatauri)" };
+        
+        // HARDCODED STANDINGS DATA
+        const finalStandings = {
+            2: {
+                teams: [ {name: "Ferrari", points: 201}, {name: "Red Bull", points: 186}, {name: "Mercedes", points: 163}, {name: "McLaren", points: 152} ],
+                drivers: [ {name: "Mapa", points: 152, team: "McLaren"}, {name: "Nuwie G", points: 135, team: "Ferrari"}, {name: "Sahan", points: 116, team: "Red Bull"}, {name: "Shahan", points: 85, team: "Red Bull"}, {name: "Rodda", points: 83, team: "Mercedes"}, {name: "Kalpa", points: 80, team: "Mercedes"}, {name: "Shiyan", points: 34, team: "Ferrari"}, {name: "Eranga", points: 17, team: "McLaren"} ]
+            },
+            3: {
+                teams: [ {name: "Red Bull", points: 149}, {name: "McLaren", points: 145}, {name: "Alfa Romeo", points: 128}, {name: "Alpine", points: 119}, {name: "AlphaTauri", points: 83}, {name: "Ferrari", points: 66}, {name: "Mercedes", points: 56} ],
+                drivers: [ {name: "Mapa", points: 149, team: "Red Bull"}, {name: "Nuwie G", points: 145, team: "McLaren"}, {name: "Sahan", points: 128, team: "Alfa Romeo"}, {name: "Rodda", points: 119, team: "Alpine"}, {name: "Kalpa", points: 83, team: "AlphaTauri"}, {name: "Eranga", points: 66, team: "Ferrari"}, {name: "Shiyan", points: 56, team: "Mercedes"} ]
+            },
+            4: {
+                teams: [ {name: "Red Bull", points: 310}, {name: "Mercedes", points: 308}, {name: "Ferrari", points: 199}, {name: "McLaren", points: 152} ],
+                drivers: [ {name: "Mapa", points: 195, team: "Ferrari"}, {name: "Rodda", points: 172, team: "Mercedes"}, {name: "Nuwie G", points: 151, team: "Red Bull"}, {name: "Kalpa", points: 136, team: "Mercedes"}, {name: "Sahan", points: 127, team: "Red Bull"}, {name: "Shahan", points: 110, team: "Ferrari"}, {name: "Shiyan", points: 53, team: "McLaren"}, {name: "Eranga", points: 25, team: "Ferrari"} ]
+            }
+        };
+
         const archiveFiles = [
             "Season%201/results_silverstone_race.json", "Season%201/results_spielberg_race.json", "Season%201/results_bahrain_race.json", "Season%201/results_jeddah_race.json", "Season%201/results_melbourne_race.json", "Season%201/results_suzuka_race.json",
             "Season%202/results_miami_race.json", "Season%202/results_imola_race.json", "Season%202/results_monza_race.json", "Season%202/results_spa-francorchamps_race.json", "Season%202/results_barcelona_race.json", "Season%202/results_baku_race.json", "Season%202/results_losail_race.json", "Season%202/results_hungaroring_race.json", "Season%202/results_singapore_race.json",
             "Season%203/results_imola_race.json", "Season%203/results_shanghai_sprint.json", "Season%203/results_shanghai_race.json", "Season%203/results_austin_sprint.json", "Season%203/results_austin_race.json", "Season%203/results_zandvoort_race.json", "Season%203/results_mexico_race.json", "Season%203/results_interlagos_sprint.json", "Season%203/results_interlagos_race.json", "Season%203/results_las%20vegas_race.json", "Season%203/results_yas%20marina_race.json",
-            
-            // Newly Added Season 4 Files
-            "Season%204/results_austin2_qualification.json", "Season%204/results_austin2_race.json",
-            "Season%204/results_austin_qualification.json", "Season%204/results_austin_race.json",
-            "Season%204/results_baku_qualification.json", "Season%204/results_baku_race.json",
-            "Season%204/results_barcelona_qualification.json", "Season%204/results_barcelona_race.json",
-            "Season%204/results_hungaroring_qualification.json", "Season%204/results_hungaroring_race.json",
-            "Season%204/results_imola_qualification.json", "Season%204/results_imola_race.json",
-            "Season%204/results_interlagos_qualification.json", "Season%204/results_interlagos_race.json",
-            "Season%204/results_las%20vegas_qualification.json", "Season%204/results_las%20vegas_race.json",
-            "Season%204/results_losail_qualification.json", "Season%204/results_losail_race.json",
-            "Season%204/results_melbourne_qualification.json", "Season%204/results_melbourne_race.json",
-            "Season%204/results_mexico_qualification.json", "Season%204/results_mexico_race.json",
-            "Season%204/results_monaco_qualification.json", "Season%204/results_monaco_race.json",
-            "Season%204/results_montreal_qualification.json", "Season%204/results_montreal_race.json",
-            "Season%204/results_monza_qualification.json", "Season%204/results_monza_race.json",
-            "Season%204/results_paul%20ricard_qualification.json", "Season%204/results_paul%20ricard_race.json",
-            "Season%204/results_portimão_qualification.json", "Season%204/results_portimão_race.json",
-            "Season%204/results_shanghai_qualification.json", "Season%204/results_shanghai_race.json",
-            "Season%204/results_silverstone2_qualification.json", "Season%204/results_silverstone2_race.json",
-            "Season%204/results_silverstone_qualification.json", "Season%204/results_silverstone_race.json",
-            "Season%204/results_singapore_qualification.json", "Season%204/results_singapore_race.json",
-            "Season%204/results_spa-francorchamps_qualification.json", "Season%204/results_spa-francorchamps_race.json",
-            "Season%204/results_suzuka_qualification.json", "Season%204/results_suzuka_race.json",
-            "Season%204/results_yas%20marina_qualification.json", "Season%204/results_yas%20marina_race.json",
-            "Season%204/results_zandvoort_qualification.json", "Season%204/results_zandvoort_race.json"
+            "Season%204/results_austin2_qualification.json", "Season%204/results_austin2_race.json", "Season%204/results_austin_qualification.json", "Season%204/results_austin_race.json", "Season%204/results_baku_qualification.json", "Season%204/results_baku_race.json", "Season%204/results_barcelona_qualification.json", "Season%204/results_barcelona_race.json", "Season%204/results_hungaroring_qualification.json", "Season%204/results_hungaroring_race.json", "Season%204/results_imola_qualification.json", "Season%204/results_imola_race.json", "Season%204/results_interlagos_qualification.json", "Season%204/results_interlagos_race.json", "Season%204/results_las%20vegas_qualification.json", "Season%204/results_las%20vegas_race.json", "Season%204/results_losail_qualification.json", "Season%204/results_losail_race.json", "Season%204/results_melbourne_qualification.json", "Season%204/results_melbourne_race.json", "Season%204/results_mexico_qualification.json", "Season%204/results_mexico_race.json", "Season%204/results_monaco_qualification.json", "Season%204/results_monaco_race.json", "Season%204/results_montreal_qualification.json", "Season%204/results_montreal_race.json", "Season%204/results_monza_qualification.json", "Season%204/results_monza_race.json", "Season%204/results_paul%20ricard_qualification.json", "Season%204/results_paul%20ricard_race.json", "Season%204/results_portimão_qualification.json", "Season%204/results_portimão_race.json", "Season%204/results_shanghai_qualification.json", "Season%204/results_shanghai_race.json", "Season%204/results_silverstone2_qualification.json", "Season%204/results_silverstone2_race.json", "Season%204/results_silverstone_qualification.json", "Season%204/results_silverstone_race.json", "Season%204/results_singapore_qualification.json", "Season%204/results_singapore_race.json", "Season%204/results_spa-francorchamps_qualification.json", "Season%204/results_spa-francorchamps_race.json", "Season%204/results_suzuka_qualification.json", "Season%204/results_suzuka_race.json", "Season%204/results_yas%20marina_qualification.json", "Season%204/results_yas%20marina_race.json", "Season%204/results_zandvoort_qualification.json", "Season%204/results_zandvoort_race.json"
         ];
 
         function formatMs(ms) { if (!ms || ms === 0) return "-"; let t = ms / 1000; let m = Math.floor(t / 60); let s = (t % 60).toFixed(3); if (m > 0) return `${m}:${s.padStart(6, '0')}`; return s; }
         function formatGap(ms) { let t = ms / 1000; let m = Math.floor(t / 60); let s = (t % 60).toFixed(3); if (m > 0) return `+${m}:${s.padStart(6, '0')}`; return `+${s}`; }
-        function getDriverPhotoUrl(seasonNum, driverName, teamName) {
+        
+        function getDriverPhotoUrl(seasonNum, driverName, trackName) {
             let safeName = driverName.replace(/\s+/g, '');
+            if (seasonNum === 4) {
+                // Post-Trade logic (Portimão onwards)
+                const postTrade = /portimão|portimao|paul ricard|shanghai|silverstone2|singapore|spa|suzuka|yas marina|zandvoort/i.test(trackName);
+                if (driverName === "Mapa") return `${photoBase}Season%204/Mapa_${postTrade ? 'Ferrari' : 'RedBull'}.png`;
+                if (driverName === "Nuwie G") return `${photoBase}Season%204/Nuwie${postTrade ? '_RedBull' : 'G_Ferrari'}.png`;
+                if (driverName === "Shiyan") return `${photoBase}Season%204/Shiyan_${postTrade ? 'Mclaren' : 'Ferrari'}.png`;
+                if (driverName === "Eranga") return `${photoBase}Season%204/Eranga_${postTrade ? 'Ferrari' : 'Mclaren'}.png`;
+                return `${photoBase}Season%204/${safeName}.png`;
+            }
             if (seasonNum === 1 || seasonNum === 2) {
                 if (driverName === "Nuwie G") safeName = "NuwiG";
                 return `${photoBase}Season_1_2/${safeName}.png`;
-            } else if (seasonNum === 3) return `${photoBase}Season%203/${safeName}.png`;
-            else return `${photoBase}${safeName}.png`; 
+            }
+            if (seasonNum === 3) return `${photoBase}Season%203/${safeName}.png`;
+            return `${photoBase}${safeName}.png`;
         }
 
-        let groupedEvents = []; 
-        let activeSeasonNum = 4; // Updated default to load Season 4
-        let activeEventIndex = "standings"; let activeSession = "Race"; 
-        
-        // Added Season 4 objects
-        let seasonStandings = { 1: { drivers: {}, teams: {} }, 2: { drivers: {}, teams: {} }, 3: { drivers: {}, teams: {} }, 4: { drivers: {}, teams: {} } };
+        let groupedEvents = []; let activeSeasonNum = 4; let activeEventIndex = "standings"; let activeSession = "Race"; 
         const cacheBuster = `?v=${new Date().getTime()}`;
 
         const fetchPromises = archiveFiles.map(file => fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/${file}${cacheBuster}`).then(r => r.ok ? r.json().then(data => ({ data, path: file })) : null));
@@ -171,24 +166,16 @@
 
             races.forEach(fileObj => {
                 const race = fileObj.data; const path = fileObj.path;
-                
-                // Updated check logic to properly grab Season 4
                 let seasonNum = path.includes("Season%204") ? 4 : path.includes("Season%203") ? 3 : path.includes("Season%202") ? 2 : 1;
                 let maxPts = Math.max(0, ...race.Drivers.map(d => (d.DriverPointsRaw || 0) / 10));
+                
                 let label = "Feature"; 
-                if (seasonNum === 3 && maxPts <= 10) label = "Sprint";
-                else if (seasonNum !== 3 && maxPts <= 16) label = "Sprint";
+                if (seasonNum === 4) label = (maxPts > 12) ? "Feature" : "Sprint";
+                else if (seasonNum === 3 && maxPts <= 10) label = "Sprint";
+                else if (seasonNum < 3 && maxPts <= 16) label = "Sprint";
                 
                 const matchingQuali = qualis.find(q => q.data.TrackName === race.TrackName && q.data.Date === race.Date);
                 groupedEvents.push({ season: seasonNum, trackName: race.TrackName, label: label, date: race.Date, raceData: race, qualiData: matchingQuali ? matchingQuali.data : null });
-
-                race.Drivers.forEach(d => {
-                    let dName = d.Driver.Name; let tName = d.Team ? d.Team.Name : "Unknown"; let pts = (d.DriverPointsRaw / 10) || 0;
-                    if(!seasonStandings[seasonNum].drivers[dName]) seasonStandings[seasonNum].drivers[dName] = { points: 0, team: tName };
-                    seasonStandings[seasonNum].drivers[dName].points += pts; seasonStandings[seasonNum].drivers[dName].team = tName; 
-                    if(!seasonStandings[seasonNum].teams[tName]) seasonStandings[seasonNum].teams[tName] = 0;
-                    seasonStandings[seasonNum].teams[tName] += pts;
-                });
             });
 
             groupedEvents.sort((a, b) => {
@@ -202,8 +189,6 @@
 
             document.getElementById('season-nav').style.display = "flex";
             document.getElementById('race-selector').style.display = "block";
-            
-            // Starts off defaulting to Season 4 view
             loadSeason(4);
         });
 
@@ -235,11 +220,10 @@
                 document.getElementById('race-subtitle').innerText = "World Drivers & Constructors Championship";
                 document.getElementById('table-head').innerHTML = `<tr><th class="pos-col">Pos</th><th>Driver</th><th class="hide-mobile">Constructor</th><th class="pts-col">Pts</th></tr>`;
 
-                let sData = seasonStandings[activeSeasonNum];
-                let sortedDrivers = Object.keys(sData.drivers).map(k => ({name: k, ...sData.drivers[k]})).sort((a,b) => b.points - a.points);
-                let sortedTeams = Object.keys(sData.teams).map(k => ({name: k, points: sData.teams[k]})).sort((a,b) => b.points - a.points);
+                let data = finalStandings[activeSeasonNum];
+                if (!data) { tbody.innerHTML = "<tr><td colspan='4'>Calculation Pending...</td></tr>"; return; }
 
-                sortedDrivers.forEach((d, idx) => {
+                data.drivers.forEach((d, idx) => {
                     let pos = idx + 1; let isWDC = pos === 1; let teamColor = teamColors[d.team] || '#222';
                     tbody.innerHTML += `
                         <tr class="${isWDC ? 'wdc-row' : ''}">
@@ -247,26 +231,24 @@
                             <td>
                                 <a href="statistics.html?driver=${encodeURIComponent(d.name)}" class="driver-link">
                                     <div class="driver-photo-wrapper" style="background-color: ${teamColor};">
-                                        <img src="${getDriverPhotoUrl(activeSeasonNum, d.name, d.team)}" class="driver-photo" onerror="this.parentElement.style.display='none'">
+                                        <img src="${getDriverPhotoUrl(activeSeasonNum, d.name, 'Standings')}" class="driver-photo" onerror="this.parentElement.style.display='none'">
                                     </div>
                                     <span class="driver-col" style="${isWDC ? 'color: gold;' : ''}">${d.name}${isWDC ? ' 👑' : ''}</span>
                                 </a>
                             </td>
                             <td class="hide-mobile"><div class="team-cell"><span class="team-text">${d.team}</span></div></td>
                             <td class="pts-col" style="${isWDC ? 'color: gold;' : ''}">${d.points}</td>
-                        </tr>
-                    `;
+                        </tr>`;
                 });
                 tbody.innerHTML += `<tr><td colspan="4" style="background: rgba(0,0,0,0.4); text-align: center; color: #888; font-weight: 900; letter-spacing: 2px; padding: 20px;">CONSTRUCTORS CHAMPIONSHIP</td></tr>`;
-                sortedTeams.forEach((t, idx) => {
+                data.teams.forEach((t, idx) => {
                     let pos = idx + 1; let isWCC = pos === 1; let teamColor = teamColors[t.name] || '#222';
                     tbody.innerHTML += `
                         <tr class="${isWCC ? 'wdc-row' : ''}">
                             <td class="pos-col">${pos}</td>
                             <td colspan="2"><div class="team-cell"><div style="width: 15px; height: 15px; border-radius: 50%; background-color: ${teamColor};"></div><span class="driver-col" style="${isWCC ? 'color: gold;' : ''}">${t.name}${isWCC ? ' 🏆' : ''}</span></div></td>
                             <td class="pts-col" style="${isWCC ? 'color: gold;' : ''}">${t.points}</td>
-                        </tr>
-                    `;
+                        </tr>`;
                 });
                 return;
             }
@@ -278,15 +260,12 @@
             if (!data) return; 
 
             const reverseFootnote = document.getElementById('reverse-grid-footnote');
-            // Assuming S4 also uses reverse grids similar to S2 and S3, added it here to keep behaviors consistent:
-            reverseFootnote.style.display = (!isQuali && (event.season === 2 || event.season === 3 || event.season === 4)) ? "block" : "none";
-
-            let hideTimingAndPenalties = (event.season === 1 && /silverstone|spielberg|austria|bahrain|sakhir/.test(event.trackName.toLowerCase()));
-            const hideGridPits = hideTimingAndPenalties || isQuali || event.season === 2 || event.season === 3 || event.season === 4;
+            reverseFootnote.style.display = (!isQuali && (event.season >= 2)) ? "block" : "none";
+            const hideGridPits = isQuali || event.season >= 2;
 
             document.getElementById('race-title').innerText = event.trackName;
             document.getElementById('race-subtitle').innerText = `Season ${event.season} ${isQuali ? 'Qualifying' : event.label} | ${new Date(data.Date).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}`;
-            document.getElementById('table-head').innerHTML = `<tr><th class="pos-col">Pos</th><th>Driver</th><th class="hide-mobile">Constructor</th>${hideGridPits ? '' : '<th class="hide-mobile" style="text-align: center;">Grid</th>'}${hideGridPits ? '' : '<th class="hide-mobile" style="text-align: center;">Pits</th>'}${hideTimingAndPenalties ? '' : `<th>${isQuali ? 'Best Lap' : 'Time / Gap'}</th>`}${hideTimingAndPenalties ? '' : '<th class="hide-mobile" style="text-align: center;">Penalties</th>'}${hideTimingAndPenalties || isQuali ? '' : '<th class="hide-mobile">Fastest Lap</th>'}${isQuali ? '' : '<th class="pts-col">Pts</th>'}</tr>`;
+            document.getElementById('table-head').innerHTML = `<tr><th class="pos-col">Pos</th><th>Driver</th><th class="hide-mobile">Constructor</th>${hideGridPits ? '' : '<th class="hide-mobile">Grid</th><th class="hide-mobile">Pits</th>'}<th>${isQuali ? 'Best Lap' : 'Time / Gap'}</th><th class="hide-mobile">Penalties</th>${isQuali ? '' : '<th>Pts</th>'}</tr>`;
 
             const drivers = data.Drivers.sort((a, b) => a.Position - b.Position);
             let winnerTime = isQuali ? 0 : (drivers.find(d => d.Position === 1)?.TimeInt || 0);
@@ -295,37 +274,30 @@
                 const isFL = data.FastestLapDriver && data.FastestLapDriver.Name === driver.Driver.Name;
                 const tName = driver.Team ? driver.Team.Name : "Unknown"; const teamColor = teamColors[tName] || '#222';
                 let timeDisplay = "";
-                if (!hideTimingAndPenalties) {
-                    if (isQuali) timeDisplay = (driver.FastestLapTimeInt === 0 || driver.Status === "Dsq" || driver.Status === "Dnf") ? `<span class="dnf-text">${driver.Status === 'Dsq' ? 'DSQ' : 'NO TIME'}</span>` : formatMs(driver.FastestLapTimeInt);
-                    else {
-                        if (driver.Status !== "Ok" && driver.Status !== "finished") timeDisplay = `<span class="dnf-text">${driver.Status === 'Dsq' ? 'DSQ' : 'DNF'}</span>`;
-                        else if (driver.Position === 1) timeDisplay = formatMs(driver.TimeInt); 
-                        else if (driver.TimeInt > 0 && winnerTime > 0) timeDisplay = formatGap(driver.TimeInt - winnerTime);
-                        else if (driver.Status && driver.Status.toLowerCase().includes("lap")) timeDisplay = driver.Status; 
-                        else timeDisplay = `<span class="dnf-text">Unknown</span>`;
-                    }
+                if (isQuali) timeDisplay = (driver.FastestLapTimeInt === 0) ? "DNF" : formatMs(driver.FastestLapTimeInt);
+                else {
+                    if (driver.Status !== "Ok" && driver.Status !== "finished") timeDisplay = "DNF";
+                    else if (driver.Position === 1) timeDisplay = formatMs(driver.TimeInt); 
+                    else timeDisplay = formatGap(driver.TimeInt - winnerTime);
                 }
-                let penText = (driver.PenaltySecsStewards > 0) ? `+${driver.PenaltySecsStewards}s` : (driver.PenaltySecsIngame > 0) ? `+${driver.PenaltySecsIngame}s` : "-";
-                const tr = document.createElement('tr'); if (!isQuali && isFL) tr.classList.add('fl-row');
-                tr.innerHTML = `
-                    <td class="pos-col">${driver.Position}</td>
-                    <td>
-                        <a href="statistics.html?driver=${encodeURIComponent(driver.Driver.Name)}" class="driver-link">
-                            <div class="driver-photo-wrapper" style="background-color: ${teamColor};">
-                                <img src="${getDriverPhotoUrl(event.season, driver.Driver.Name, tName)}" class="driver-photo" onerror="this.parentElement.style.display='none'">
-                            </div>
-                            <span class="driver-col">${driver.Driver.Name}</span>
-                        </a>
-                    </td>
-                    <td class="hide-mobile"><div class="team-cell"><span class="team-text">${tName}</span></div></td>
-                    ${hideGridPits ? '' : `<td class="hide-mobile" style="text-align: center;">${driver.GridPosition}</td>`}
-                    ${hideGridPits ? '' : `<td class="hide-mobile" style="text-align: center;">${driver.PitsCount}</td>`}
-                    ${hideTimingAndPenalties ? '' : `<td class="time-col">${timeDisplay}</td>`}
-                    ${hideTimingAndPenalties ? '' : `<td class="hide-mobile" style="text-align: center; color: #ff8000; font-weight: 700;">${penText}</td>`}
-                    ${hideTimingAndPenalties || isQuali ? '' : `<td class="time-col hide-mobile">${formatMs(driver.FastestLapTimeInt)}</td>`}
-                    ${isQuali ? '' : `<td class="pts-col">${driver.DriverPointsRaw / 10}</td>`}
-                `;
-                tbody.appendChild(tr);
+                
+                tbody.innerHTML += `
+                    <tr class="${!isQuali && isFL ? 'fl-row' : ''}">
+                        <td class="pos-col">${driver.Position}</td>
+                        <td>
+                            <a href="statistics.html?driver=${encodeURIComponent(driver.Driver.Name)}" class="driver-link">
+                                <div class="driver-photo-wrapper" style="background-color: ${teamColor};">
+                                    <img src="${getDriverPhotoUrl(event.season, driver.Driver.Name, event.trackName)}" class="driver-photo" onerror="this.parentElement.style.display='none'">
+                                </div>
+                                <span class="driver-col">${driver.Driver.Name}</span>
+                            </a>
+                        </td>
+                        <td class="hide-mobile"><span class="team-text">${tName}</span></td>
+                        ${hideGridPits ? '' : `<td>${driver.GridPosition}</td><td>${driver.PitsCount}</td>`}
+                        <td class="time-col">${timeDisplay}</td>
+                        <td class="hide-mobile">${driver.PenaltySecsStewards || driver.PenaltySecsIngame || 0}s</td>
+                        ${isQuali ? '' : `<td class="pts-col">${driver.DriverPointsRaw / 10}</td>`}
+                    </tr>`;
             });
         }
     </script>
