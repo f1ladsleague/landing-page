@@ -1040,8 +1040,8 @@
                 datasets.push({
                     label: drv,
                     data: data,
-                    borderColor: legendColor, // Fixes legend & fallback line color
-                    backgroundColor: legendColor, // Fixes hover box & legend box
+                    borderColor: legendColor, 
+                    backgroundColor: legendColor, 
                     segment: {
                         borderColor: ctx => {
                             let raceIdx = ctx.p1DataIndex !== undefined ? ctx.p1DataIndex : ctx.p0DataIndex;
@@ -1051,15 +1051,36 @@
                                 let dData = race.raceData.Drivers.find(d => d.Driver.Name === drv);
                                 if(dData && dData.Team) hexColor = teamColors[dData.Team.Name] || '#888';
                             }
-                            return isMain ? hexColor : hexToRgbA(hexColor, 0.3); // 30% opacity for others
+                            return isMain ? hexColor : hexToRgbA(hexColor, 0.3); 
                         }
                     },
                     borderWidth: isMain ? 4 : 1.5,
                     borderDash: [], 
-                    pointRadius: isMain ? 4 : 0, // Hides points for rivals to keep chart clean
-                    pointBackgroundColor: baseHex,
+                    pointRadius: isMain ? 4 : 0, 
+                    pointBackgroundColor: ctx => {
+                        let raceIdx = ctx.dataIndex;
+                        if(raceIdx === undefined) return baseHex;
+                        let race = seasonRaces[raceIdx];
+                        let hexColor = baseHex;
+                        if(race) {
+                            let dData = race.raceData.Drivers.find(d => d.Driver.Name === drv);
+                            if(dData && dData.Team) hexColor = teamColors[dData.Team.Name] || '#888';
+                        }
+                        return isMain ? hexColor : hexToRgbA(hexColor, 0.3);
+                    },
+                    pointBorderColor: ctx => {
+                        let raceIdx = ctx.dataIndex;
+                        if(raceIdx === undefined) return baseHex;
+                        let race = seasonRaces[raceIdx];
+                        let hexColor = baseHex;
+                        if(race) {
+                            let dData = race.raceData.Drivers.find(d => d.Driver.Name === drv);
+                            if(dData && dData.Team) hexColor = teamColors[dData.Team.Name] || '#888';
+                        }
+                        return isMain ? hexColor : hexToRgbA(hexColor, 0.3);
+                    },
                     pointHoverRadius: 6,
-                    fill: false, // Ensures fill doesn't override legend box color
+                    fill: false, 
                     tension: 0.2,
                     order: isMain ? 1 : 2 
                 });
@@ -1077,7 +1098,7 @@
                     }, 
                     scales: { 
                         y: { grid: { color: 'rgba(255,255,255,0.05)' } }, 
-                        x: { grid: { display: true, color: 'rgba(255,255,255,0.05)' }, ticks: { font: { size: 10 } } } // Added faint vertical lines
+                        x: { grid: { display: true, color: 'rgba(255,255,255,0.05)' }, ticks: { font: { size: 10 } } } 
                     } 
                 }
             });
