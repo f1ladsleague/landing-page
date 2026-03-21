@@ -82,6 +82,7 @@
             <button id="tab-s1" class="season-tab" onclick="loadSeason(1)">Season 1</button>
             <button id="tab-s2" class="season-tab" onclick="loadSeason(2)">Season 2</button>
             <button id="tab-s3" class="season-tab" onclick="loadSeason(3)">Season 3</button>
+            <button id="tab-s4" class="season-tab" onclick="loadSeason(4)">Season 4</button>
         </div>
         <div class="header" id="main-header">
             <div class="header-left">
@@ -114,7 +115,33 @@
         const archiveFiles = [
             "Season%201/results_silverstone_race.json", "Season%201/results_spielberg_race.json", "Season%201/results_bahrain_race.json", "Season%201/results_jeddah_race.json", "Season%201/results_melbourne_race.json", "Season%201/results_suzuka_race.json",
             "Season%202/results_miami_race.json", "Season%202/results_imola_race.json", "Season%202/results_monza_race.json", "Season%202/results_spa-francorchamps_race.json", "Season%202/results_barcelona_race.json", "Season%202/results_baku_race.json", "Season%202/results_losail_race.json", "Season%202/results_hungaroring_race.json", "Season%202/results_singapore_race.json",
-            "Season%203/results_imola_race.json", "Season%203/results_shanghai_sprint.json", "Season%203/results_shanghai_race.json", "Season%203/results_austin_sprint.json", "Season%203/results_austin_race.json", "Season%203/results_zandvoort_race.json", "Season%203/results_mexico_race.json", "Season%203/results_interlagos_sprint.json", "Season%203/results_interlagos_race.json", "Season%203/results_las%20vegas_race.json", "Season%203/results_yas%20marina_race.json"
+            "Season%203/results_imola_race.json", "Season%203/results_shanghai_sprint.json", "Season%203/results_shanghai_race.json", "Season%203/results_austin_sprint.json", "Season%203/results_austin_race.json", "Season%203/results_zandvoort_race.json", "Season%203/results_mexico_race.json", "Season%203/results_interlagos_sprint.json", "Season%203/results_interlagos_race.json", "Season%203/results_las%20vegas_race.json", "Season%203/results_yas%20marina_race.json",
+            
+            // Newly Added Season 4 Files
+            "Season%204/results_austin2_qualification.json", "Season%204/results_austin2_race.json",
+            "Season%204/results_austin_qualification.json", "Season%204/results_austin_race.json",
+            "Season%204/results_baku_qualification.json", "Season%204/results_baku_race.json",
+            "Season%204/results_barcelona_qualification.json", "Season%204/results_barcelona_race.json",
+            "Season%204/results_hungaroring_qualification.json", "Season%204/results_hungaroring_race.json",
+            "Season%204/results_imola_qualification.json", "Season%204/results_imola_race.json",
+            "Season%204/results_interlagos_qualification.json", "Season%204/results_interlagos_race.json",
+            "Season%204/results_las%20vegas_qualification.json", "Season%204/results_las%20vegas_race.json",
+            "Season%204/results_losail_qualification.json", "Season%204/results_losail_race.json",
+            "Season%204/results_melbourne_qualification.json", "Season%204/results_melbourne_race.json",
+            "Season%204/results_mexico_qualification.json", "Season%204/results_mexico_race.json",
+            "Season%204/results_monaco_qualification.json", "Season%204/results_monaco_race.json",
+            "Season%204/results_montreal_qualification.json", "Season%204/results_montreal_race.json",
+            "Season%204/results_monza_qualification.json", "Season%204/results_monza_race.json",
+            "Season%204/results_paul%20ricard_qualification.json", "Season%204/results_paul%20ricard_race.json",
+            "Season%204/results_portimão_qualification.json", "Season%204/results_portimão_race.json",
+            "Season%204/results_shanghai_qualification.json", "Season%204/results_shanghai_race.json",
+            "Season%204/results_silverstone2_qualification.json", "Season%204/results_silverstone2_race.json",
+            "Season%204/results_silverstone_qualification.json", "Season%204/results_silverstone_race.json",
+            "Season%204/results_singapore_qualification.json", "Season%204/results_singapore_race.json",
+            "Season%204/results_spa-francorchamps_qualification.json", "Season%204/results_spa-francorchamps_race.json",
+            "Season%204/results_suzuka_qualification.json", "Season%204/results_suzuka_race.json",
+            "Season%204/results_yas%20marina_qualification.json", "Season%204/results_yas%20marina_race.json",
+            "Season%204/results_zandvoort_qualification.json", "Season%204/results_zandvoort_race.json"
         ];
 
         function formatMs(ms) { if (!ms || ms === 0) return "-"; let t = ms / 1000; let m = Math.floor(t / 60); let s = (t % 60).toFixed(3); if (m > 0) return `${m}:${s.padStart(6, '0')}`; return s; }
@@ -128,8 +155,12 @@
             else return `${photoBase}${safeName}.png`; 
         }
 
-        let groupedEvents = []; let activeSeasonNum = 3; let activeEventIndex = "standings"; let activeSession = "Race"; 
-        let seasonStandings = { 1: { drivers: {}, teams: {} }, 2: { drivers: {}, teams: {} }, 3: { drivers: {}, teams: {} } };
+        let groupedEvents = []; 
+        let activeSeasonNum = 4; // Updated default to load Season 4
+        let activeEventIndex = "standings"; let activeSession = "Race"; 
+        
+        // Added Season 4 objects
+        let seasonStandings = { 1: { drivers: {}, teams: {} }, 2: { drivers: {}, teams: {} }, 3: { drivers: {}, teams: {} }, 4: { drivers: {}, teams: {} } };
         const cacheBuster = `?v=${new Date().getTime()}`;
 
         const fetchPromises = archiveFiles.map(file => fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/${file}${cacheBuster}`).then(r => r.ok ? r.json().then(data => ({ data, path: file })) : null));
@@ -140,7 +171,9 @@
 
             races.forEach(fileObj => {
                 const race = fileObj.data; const path = fileObj.path;
-                let seasonNum = path.includes("Season%202") ? 2 : path.includes("Season%203") ? 3 : 1;
+                
+                // Updated check logic to properly grab Season 4
+                let seasonNum = path.includes("Season%204") ? 4 : path.includes("Season%203") ? 3 : path.includes("Season%202") ? 2 : 1;
                 let maxPts = Math.max(0, ...race.Drivers.map(d => (d.DriverPointsRaw || 0) / 10));
                 let label = "Feature"; 
                 if (seasonNum === 3 && maxPts <= 10) label = "Sprint";
@@ -169,7 +202,9 @@
 
             document.getElementById('season-nav').style.display = "flex";
             document.getElementById('race-selector').style.display = "block";
-            loadSeason(3);
+            
+            // Starts off defaulting to Season 4 view
+            loadSeason(4);
         });
 
         function loadSeason(sNum) {
@@ -243,10 +278,11 @@
             if (!data) return; 
 
             const reverseFootnote = document.getElementById('reverse-grid-footnote');
-            reverseFootnote.style.display = (!isQuali && (event.season === 2 || event.season === 3)) ? "block" : "none";
+            // Assuming S4 also uses reverse grids similar to S2 and S3, added it here to keep behaviors consistent:
+            reverseFootnote.style.display = (!isQuali && (event.season === 2 || event.season === 3 || event.season === 4)) ? "block" : "none";
 
             let hideTimingAndPenalties = (event.season === 1 && /silverstone|spielberg|austria|bahrain|sakhir/.test(event.trackName.toLowerCase()));
-            const hideGridPits = hideTimingAndPenalties || isQuali || event.season === 2 || event.season === 3;
+            const hideGridPits = hideTimingAndPenalties || isQuali || event.season === 2 || event.season === 3 || event.season === 4;
 
             document.getElementById('race-title').innerText = event.trackName;
             document.getElementById('race-subtitle').innerText = `Season ${event.season} ${isQuali ? 'Qualifying' : event.label} | ${new Date(data.Date).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}`;
