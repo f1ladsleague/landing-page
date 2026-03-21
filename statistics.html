@@ -120,7 +120,7 @@
         .summary-stats { font-size: 14px; color: #aaa; font-weight: 700; }
         
         .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 5px; }
-        table { width: 100%; min-width: 700px; border-collapse: collapse; text-align: left; table-layout: fixed;}
+        table { width: 100%; min-width: 600px; border-collapse: collapse; text-align: left; table-layout: fixed;}
         th { background: rgba(0,0,0,0.6); padding: 12px 10px; color: #888; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; border-bottom: 1px solid #333; }
         td { padding: 12px 10px; border-bottom: 1px solid #2a2a35; font-size: 15px; font-weight: 600; color: inherit; transition: background 0.2s;}
         tr:last-child td { border-bottom: none; }
@@ -370,7 +370,7 @@
             }
         }
 
-        // TIE BREAKER FUNCTION
+        // TIE BREAKER FUNCTION - UPDATED WITH INLINE PILL BADGES
         function getTopStat(statObj, labelSuffix = "") {
             let maxVal = -1;
             let leaders = [];
@@ -382,9 +382,12 @@
             
             let nameStr = leaders.join(", ");
             let sizeStr = nameStr.length > 25 ? "15px" : (nameStr.length > 15 ? "18px" : "26px");
-            return `<span style="font-size:${sizeStr}; display:flex; flex-direction:column; align-items:center; line-height:1.2;">
-                        <span style="white-space:normal; text-align:center; padding: 0 5px;">${nameStr}</span>
-                        <span style="font-size:14px; color:#888; font-weight:700; margin-top:4px;">(${maxVal}${labelSuffix})</span>
+            
+            let badge = `<span style="background: var(--f1-red); color: white; font-size: 13px; font-weight: 900; padding: 2px 8px; border-radius: 12px; margin-left: 6px; vertical-align: middle; box-shadow: 0 2px 4px rgba(0,0,0,0.5);">x${maxVal}${labelSuffix}</span>`;
+            
+            return `<span style="font-size:${sizeStr}; display:flex; flex-direction:row; align-items:center; justify-content:center; flex-wrap:wrap; gap:4px; line-height:1.2;">
+                        <span style="text-align:center;">${nameStr}</span>
+                        ${badge}
                     </span>`;
         }
 
@@ -405,7 +408,6 @@
                 const results = await Promise.all(fetchPromises);
                 const validFiles = results.filter(r => r !== null);
                 
-                // Parse Qualifications natively for accurate Pole Positions
                 const qualis = validFiles.filter(f => f.data.SessionType === "Qualification");
                 qualis.forEach(fileObj => {
                     let q = fileObj.data;
@@ -422,7 +424,6 @@
                     }
                 });
 
-                // Process Main Races & Sprints
                 const racesAndSprints = validFiles.filter(f => f.data.SessionType === "Race");
 
                 racesAndSprints.forEach(fileObj => {
@@ -447,7 +448,6 @@
                     let cleanTrackName = race.TrackName;
                     if (cleanTrackName === "Spa-Francorchamps") cleanTrackName = "Spa";
 
-                    // Bind Quali file to this event for UI
                     let qData = qualis.find(q => q.data.TrackName === race.TrackName && q.data.Date === race.Date)?.data;
 
                     allEvents.push({ season: seasonNum, trackName: cleanTrackName, label: label, date: dateObj, raceData: race, qualiData: qData });
@@ -524,7 +524,7 @@
                     s.penPts += penPts;
                     s.totalPtsSort += pts; 
                     
-                    // Fallback Pole Position for Season 1 (No Quali files exist for S1)
+                    // Fallback Pole Position for Season 1
                     if (ev.season === 1 && d.GridPosition === 1) {
                         s.poles++;
                         trackStats[tNameStr].driverPoles[dName] = (trackStats[tNameStr].driverPoles[dName] || 0) + 1;
@@ -750,11 +750,11 @@
                     return `
                         <tr class="${rowClass}">
                             <td style="width:10%; text-align:center; font-weight:900;">${r.pos}</td>
-                            <td style="width:35%;" onclick="renderTrackProfile('${r.track}')" class="link-hover" title="View ${r.track} Analytics">
+                            <td style="width:28%;" onclick="renderTrackProfile('${r.track}')" class="link-hover" title="View ${r.track} Analytics">
                                 ${tFlag}${r.track} <span style="opacity: 0.6; font-size:11px; font-weight: normal; text-decoration: none;">(${r.label})</span>
                             </td>
-                            <td style="width:20%;"><span style="color: ${teamColors[r.team] || '#fff'} !important; font-weight: 700;">${r.team}</span></td>
-                            <td style="width:20%; font-family:monospace;">${r.gap}</td>
+                            <td style="width:25%;"><span style="color: ${teamColors[r.team] || '#fff'} !important; font-weight: 700;">${r.team}</span></td>
+                            <td style="width:22%; font-family:monospace;">${r.gap}</td>
                             <td class="${flClass}" style="width:15%; font-family:monospace;">${formatMs(r.flTime)}</td>
                         </tr>
                     `;
@@ -769,12 +769,12 @@
                             <span class="summary-stats" style="color:#fff;">${champStatus} &nbsp;|&nbsp; Grid Size: ${sGridSize}</span>
                         </summary>
                         <div class="table-wrap">
-                            <table>
+                            <table style="width: 100%; table-layout: fixed;">
                                 <thead><tr>
                                     <th style="width:10%; text-align:center;">Pos</th>
-                                    <th style="width:35%;">Track</th>
-                                    <th style="width:20%;">Car</th>
-                                    <th style="width:20%;">Gap to Leader</th>
+                                    <th style="width:28%;">Track</th>
+                                    <th style="width:25%;">Car</th>
+                                    <th style="width:22%;">Gap to Leader</th>
                                     <th style="width:15%;">Fastest Lap</th>
                                 </tr></thead>
                                 <tbody>${rows}</tbody>
@@ -913,9 +913,9 @@
                         let teamStr = d.Team ? d.Team.Name : "Unknown";
                         return `<tr>
                             <td style="width:10%; text-align:center; font-weight:900;">${d.Position}</td>
-                            <td style="width:40%;" class="link-hover" onclick="renderDriverProfile('${d.Driver.Name}')">${d.Driver.Name}</td>
-                            <td style="width:25%;"><span style="color: ${teamColors[teamStr]||'#fff'}; font-weight:700;">${teamStr}</span></td>
-                            <td style="width:25%; font-family:monospace;">${formatMs(d.BestLapTimeInt || d.FastestLapTimeInt)}</td>
+                            <td style="width:30%;" class="link-hover" onclick="renderDriverProfile('${d.Driver.Name}')">${d.Driver.Name}</td>
+                            <td style="width:30%;"><span style="color: ${teamColors[teamStr]||'#fff'}; font-weight:700;">${teamStr}</span></td>
+                            <td style="width:30%; font-family:monospace;">${formatMs(d.BestLapTimeInt || d.FastestLapTimeInt)}</td>
                         </tr>`;
                     }).join('');
                     
@@ -925,9 +925,9 @@
                             <table>
                                 <thead><tr>
                                     <th style="width:10%; text-align:center;">Pos</th>
-                                    <th style="width:40%;">Driver</th>
-                                    <th style="width:25%;">Car</th>
-                                    <th style="width:25%;">Best Lap</th>
+                                    <th style="width:30%;">Driver</th>
+                                    <th style="width:30%;">Car</th>
+                                    <th style="width:30%;">Best Lap</th>
                                 </tr></thead>
                                 <tbody>${qRows}</tbody>
                             </table>
@@ -961,8 +961,8 @@
                     return `
                         <tr class="${rowClass}">
                             <td style="width:10%; text-align:center; font-weight:900;">${d.Position}</td>
-                            <td style="width:35%;" onclick="renderDriverProfile('${d.Driver.Name}')" class="link-hover" title="View ${d.Driver.Name}'s Profile">${d.Driver.Name}</td>
-                            <td style="width:20%;"><span style="color: ${teamColors[teamNameStr] || '#fff'} !important; font-weight: 700;">${teamNameStr}</span></td>
+                            <td style="width:30%;" onclick="renderDriverProfile('${d.Driver.Name}')" class="link-hover" title="View ${d.Driver.Name}'s Profile">${d.Driver.Name}</td>
+                            <td style="width:25%;"><span style="color: ${teamColors[teamNameStr] || '#fff'} !important; font-weight: 700;">${teamNameStr}</span></td>
                             <td style="width:20%; font-family:monospace;">${gapStr}</td>
                             <td class="${flClass}" style="width:15%; font-family:monospace;">${formatMs(d.FastestLapTimeInt || 0)}</td>
                         </tr>
@@ -983,8 +983,8 @@
                             <table class="analysis-table">
                                 <thead><tr>
                                     <th style="width:10%; text-align:center;">Pos</th>
-                                    <th style="width:35%;">Driver</th>
-                                    <th style="width:20%;">Car</th>
+                                    <th style="width:30%;">Driver</th>
+                                    <th style="width:25%;">Car</th>
                                     <th style="width:20%;">Time / Gap</th>
                                     <th style="width:15%;">Fastest Lap</th>
                                 </tr></thead>
