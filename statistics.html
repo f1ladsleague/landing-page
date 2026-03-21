@@ -56,7 +56,6 @@
         .back-btn { background: #333; color: #fff; text-decoration: none; padding: 8px 20px; border-radius: 6px; font-weight: 700; border: none; cursor: pointer; transition: 0.3s; font-family: 'Titillium Web'; text-transform: uppercase; display: inline-flex; align-items: center; gap: 8px;}
         .back-btn:hover { background: var(--f1-red); transform: translateX(-3px);}
 
-        /* CHANGED: align-items to flex-start to pin photo to top */
         .profile-header { display: flex; align-items: flex-start; gap: 25px; padding: 30px; background: rgba(0,0,0,0.4); border-bottom: 1px solid #333; flex-wrap: wrap;}
         
         .profile-photo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; object-position: center top; border: 4px solid #444; box-shadow: 0 5px 15px rgba(0,0,0,0.5); cursor: pointer; transition: transform 0.3s ease, border-color 0.3s; }
@@ -892,9 +891,8 @@
             let avgPosNum = validStarts > 0 ? (stats.sumPos / validStarts) : 10;
             let avgGained = validStarts > 0 ? (stats.posGained / validStarts) : 0;
             
-            // RACECRAFT FORMULA FIX
-            let baseRacecraft = (10 - avgPosNum) * 10; // Avg Finish P1 = 90
-            let racecraftBonus = avgGained * 10;       // Avg Gain +2 = +20 bonus
+            let baseRacecraft = (10 - avgPosNum) * 10; 
+            let racecraftBonus = avgGained * 10;       
             let racecraft = Math.round(Math.min(99, Math.max(0, baseRacecraft + racecraftBonus)));
             
             let consistency = Math.round(((stats.starts - stats.dnfs) / stats.starts) * 100); if(isNaN(consistency)) consistency=0;
@@ -940,11 +938,9 @@
             let gLabels = recentGained.map(g => `${g.track} (S${g.sNum})`);
             let gData = recentGained.map(g => g.gained);
             
-            // Set dynamic width so it scrolls beautifully on large datasets
             let minW = Math.max(100, recentGained.length * 35);
             document.getElementById('pg-canvas-wrapper').style.minWidth = minW + 'px';
 
-            // Gray out the 0 values so they are visible with minBarLength
             let gColors = gData.map(val => val > 0 ? 'rgba(0, 215, 182, 0.8)' : (val < 0 ? 'rgba(225, 6, 0, 0.8)' : 'rgba(255, 255, 255, 0.3)')); 
 
             activeCharts.gained = new Chart(document.getElementById('positionsGainedChart'), {
@@ -1007,6 +1003,17 @@
             });
         }
 
+        function hexToRgbA(hex, alpha){
+            let c;
+            if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
+                c= hex.substring(1).split('');
+                if(c.length== 3){ c= [c[0], c[0], c[1], c[1], c[2], c[2]]; }
+                c= '0x'+c.join('');
+                return 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+','+alpha+')';
+            }
+            return `rgba(136,136,136,${alpha})`;
+        }
+
         window.updateCumulativePointsChart = function(dName) {
             let sNum = document.getElementById('cp-season-selector').value;
             if(activeCharts.cumulative) activeCharts.cumulative.destroy();
@@ -1026,27 +1033,33 @@
                 });
                 
                 let isMain = drv === dName;
+                let latestTeam = seasonStandings[sNum].drivers[drv].team;
+                let baseHex = teamColors[latestTeam] || '#888';
+                let legendColor = isMain ? baseHex : hexToRgbA(baseHex, 0.4);
                 
                 datasets.push({
                     label: drv,
                     data: data,
+                    borderColor: legendColor, // Fixes legend & fallback line color
+                    backgroundColor: legendColor, // Fixes hover box & legend box
                     segment: {
                         borderColor: ctx => {
                             let raceIdx = ctx.p1DataIndex !== undefined ? ctx.p1DataIndex : ctx.p0DataIndex;
                             let race = seasonRaces[raceIdx];
+                            let hexColor = baseHex;
                             if(race) {
                                 let dData = race.raceData.Drivers.find(d => d.Driver.Name === drv);
-                                if(dData && dData.Team) return teamColors[dData.Team.Name] || '#888';
+                                if(dData && dData.Team) hexColor = teamColors[dData.Team.Name] || '#888';
                             }
-                            return '#888';
+                            return isMain ? hexColor : hexToRgbA(hexColor, 0.3); // 30% opacity for others
                         }
                     },
-                    backgroundColor: isMain ? 'rgba(255,255,255,0.05)' : 'transparent',
-                    borderWidth: isMain ? 4 : 2,
-                    borderDash: isMain ? [] : [5, 5],
-                    pointRadius: isMain ? 4 : 0,
+                    borderWidth: isMain ? 4 : 1.5,
+                    borderDash: [], 
+                    pointRadius: isMain ? 4 : 0, // Hides points for rivals to keep chart clean
+                    pointBackgroundColor: baseHex,
                     pointHoverRadius: 6,
-                    fill: isMain,
+                    fill: false, // Ensures fill doesn't override legend box color
                     tension: 0.2,
                     order: isMain ? 1 : 2 
                 });
@@ -1055,7 +1068,18 @@
             activeCharts.cumulative = new Chart(document.getElementById('cumulativePointsChart'), {
                 type: 'line',
                 data: { labels: labels, datasets: datasets },
-                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { display: true, position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, font: {size: 11} } } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false }, ticks: { font: { size: 10 } } } } }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    interaction: { mode: 'index', intersect: false }, 
+                    plugins: { 
+                        legend: { display: true, position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, font: {size: 11} } } 
+                    }, 
+                    scales: { 
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' } }, 
+                        x: { grid: { display: true, color: 'rgba(255,255,255,0.05)' }, ticks: { font: { size: 10 } } } // Added faint vertical lines
+                    } 
+                }
             });
         }
 
