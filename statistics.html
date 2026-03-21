@@ -89,8 +89,13 @@
 
         /* Charts Section */
         .charts-section { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 30px; background: rgba(0,0,0,0.2); width: 100%; box-sizing: border-box;}
-        .chart-container { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; min-width: 0; width: 100%; box-sizing: border-box; }
-        .chart-title { font-size: 16px; color: #aaa; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; margin-top: 0; text-align: center; margin-bottom: 15px; }
+        .chart-container { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; min-width: 0; width: 100%; box-sizing: border-box; display: flex; flex-direction: column;}
+        .chart-container.full-width { grid-column: 1 / -1; }
+        
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;}
+        .chart-title { font-size: 16px; color: #aaa; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; margin: 0; }
+        .chart-selector { background: #333; color: #fff; border: 1px solid #555; padding: 5px 10px; border-radius: 4px; font-family: 'Titillium Web'; font-weight: 700; outline: none; cursor: pointer;}
+        .chart-canvas-wrapper { position: relative; flex-grow: 1; min-height: 300px; width: 100%; }
 
         /* CUSTOM PHOTO GRAPH CSS */
         .track-finishes-grid { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: thin; scrollbar-color: var(--f1-red) #333; min-height: 120px;}
@@ -138,25 +143,6 @@
         .analysis-table tr:hover td { background: rgba(255,255,255,0.05); }
         .quali-header { padding: 15px 20px 5px 20px; font-size: 13px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: #aaa; }
 
-        /* EXACT CUSTOM MODAL FOR EA RACENET */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
-        .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-content { background: var(--f1-card); border-radius: 12px; padding: 30px 25px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 15px 50px rgba(0,0,0,0.8); border-top: 5px solid #ff4747; position: relative; transform: translateY(20px); transition: transform 0.3s ease; }
-        .modal-overlay.active .modal-content { transform: translateY(0); }
-        .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; color: #888; font-size: 28px; cursor: pointer; transition: 0.2s; line-height: 1; }
-        .modal-close:hover { color: var(--f1-red); }
-        .modal-content h3 { margin: 10px 0 5px 0; font-size: 24px; text-transform: uppercase; font-weight: 900; color: #fff; }
-        .modal-content p { color: #aaa; font-size: 14px; margin-bottom: 25px; line-height: 1.4; }
-        .cred-group { margin-bottom: 12px; text-align: left; background: rgba(0,0,0,0.4); padding: 12px 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); }
-        .cred-label { display: block; font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-weight: 700; }
-        .cred-row { display: flex; justify-content: space-between; align-items: center; }
-        .cred-value { font-family: monospace; font-size: 15px; color: #fff; font-weight: 700; letter-spacing: 0.5px; user-select: all; }
-        .copy-btn { background: #333; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 700; transition: 0.2s; text-transform: uppercase; letter-spacing: 0.5px; }
-        .copy-btn:hover { background: #555; }
-        .copy-btn.success { background: #00d7b6; color: #000; }
-        .proceed-btn { display: inline-block; margin-top: 15px; background: #ff4747; color: #fff; text-decoration: none; padding: 14px 25px; border-radius: 6px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; width: 100%; box-sizing: border-box; transition: 0.3s; }
-        .proceed-btn:hover { background: #ff1a1a; box-shadow: 0 5px 15px rgba(255, 71, 71, 0.4); transform: translateY(-2px); }
-
         #loader { text-align: center; padding: 50px; font-size: 18px; color: #aaa; font-style: italic; }
 
         @media (max-width: 1000px) {
@@ -197,7 +183,6 @@
         <div class="stat-nav" id="main-nav" style="display: none;">
             <button class="stat-tab active" onclick="switchMainTab('drivers')">👤 Drivers</button>
             <button class="stat-tab" onclick="switchMainTab('tracks')">🏁 Track Analysis</button>
-            <button class="stat-tab" onclick="openRacenet(event)">🎮 EA Racenet</button>
         </div>
 
         <div id="loader">Syncing telemetry and databases...</div>
@@ -213,33 +198,6 @@
         <div id="driver-profile-container" class="view-section"></div>
         <div id="track-profile-container" class="view-section"></div>
 
-    </div>
-
-    <div id="racenet-modal" class="modal-overlay">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal()">×</button>
-            <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/acce95aa34709d661580799b3accd42bc0d82658/EARacenetLogo.png" alt="EA Racenet" style="width: 65px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));">
-            <h3>Racenet Login</h3>
-            <p>Use the league credentials below to access telemetry and session statistics.</p>
-            
-            <div class="cred-group">
-                <span class="cred-label">Username / Email</span>
-                <div class="cred-row">
-                    <span class="cred-value" id="rn-user">f1ladsleague@gmail.com</span>
-                    <button class="copy-btn" onclick="copyText('rn-user', this)">Copy</button>
-                </div>
-            </div>
-            
-            <div class="cred-group">
-                <span class="cred-label">Password</span>
-                <div class="cred-row">
-                    <span class="cred-value" id="rn-pass">madhawamaPa!23</span>
-                    <button class="copy-btn" onclick="copyText('rn-pass', this)">Copy</button>
-                </div>
-            </div>
-            
-            <a href="https://racenet.com/" target="_blank" class="proceed-btn">Proceed to Racenet ❯</a>
-        </div>
     </div>
 
     <script>
@@ -267,7 +225,7 @@
         let seasonStandings = {};
         let currentSeasonMax = 1;
         
-        let myChart1, myChart2;
+        let activeCharts = {}; // Store chart instances to destroy them cleanly
 
         const staticDriverProfiles = [
           { "Name": "Mapa", "RealName": "Madhawa Mapa", "InGameName": "M. MAPA", "Nationality": "United Arab Emirates", "RaceNumber": 99, "GamePlatform": "PC" },
@@ -338,24 +296,13 @@
             return `+${seconds}`;
         }
 
-        function openRacenet(event) { event.preventDefault(); document.getElementById('racenet-modal').classList.add('active'); }
-        function closeModal() { document.getElementById('racenet-modal').classList.remove('active'); }
-
-        function copyText(elementId, btnElement) {
-            const textToCopy = document.getElementById(elementId).innerText;
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                const originalText = btnElement.innerText;
-                btnElement.innerText = "COPIED!"; btnElement.classList.add('success');
-                setTimeout(() => { btnElement.innerText = originalText; btnElement.classList.remove('success'); }, 2000);
-            }).catch(err => { alert("Failed to copy. Please manually select the text."); });
-        }
-
         function ensureDriverStats(dName) {
             if (!driverStats[dName]) {
                 driverStats[dName] = { 
                     name: dName, currentTeam: "Unknown", starts: 0, wins: 0, podiums: 0, 
                     fls: 0, poles: 0, dnfs: 0, penPts: 0, totalPtsSort: 0,
-                    sumPos: 0, bestPos: 999, teamsTracked: {}, tracksTracked: {}, seasons: {}
+                    sumPos: 0, sumGrid: 0, posGained: 0, bestPos: 999, teamsTracked: {}, tracksTracked: {}, seasons: {},
+                    allPositionsGained: [] // Format: {track, gained, label}
                 };
             }
         }
@@ -365,12 +312,14 @@
                 trackStats[tNameStr] = { 
                     name: tNameStr, races: 0, sessions: [],
                     driverFinishes: {}, driverWins: {}, driverSprintWins: {}, driverFeatureWins: {}, driverPoles: {}, driverFastestLaps: {},
-                    lapRecord: { time: 999999999, driver: "-" }
+                    lapRecord: { time: 999999999, driver: "-" },
+                    winFromGrid: { "Pole": 0, "Front Row": 0, "Rest": 0 },
+                    seasonLapRecords: {}
                 };
             }
         }
 
-        // TIE BREAKER FUNCTION - UPDATED WITH INLINE PILL BADGES
+        // TIE BREAKER FUNCTION 
         function getTopStat(statObj, labelSuffix = "") {
             let maxVal = -1;
             let leaders = [];
@@ -382,7 +331,6 @@
             
             let nameStr = leaders.join(", ");
             let sizeStr = nameStr.length > 25 ? "15px" : (nameStr.length > 15 ? "18px" : "26px");
-            
             let badge = `<span style="background: var(--f1-red); color: white; font-size: 13px; font-weight: 900; padding: 2px 8px; border-radius: 12px; margin-left: 6px; vertical-align: middle; box-shadow: 0 2px 4px rgba(0,0,0,0.5);">x${maxVal}${labelSuffix}</span>`;
             
             return `<span style="font-size:${sizeStr}; display:flex; flex-direction:row; align-items:center; justify-content:center; flex-wrap:wrap; gap:4px; line-height:1.2;">
@@ -491,6 +439,13 @@
                     let flTime = d.FastestLapTimeInt || 0;
                     let isDnf = (d.Status !== "Ok" && d.Status !== "finished" && !d.Status.toLowerCase().includes("lap"));
                     
+                    // Grid mapping for Position Gained metric
+                    let gridPos = d.GridPosition;
+                    if ((!gridPos || gridPos === 0) && ev.qualiData) {
+                        let qInfo = ev.qualiData.Drivers.find(qd => qd.Driver.Name === dName);
+                        if (qInfo) gridPos = qInfo.Position;
+                    }
+
                     let gapStr = "-";
                     if (isDnf) gapStr = "DNF";
                     else if (pos === 1) gapStr = "Winner";
@@ -503,7 +458,7 @@
                     if(!seasonStandings[ev.season].teams[tName]) seasonStandings[ev.season].teams[tName] = 0;
                     seasonStandings[ev.season].teams[tName] += pts;
 
-                    // TRACK FINISHES FOR PICTOGRAM GRAPH
+                    // TRACK FINISHES FOR PICTOGRAM & QUALI IMPORTANCE
                     if (!trackStats[tNameStr].driverFinishes[dName]) {
                         trackStats[tNameStr].driverFinishes[dName] = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, "DNF": 0, total: 0 };
                     }
@@ -516,6 +471,11 @@
                         trackStats[tNameStr].driverWins[dName] = (trackStats[tNameStr].driverWins[dName] || 0) + 1;
                         if (ev.label === "Sprint") trackStats[tNameStr].driverSprintWins[dName] = (trackStats[tNameStr].driverSprintWins[dName] || 0) + 1;
                         else trackStats[tNameStr].driverFeatureWins[dName] = (trackStats[tNameStr].driverFeatureWins[dName] || 0) + 1;
+                        
+                        // Map Winner's Grid Position
+                        if (gridPos === 1) trackStats[tNameStr].winFromGrid["Pole"]++;
+                        else if (gridPos === 2) trackStats[tNameStr].winFromGrid["Front Row"]++;
+                        else trackStats[tNameStr].winFromGrid["Rest"]++;
                     }
 
                     let s = driverStats[dName];
@@ -524,7 +484,6 @@
                     s.penPts += penPts;
                     s.totalPtsSort += pts; 
                     
-                    // Fallback Pole Position for Season 1
                     if (ev.season === 1 && d.GridPosition === 1) {
                         s.poles++;
                         trackStats[tNameStr].driverPoles[dName] = (trackStats[tNameStr].driverPoles[dName] || 0) + 1;
@@ -538,14 +497,29 @@
                         trackStats[tNameStr].driverFastestLaps[dName] = (trackStats[tNameStr].driverFastestLaps[dName] || 0) + 1;
                     }
                     
+                    // Track Absolute Lap Record
                     if (flTime > 0 && flTime < trackStats[tNameStr].lapRecord.time) {
                         trackStats[tNameStr].lapRecord = { time: flTime, driver: dName };
                     }
+                    // Track Season Lap Record for Graph
+                    if (flTime > 0) {
+                        if (!trackStats[tNameStr].seasonLapRecords[ev.season] || flTime < trackStats[tNameStr].seasonLapRecords[ev.season]) {
+                            trackStats[tNameStr].seasonLapRecords[ev.season] = flTime;
+                        }
+                    }
                     
-                    if (isDnf) s.dnfs++;
-                    else {
+                    if (isDnf) {
+                        s.dnfs++;
+                    } else {
                         s.sumPos += pos; 
                         if (pos < s.bestPos) s.bestPos = pos;
+                        
+                        if (gridPos > 0) {
+                            s.sumGrid += gridPos;
+                            let gained = gridPos - pos; // + if gained, - if lost
+                            s.posGained += gained;
+                            s.allPositionsGained.push({ track: tNameStr, label: ev.label, gained: gained, sNum: ev.season });
+                        }
                     }
 
                     s.teamsTracked[tName] = (s.teamsTracked[tName] || 0) + 1;
@@ -674,6 +648,9 @@
                 `;
             }
 
+            let sortedSeasons = Object.keys(s.seasons).sort((a,b) => b - a); 
+            let seasonOptions = sortedSeasons.map(num => `<option value="${num}">Season ${num}</option>`).join('');
+
             let html = `
                 <div style="margin-bottom: 20px;">
                     <button class="back-btn" onclick="exitToDirectory('drivers')">❮ Back to Drivers</button>
@@ -712,13 +689,23 @@
                     </div>
 
                     <div class="charts-section">
+                        <div class="chart-container full-width">
+                            <div class="chart-header">
+                                <h4 class="chart-title">Title Charge (Cumulative Points)</h4>
+                                <select id="cp-season-selector" class="chart-selector" onchange="updateCumulativePointsChart('${dName}')">
+                                    ${seasonOptions}
+                                </select>
+                            </div>
+                            <div class="chart-canvas-wrapper"><canvas id="cumulativePointsChart"></canvas></div>
+                        </div>
+
                         <div class="chart-container">
-                            <h4 class="chart-title">Average Finish Position (By Season)</h4>
-                            <div style="position: relative; height: 300px; width: 100%;"><canvas id="avgPosChart"></canvas></div>
+                            <h4 class="chart-title">Driver DNA</h4>
+                            <div class="chart-canvas-wrapper" style="min-height:350px;"><canvas id="radarChart"></canvas></div>
                         </div>
                         <div class="chart-container">
-                            <h4 class="chart-title">Race Finish Breakdown</h4>
-                            <div style="position: relative; height: 300px; width: 100%;"><canvas id="distBarChart"></canvas></div>
+                            <h4 class="chart-title">The Sunday Driver (Positions Gained)</h4>
+                            <div class="chart-canvas-wrapper" style="min-height:350px;"><canvas id="positionsGainedChart"></canvas></div>
                         </div>
                     </div>
 
@@ -731,7 +718,6 @@
             container.innerHTML = html;
 
             const accCont = document.getElementById('accordion-container');
-            let sortedSeasons = Object.keys(s.seasons).sort((a,b) => b - a); 
             
             sortedSeasons.forEach(sNum => {
                 let sData = s.seasons[sNum];
@@ -784,47 +770,96 @@
                 `;
             });
 
-            setTimeout(() => drawDriverCharts(s, sortedSeasons), 100);
+            setTimeout(() => {
+                drawDriverCharts(sName=dName, stats=s);
+                updateCumulativePointsChart(dName);
+            }, 100);
         }
 
-        function drawDriverCharts(s, sortedSeasons) {
-            if(myChart1) myChart1.destroy();
-            if(myChart2) myChart2.destroy();
+        function drawDriverCharts(dName, stats) {
+            Chart.defaults.color = '#aaa';
+            Chart.defaults.font.family = "'Titillium Web', sans-serif";
 
-            let labels = sortedSeasons.slice().reverse().map(num => `S${num}`);
-            let avgData = sortedSeasons.slice().reverse().map(num => {
-                let races = s.seasons[num].races.filter(r => r.pos !== "DNF");
-                if (races.length === 0) return null;
-                let sum = races.reduce((acc, curr) => acc + curr.pos, 0);
-                return sum / races.length;
+            if(activeCharts.radar) activeCharts.radar.destroy();
+            if(activeCharts.gained) activeCharts.gained.destroy();
+
+            // 1. Radar Chart (Driver DNA)
+            let avgGrid = stats.sumGrid / (stats.starts - stats.dnfs); if(isNaN(avgGrid)) avgGrid = 10;
+            let oneLapPace = Math.round(Math.max(0, 100 - ((avgGrid - 1) * 5)));
+            let avgGained = stats.posGained / (stats.starts - stats.dnfs); if(isNaN(avgGained)) avgGained = 0;
+            let racecraft = Math.round(Math.min(99, Math.max(0, 50 + (avgGained * 10))));
+            let consistency = Math.round(((stats.starts - stats.dnfs) / stats.starts) * 100); if(isNaN(consistency)) consistency=0;
+            let cleanliness = Math.round(Math.max(0, 100 - (stats.penPts * 2.5)));
+            let clutch = Math.round(Math.min(99, (stats.podiums / stats.starts) * 100 * 1.5)); if(isNaN(clutch)) clutch=0;
+
+            activeCharts.radar = new Chart(document.getElementById('radarChart'), {
+                type: 'radar',
+                data: {
+                    labels: ['One-Lap Pace', 'Racecraft', 'Consistency', 'Cleanliness', 'Clutch Factor'],
+                    datasets: [{
+                        label: dName,
+                        data: [oneLapPace, racecraft, consistency, cleanliness, clutch],
+                        backgroundColor: 'rgba(225, 6, 0, 0.4)', borderColor: '#e10600',
+                        pointBackgroundColor: '#fff', pointBorderColor: '#e10600', borderWidth: 3
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { angleLines: { color: 'rgba(255,255,255,0.1)' }, grid: { color: 'rgba(255,255,255,0.1)' }, pointLabels: { font: { size: 12, weight: 'bold' }, color: '#fff' }, ticks: { display: false, min: 0, max: 100 } } } }
             });
+
+            // 2. Positions Gained/Lost Bar Chart
+            let recentGained = stats.allPositionsGained.slice(-15); // Show last 15 races for clarity
+            let gLabels = recentGained.map(g => `${g.track} (S${g.sNum})`);
+            let gData = recentGained.map(g => g.gained);
+            let gColors = gData.map(val => val >= 0 ? 'rgba(0, 215, 182, 0.8)' : 'rgba(225, 6, 0, 0.8)'); // Mercedes Green = Gain, Red = Loss
+
+            activeCharts.gained = new Chart(document.getElementById('positionsGainedChart'), {
+                type: 'bar',
+                data: { labels: gLabels, datasets: [{ data: gData, backgroundColor: gColors, borderRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return c.raw >= 0 ? `+${c.raw} positions` : `${c.raw} positions`; } } } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false }, ticks: { display: false } } } }
+            });
+        }
+
+        window.updateCumulativePointsChart = function(dName) {
+            let sNum = document.getElementById('cp-season-selector').value;
+            if(activeCharts.cumulative) activeCharts.cumulative.destroy();
+
+            let seasonRaces = allEvents.filter(e => e.season == sNum);
+            let labels = seasonRaces.map(r => r.trackName + (r.label=='Sprint'?' (S)':''));
+            let driversInSeason = Object.keys(seasonStandings[sNum].drivers);
             
-            myChart1 = new Chart(document.getElementById('avgPosChart'), {
-                type: 'line',
-                data: { labels: labels, datasets: [{ label: 'Average Finish', data: avgData, borderColor: '#e10600', backgroundColor: 'rgba(225, 6, 0, 0.2)', borderWidth: 3, tension: 0.3, fill: true, pointRadius: 5 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { reverse: true, min: 1, max: 10, ticks: { stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } }
-            });
+            let datasets = [];
 
-            let p1=0, p2=0, p3=0, p4=0, p5=0, p6=0, p7_10=0;
-            Object.values(s.seasons).forEach(season => {
-                season.races.forEach(r => {
-                    if (r.pos === 1) p1++;
-                    else if (r.pos === 2) p2++;
-                    else if (r.pos === 3) p3++;
-                    else if (r.pos === 4) p4++;
-                    else if (r.pos === 5) p5++;
-                    else if (r.pos === 6) p6++;
-                    else if (r.pos >= 7 && r.pos <= 10) p7_10++;
+            driversInSeason.forEach(drv => {
+                let cumulative = 0;
+                let data = seasonRaces.map(race => {
+                    let dData = race.raceData.Drivers.find(d => d.Driver.Name === drv);
+                    if (dData) cumulative += (dData.DriverPointsRaw / 10);
+                    return cumulative;
+                });
+                
+                let isMain = drv === dName;
+                let team = seasonStandings[sNum].drivers[drv].team;
+                let color = teamColors[team] || '#888';
+                
+                datasets.push({
+                    label: drv,
+                    data: data,
+                    borderColor: color,
+                    backgroundColor: isMain ? 'rgba(255,255,255,0.1)' : 'transparent',
+                    borderWidth: isMain ? 4 : 2,
+                    borderDash: isMain ? [] : [5, 5],
+                    pointRadius: isMain ? 4 : 0,
+                    pointHoverRadius: 6,
+                    fill: isMain,
+                    tension: 0.2,
+                    order: isMain ? 1 : 2 // Bring main driver to front
                 });
             });
 
-            myChart2 = new Chart(document.getElementById('distBarChart'), {
-                type: 'bar',
-                data: {
-                    labels: ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th-10th', 'DNFs'],
-                    datasets: [{ data: [p1, p2, p3, p4, p5, p6, p7_10, s.dnfs], backgroundColor: ['#FFD700', '#C0C0C0', '#CD7F32', '#0090ff', '#00d2be', '#3671c6', '#555', '#e10600'], borderRadius: 4 }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } }
+            activeCharts.cumulative = new Chart(document.getElementById('cumulativePointsChart'), {
+                type: 'line',
+                data: { labels: labels, datasets: datasets },
+                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { display: true, position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, font: {size: 11} } } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } }
             });
         }
 
@@ -882,7 +917,6 @@
 
             let t = trackStats[tName];
             
-            // Build tie-breaker object for podiums & DNFs
             let podObj = {}; let dnfObj = {};
             for (let d in t.driverFinishes) {
                 podObj[d] = (t.driverFinishes[d][1]||0) + (t.driverFinishes[d][2]||0) + (t.driverFinishes[d][3]||0);
@@ -905,8 +939,6 @@
             let layoutImg = trackLayouts[tName] ? `<img src="${photoBase}Track%20Layouts/${trackLayouts[tName]}-track-layout.png" class="track-layout-img" onerror="this.style.display='none'">` : '';
 
             let sessionAccordions = t.sessions.map((ev, idx) => {
-                
-                // --- QUALIFYING INTEGRATION ---
                 let qualiHtml = "";
                 if (ev.qualiData) {
                     let qRows = ev.qualiData.Drivers.sort((a,b)=>a.Position - b.Position).map(d => {
@@ -935,7 +967,6 @@
                     `;
                 }
 
-                // --- RACE INTEGRATION ---
                 let sortedDrivers = ev.raceData.Drivers.sort((a, b) => a.Position - b.Position);
                 let winnerTime = sortedDrivers.find(d => d.Position === 1)?.TimeInt || 0;
 
@@ -1022,10 +1053,19 @@
                         <div class="stat-box" style="justify-content:center;"><div class="stat-value text-value" style="display:flex; flex-direction:column; align-items:center;">${lapRecText}</div><div class="stat-label">All-Time Lap Record</div></div>
                     </div>
 
-                    <div class="charts-section" style="grid-template-columns: 1fr;">
-                        <div class="chart-container">
-                            <h4 class="chart-title">Finishing Positions by Driver</h4>
+                    <div class="charts-section">
+                        <div class="chart-container full-width">
+                            <h4 class="chart-title" style="margin-bottom: 15px;">Historical Finishes</h4>
                             ${customGraphHtml}
+                        </div>
+                        
+                        <div class="chart-container">
+                            <h4 class="chart-title">Qualifying Importance (Win Conversion)</h4>
+                            <div class="chart-canvas-wrapper" style="min-height:280px;"><canvas id="trackQualiChart"></canvas></div>
+                        </div>
+                        <div class="chart-container">
+                            <h4 class="chart-title">Lap Record Evolution</h4>
+                            <div class="chart-canvas-wrapper" style="min-height:280px;"><canvas id="lapEvoChart"></canvas></div>
                         </div>
                     </div>
 
@@ -1036,17 +1076,47 @@
                 </div>
             `;
             container.innerHTML = html;
+            setTimeout(() => drawTrackCharts(tName, t), 100);
         }
 
-        function exitToDirectory(tabName) {
-            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-            document.getElementById('main-nav').style.display = "flex";
-            document.getElementById(`view-${tabName}`).classList.add('active');
+        function drawTrackCharts(tName, t) {
+            Chart.defaults.color = '#aaa';
+            Chart.defaults.font.family = "'Titillium Web', sans-serif";
+
+            if(activeCharts.trackQuali) activeCharts.trackQuali.destroy();
+            if(activeCharts.trackLap) activeCharts.trackLap.destroy();
+
+            // 1. Qualifying Importance Donut Chart
+            let wLabels = Object.keys(t.winFromGrid);
+            let wData = Object.values(t.winFromGrid);
             
-            document.querySelectorAll('.stat-tab').forEach(t => t.classList.remove('active'));
-            if(tabName === 'drivers') document.querySelectorAll('.stat-tab')[0].classList.add('active');
-            if(tabName === 'tracks') document.querySelectorAll('.stat-tab')[1].classList.add('active');
-            window.scrollTo(0, 0);
+            // Only draw if there are wins recorded
+            if (wData.reduce((a, b) => a + b, 0) > 0) {
+                activeCharts.trackQuali = new Chart(document.getElementById('trackQualiChart'), {
+                    type: 'doughnut',
+                    data: { labels: wLabels, datasets: [{ data: wData, backgroundColor: ['#e10600', '#F47600', '#3671c6'], borderColor: '#1f1f27', borderWidth: 3 }] },
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom', labels: {color: '#fff', usePointStyle: true, boxWidth: 8} } } }
+                });
+            }
+
+            // 2. Lap Record Evolution Line Chart
+            let lSeasons = Object.keys(t.seasonLapRecords).sort((a,b)=>a-b);
+            let lLabels = lSeasons.map(s => `Season ${s}`);
+            let lData = lSeasons.map(s => t.seasonLapRecords[s]);
+
+            if (lData.length > 0) {
+                activeCharts.trackLap = new Chart(document.getElementById('lapEvoChart'), {
+                    type: 'line',
+                    data: { labels: lLabels, datasets: [{ label: 'Fastest Lap', data: lData, borderColor: '#ae37de', backgroundColor: 'rgba(174, 55, 222, 0.2)', borderWidth: 3, pointRadius: 5, fill: true, tension: 0.2 }] },
+                    options: { 
+                        responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return formatMs(c.raw); } } } }, 
+                        scales: { 
+                            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { callback: function(val) { return formatMs(val); } } }, 
+                            x: { grid: { display: false } } 
+                        } 
+                    }
+                });
+            }
         }
 
         window.onload = async () => {
