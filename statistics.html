@@ -966,7 +966,14 @@
             window.scrollTo(0, 0);
         }
 
-        window.onload = initData;
+        window.onload = async () => {
+            await initData();
+            const urlParams = new URLSearchParams(window.location.search);
+            const targetDriver = urlParams.get('driver');
+            if (targetDriver && driverStats[targetDriver]) {
+                renderDriverProfile(targetDriver);
+            }
+        };
     </script>
 </body>
 </html>
