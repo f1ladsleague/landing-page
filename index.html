@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>F1 Lads League</title>
+    <title>F1 Lads League | Season 5</title>
     
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/f1ladsleague/sidebetting/6f14ca658f9c288fd8ca8a79df5c658c97c8ac92/favicon.png">
     
@@ -50,16 +50,15 @@
             overflow: hidden; 
         }
         
-        /* Forces the video to anchor at the 25% mark */
         .video-container {
             position: absolute;
-            top: 25%; /* Pushed down from the top */
+            top: 25%; 
             left: 50%;
             width: 100vw;
-            height: 56.25vw; /* 16:9 Aspect Ratio */
+            height: 56.25vw; 
             min-height: 100%;
             min-width: 177.77vh; 
-            transform: translate(-50%, -25%); /* Perfectly aligns the 25% anchor */
+            transform: translate(-50%, -25%); 
             z-index: 1;
             pointer-events: none; 
         }
@@ -70,7 +69,6 @@
             border: none;
         }
 
-        /* The Dark Gradient Overlay */
         .video-overlay {
             position: absolute;
             top: 0;
@@ -81,7 +79,6 @@
             z-index: 2;
         }
 
-        /* The Content (Logo ONLY) */
         .hero-content {
             position: relative;
             z-index: 3; 
@@ -95,15 +92,19 @@
 
         /* MAIN LINKS GRID */
         .container {
-            max-width: 1200px;
+            max-width: 1300px; /* Widened slightly to fit 5 columns beautifully */
             margin: 0 auto;
             padding: 50px 20px 80px 20px;
         }
         
-        .links-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 25px; }
+        .links-grid { 
+            display: grid; 
+            grid-template-columns: repeat(5, 1fr); /* STRICTLY 5 COLUMNS FOR PC */
+            gap: 20px; 
+        }
 
         .link-card {
-            background: rgba(31, 31, 39, 0.7); backdrop-filter: blur(10px); border-radius: 16px; padding: 40px 25px;
+            background: rgba(31, 31, 39, 0.7); backdrop-filter: blur(10px); border-radius: 16px; padding: 30px 15px;
             text-align: center; text-decoration: none; color: #fff; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             box-shadow: 0 10px 30px rgba(0,0,0,0.4); display: flex; flex-direction: column; justify-content: center; align-items: center;
             border-top: 5px solid var(--card-color); border-left: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);
@@ -115,12 +116,11 @@
             border-left: 1px solid color-mix(in srgb, var(--card-color) 30%, transparent); border-right: 1px solid color-mix(in srgb, var(--card-color) 30%, transparent);
         }
 
-        .card-icon { font-size: 45px; margin-bottom: 15px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4)); transition: transform 0.3s ease; display: inline-block; }
+        .card-icon { font-size: 40px; margin-bottom: 15px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4)); transition: transform 0.3s ease; display: inline-block; }
         .link-card:hover .card-icon { transform: scale(1.15); }
-        .link-card h2 { font-size: 26px; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; }
-        .link-card p { color: #bbb; font-size: 16px; margin: 0; line-height: 1.5; font-weight: 600; }
+        .link-card h2 { font-size: 20px; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; }
+        .link-card p { color: #bbb; font-size: 14px; margin: 0; line-height: 1.4; font-weight: 600; }
 
-        /* LOADING ANIMATION FOR TELEMETRY PING */
         @keyframes spin { 100% { transform: rotate(360deg); } }
         .spinning { animation: spin 1s linear infinite; }
 
@@ -134,6 +134,11 @@
         }
         #ios-install-prompt.show { bottom: 25px; }
         .prompt-close { position: absolute; top: -10px; right: -10px; background: var(--f1-red); color: white; width: 24px; height: 24px; border-radius: 50%; font-size: 12px; line-height: 24px; cursor: pointer; font-weight: bold; border: 2px solid #fff; }
+
+        /* TABLET OPTIMIZATION */
+        @media (max-width: 1100px) {
+            .links-grid { grid-template-columns: repeat(3, 1fr); }
+        }
 
         /* MOBILE OPTIMIZATION */
         @media (max-width: 768px) {
@@ -163,7 +168,7 @@
         <div class="links-grid">
             <a href="https://www.youtube.com/@f1lads/streams" target="_blank" class="link-card" style="--card-color: #ff2a2a;">
                 <div class="card-icon">
-                    <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/7832093f0e52f79d3860dd1631da6fdb87a15819/YTLogo.png" alt="YouTube Logo" style="width: 55px; height: auto; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));">
+                    <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/7832093f0e52f79d3860dd1631da6fdb87a15819/YTLogo.png" alt="YouTube Logo" style="width: 50px; height: auto; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));">
                 </div>
                 <h2>Live Stream</h2>
                 <p>Watch the race day action live on YouTube.</p>
@@ -178,40 +183,41 @@
                 <h2>Side Bets</h2>
                 <p>Constructor Dashboard & Side Betting.</p>
             </a>
-            <a href="https://teamradio.f1lads.com" class="link-card" style="--card-color: #00D7B6;">
-                <div class="card-icon">📻</div>
-                <h2>Team Radio</h2>
-                <p>Live Pitwall Dashboard & Broadcast Comms.</p>
-            </a>
             <a href="rules.html" class="link-card" style="--card-color: #00bfff;">
                 <div class="card-icon">📖</div>
                 <h2>Rules & Regs</h2>
                 <p>Official Rules & Regulations and Stewards Decisions.</p>
-            </a>
-            <a href="https://telemetry.f1lads.com" onclick="checkTelemetry(event, this.href)" class="link-card" style="--card-color: #b388ff;">
-                <div class="card-icon">📊</div>
-                <h2>Telemetry</h2>
-                <p>Live Race Day Telemetry.</p>
             </a>
             <a href="paddock.html" class="link-card" style="--card-color: #ff9100;">
                 <div class="card-icon">🏎️</div>
                 <h2>The Paddock</h2>
                 <p>Meet the Constructors, Team Principals and Drivers.</p>
             </a>
-            <a href="results.html" class="link-card" style="--card-color: #e000d4;">
-                <div class="card-icon">🏁</div>
-                <h2>Race Results</h2>
-                <p>Full race classification data for the current season.</p>
+
+            <a href="https://teamradio.f1lads.com" class="link-card" style="--card-color: #00D7B6;">
+                <div class="card-icon">📻</div>
+                <h2>Team Radio</h2>
+                <p>Live Race Day Team Radio.</p>
+            </a>
+            <a href="https://telemetry.f1lads.com" onclick="checkTelemetry(event, this.href)" class="link-card" style="--card-color: #b388ff;">
+                <div class="card-icon">📊</div>
+                <h2>Telemetry</h2>
+                <p>Live Race Day Telemetry.</p>
             </a>
             <a href="statistics.html" class="link-card" style="--card-color: #ff4747;">
                 <div class="card-icon">📈</div>
                 <h2>Stats & Analysis</h2>
                 <p>Comprehensive Driver & Track statistics and analysis hub.</p>
             </a>
+            <a href="results.html" class="link-card" style="--card-color: #e000d4;">
+                <div class="card-icon">🏁</div>
+                <h2>Race Results</h2>
+                <p>Full race classification data for the current season.</p>
+            </a>
             <a href="archive.html" class="link-card" style="--card-color: #a0a0a0;">
                 <div class="card-icon">🏛️</div>
                 <h2>The Vault</h2>
-                <p>Historical race results and legacy data from previous seasons.</p>
+                <p>Historical race results from previous seasons.</p>
             </a>
         </div>
     </div>
@@ -224,7 +230,7 @@
 
     <script>
         function checkTelemetry(event, url) {
-            event.preventDefault(); // Stop immediate navigation
+            event.preventDefault(); 
             
             const card = event.currentTarget;
             const iconEl = card.querySelector('.card-icon');
@@ -239,47 +245,39 @@
 
             let isDone = false;
 
-            // Expanded timeout to 6 seconds to give the proxy enough time to read Cloudflare
             let safetyTimeout = setTimeout(() => {
                 if (!isDone) {
                     isDone = true;
-                    window.location.href = url; // Let them through if the proxy takes too long
+                    window.location.href = url; 
                 }
             }, 6000);
 
-            // Fetch the actual HTML of the telemetry page through a safe proxy
             const checkUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url + "?nocache=" + Date.now())}`;
 
             fetch(checkUrl)
                 .then(response => response.json())
                 .then(data => {
-                    if (isDone) return; // Prevent double-execution if timeout already fired
+                    if (isDone) return; 
                     isDone = true;
                     clearTimeout(safetyTimeout);
                     
-                    // Convert the entire webpage into lowercase text
                     const html = (data.contents || "").toLowerCase();
                     const httpCode = data.status ? data.status.http_code : 200;
 
-                    // STRICT CHECK: Does the webpage actually contain Cloudflare's 502 error message?
                     const isCloudflareError = httpCode === 502 || 
                                               (html.includes("bad gateway") && html.includes("cloudflare"));
 
                     if (isCloudflareError) {
-                        // Reset the card back to normal
                         iconEl.innerHTML = originalIcon;
                         iconEl.classList.remove("spinning");
                         titleEl.innerText = originalTitle;
                         
-                        // Show the alert
                         alert("🏎️ Telemetry is currently offline!\n\nThe live data feed only activates during the actual race sessions. Please check back later.");
                     } else {
-                        // Server is live, let them in!
                         window.location.href = url;
                     }
                 })
                 .catch(error => {
-                    // If the proxy fails (e.g., strict browser privacy settings), fail safely and let them through
                     if (isDone) return;
                     isDone = true;
                     clearTimeout(safetyTimeout);
@@ -293,13 +291,11 @@
                 'iPad Simulator', 'iPhone Simulator', 'iPod Simulator',
                 'iPad', 'iPhone', 'iPod'
             ].includes(navigator.platform)
-            // iPad on iOS 13 detection
             || (navigator.userAgent.includes("Mac") && "ontouchend" in document);
         }
 
         function closePrompt() {
             document.getElementById('ios-install-prompt').classList.remove('show');
-            // Save to localStorage so we don't annoy them every time they visit
             localStorage.setItem('f1lads-prompt-closed', 'true');
         }
 
@@ -307,11 +303,10 @@
             const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
             const hasClosedPrompt = localStorage.getItem('f1lads-prompt-closed');
 
-            // If it's an iOS device, NOT already installed as an app, and they haven't dismissed it yet
             if (isIOS() && !isStandalone && !hasClosedPrompt) {
                 setTimeout(() => {
                     document.getElementById('ios-install-prompt').classList.add('show');
-                }, 1500); // Slide up 1.5 seconds after page load
+                }, 1500); 
             }
         };
     </script>
