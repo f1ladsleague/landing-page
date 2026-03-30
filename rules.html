@@ -23,6 +23,8 @@
             --f1-dark: #15151e; 
             --f1-card: #1f1f27;
             --f1-hover: #2a2a35;
+            --text-main: #e0e0e0;
+            --text-muted: #888888;
         }
         
         body { 
@@ -105,7 +107,7 @@
         /* MODERN TAB / BUTTON SYSTEM */
         .action-tabs {
             display: flex;
-            gap: 25px;
+            gap: 15px;
             width: 100%;
             margin-bottom: 40px;
             justify-content: center;
@@ -114,11 +116,11 @@
 
         .tab-btn {
             flex: 1;
-            min-width: 280px;
-            max-width: 450px;
-            padding: 20px 25px;
+            min-width: 220px;
+            max-width: 300px;
+            padding: 15px 20px;
             font-family: 'Titillium Web', sans-serif;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 900;
             letter-spacing: 1px;
             text-transform: uppercase;
@@ -150,39 +152,158 @@
 
         .tab-btn:hover {
             transform: translateY(-5px);
-            --btn-color: #00bfff; /* Glows blue on hover by default */
+            --btn-color: #00bfff;
             background: color-mix(in srgb, var(--btn-color) 15%, rgba(42, 42, 53, 0.95));
             box-shadow: 0 15px 40px color-mix(in srgb, var(--btn-color) 30%, transparent);
             border-color: var(--btn-color);
         }
         
         .tab-btn.active:hover {
-            --btn-color: var(--f1-red); /* Keeps the active tab red on hover */
+            --btn-color: var(--f1-red); 
         }
 
-        /* Unique hover color for the Discord button */
         #discord-btn:hover {
-            --btn-color: #5865F2; /* Discord Blurple */
+            --btn-color: #5865F2; 
         }
 
-        /* PDF VIEWER - HIDDEN BY DEFAULT */
-        .pdf-container {
+        /* VIEWERS (PDF & Framework) */
+        .content-viewer {
             width: 100%;
-            height: 75vh;
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 15px 40px rgba(0,0,0,0.6);
             border: 1px solid rgba(255,255,255,0.1);
-            background: #fff; 
-            display: none; /* Keeps it collapsed initially */
+            display: none; 
             opacity: 0;
             transition: opacity 0.4s ease;
         }
         
+        .pdf-container {
+            height: 75vh;
+            background: #fff; 
+        }
+
         iframe {
             width: 100%;
             height: 100%;
             border: none;
+        }
+
+        /* PENALTY FRAMEWORK STYLING */
+        .framework-container {
+            background: var(--f1-card);
+            padding: 0;
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        .document-header {
+            text-align: center;
+            padding: 40px 30px;
+            background: rgba(0,0,0,0.4);
+            border-bottom: 3px solid var(--f1-red);
+        }
+
+        .fia-logo { 
+            max-width: 140px; 
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 15px rgba(0,0,0,0.6); 
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .doc-title { 
+            font-size: 32px; 
+            text-transform: uppercase; 
+            font-weight: 900; 
+            letter-spacing: 2px; 
+            color: #fff; 
+            margin: 0; 
+            line-height: 1.2;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.6); 
+        }
+
+        .doc-subtitle {
+            font-size: 14px;
+            color: var(--f1-red);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 4px;
+            margin-top: 10px;
+        }
+
+        .document-body {
+            padding: 40px 50px;
+        }
+
+        .article-block {
+            margin-bottom: 40px;
+        }
+
+        .article-title {
+            font-size: 22px;
+            font-weight: 900;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            background: rgba(225, 6, 0, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+        }
+
+        .clause {
+            display: flex;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .clause-number {
+            font-weight: 900;
+            color: var(--f1-red);
+            min-width: 45px;
+            flex-shrink: 0;
+        }
+
+        .clause-content {
+            flex-grow: 1;
+        }
+
+        .clause-title {
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .sub-clause-list {
+            list-style: none;
+            padding-left: 20px;
+            margin-top: 10px;
+            margin-bottom: 0;
+        }
+
+        .sub-clause-list li {
+            margin-bottom: 8px;
+        }
+
+        .sub-clause-letter {
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-right: 8px;
+        }
+
+        .footer-note {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            background: rgba(0,0,0,0.2);
         }
 
         /* MOBILE OPTIMIZATION */
@@ -193,8 +314,12 @@
             .back-btn { top: 15px; left: 15px; padding: 8px 12px; font-size: 13px; }
             .container { padding: 30px 15px 50px 15px; }
             .action-tabs { flex-direction: column; gap: 15px; align-items: center; }
-            .tab-btn { width: 100%; padding: 15px; font-size: 16px; box-sizing: border-box; }
+            .tab-btn { width: 100%; padding: 15px; font-size: 16px; box-sizing: border-box; max-width: 100%; }
             .pdf-container { height: 65vh; }
+            .document-body { padding: 30px 20px; }
+            .doc-title { font-size: 26px; }
+            .clause { flex-direction: column; }
+            .clause-number { margin-bottom: 5px; }
         }
     </style>
 </head>
@@ -212,54 +337,219 @@
         
         <div class="action-tabs">
             <div class="tab-btn" id="guidelines-btn" style="--btn-color: #444;">
-                <span>📄</span> Season 5 Official Guidelines
+                <span>📄</span> Season 5 Guidelines
+            </div>
+
+            <div class="tab-btn" id="framework-btn" style="--btn-color: #444;">
+                <span>🚨</span> Penalty Framework
             </div>
             
             <a href="https://discord.com/channels/1226575773649997934/1226575774748770305" target="_blank" class="tab-btn" id="discord-btn" style="--btn-color: #444;">
-                <span>⚖️</span> Stewards & Committee Decisions
+                <span>⚖️</span> Stewards Decisions
             </a>
             
             <a href="https://trade.f1lads.com" target="_blank" class="tab-btn" style="--btn-color: #444;">
-                <span>🔄</span> Mid-Season Trade Window
+                <span>🔄</span> Trade Window
             </a>
         </div>
 
-        <div class="pdf-container" id="pdf-viewer">
+        <div class="content-viewer pdf-container" id="pdf-viewer">
             <iframe id="pdf-iframe" data-src="https://docs.google.com/gview?url=https://raw.githubusercontent.com/f1ladsleague/landing-page/main/F1%20Lads%20League%20-%20Guidelines%20(Season%205).pdf&embedded=true"></iframe>
+        </div>
+
+        <div class="content-viewer framework-container" id="framework-viewer">
+            <div class="document-header">
+                <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/e8e0906ff66541f760c63d3aecd2b232ce7ed210/Team_Photos/FIA.png" alt="FIA Lads Logo" class="fia-logo">
+                <h1 class="doc-title">Penalty & Stewarding Framework</h1>
+                <div class="doc-subtitle">Official Sporting Regulations • Season 5</div>
+            </div>
+
+            <div class="document-body">
+                <div class="article-block">
+                    <h2 class="article-title">Article 1: Core Principles & Jurisdiction</h2>
+                    
+                    <div class="clause">
+                        <div class="clause-number">1.1</div>
+                        <div class="clause-content"><span class="clause-title">Regulatory Authority:</span> The Stewards shall retain ultimate jurisdiction over all on-track incidents, driver conduct, and the application of sporting penalties during the Season 5 Championship. Notwithstanding anything contained in these rules, the Stewards have ultimate jurisdiction and discretion to do whatever they want and see fit.</div>
+                    </div>
+
+                    <div class="clause">
+                        <div class="clause-number">1.2</div>
+                        <div class="clause-content"><span class="clause-title">Deviation from Standard Regulations (Penalties):</span> The F1 Lads League features a grid of drivers with significant variances in pace and skill level. Consequently, standard time penalties are often rendered ineffective, as faster drivers may easily build sufficient track gaps to negate the penalty. To ensure equitable administration of justice, the Stewards shall heavily favour the application of Position Penalties (post-race classification drops) over Time Penalties to guarantee that at-fault drivers suffer a tangible loss of points.</div>
+                    </div>
+
+                    <div class="clause">
+                        <div class="clause-number">1.3</div>
+                        <div class="clause-content"><span class="clause-title">Application of FIA Racing Standards:</span> Notwithstanding Article 1.2, all on-track racing conduct, incident reviews, and appeals shall, wherever possible, be evaluated and interpreted with direct reference to the established sporting principles, racing regulations, and precedents of the real-world FIA Formula One World Championship (e.g., leaving a car's width, track limits, and rules of engagement), except where expressly contradicted by these League Regulations or otherwise determined at the sole discretion of the Stewards.</div>
+                    </div>
+
+                    <div class="clause">
+                        <div class="clause-number">1.4</div>
+                        <div class="clause-content"><span class="clause-title">Composition and Recusal of the Stewards:</span> The Stewarding panel shall be exclusively comprised of three (3) active drivers: Mapa, Nuwie G, and Sahan. To preserve the integrity and impartiality of the sporting process, any Steward who is directly involved in an on-track incident under review must immediately recuse themselves from the deliberation and ruling of that specific incident. However, in the extraordinary event that all three (3) Stewards are concurrently involved in the same incident, the recusal requirement shall be waived, and all Stewards shall retain their voting and disciplinary authority to ensure a resolution is reached.</div>
+                    </div>
+                </div>
+
+                <div class="article-block">
+                    <h2 class="article-title">Article 2: The Dual-Penalty System</h2>
+                    
+                    <div class="clause">
+                        <div class="clause-number">2.1</div>
+                        <div class="clause-content"><span class="clause-title">Application of Sanctions:</span> To ensure immediate sporting fairness and long-term driver accountability, actionable incidents reviewed by the Stewards shall generally incur two concurrent sanctions: a Sporting Penalty and Penalty Points.</div>
+                    </div>
+
+                    <div class="clause">
+                        <div class="clause-number">2.2</div>
+                        <div class="clause-content"><span class="clause-title">Sporting Penalties:</span> A position drop applied to the final race classification to negate any unfair advantage gained during the incident.</div>
+                    </div>
+
+                    <div class="clause">
+                        <div class="clause-number">2.3</div>
+                        <div class="clause-content"><span class="clause-title">Penalty Points:</span> Between one (1) and three (3) Penalty Points shall be endorsed on the offending driver’s Super License. The precise allocation shall be determined by the Stewards based on incident severity.</div>
+                    </div>
+                </div>
+
+                <div class="article-block">
+                    <h2 class="article-title">Article 3: Classification & Points Deductions</h2>
+                    
+                    <div class="clause">
+                        <div class="clause-number">3.1</div>
+                        <div class="clause-content"><span class="clause-title">The DNF Baseline:</span> To ensure post-race penalties maintain material impact regardless of a driver's finishing status, any driver who Does Not Finish (DNF) or Retires from the session shall be formally classified in 10th Place exclusively for the purpose of post-race penalty calculations.</div>
+                    </div>
+
+                    <div class="clause">
+                        <div class="clause-number">3.2</div>
+                        <div class="clause-content"><span class="clause-title">Championship Point Deductions:</span> If a post-race Position Penalty drops a driver below 10th Place in the classification, the penalty shall automatically convert into a direct deduction of Championship Points. These deductions are uncapped and shall apply equally to both the Driver's Championship and the Constructor's Championship standings.</div>
+                    </div>
+
+                    <div class="clause">
+                        <div class="clause-number">3.3</div>
+                        <div class="clause-content">
+                            <span class="clause-title">Application of Deduction Values:</span> Point deductions shall be calculated based on the official points table for the applicable session type (Sprint or Feature Race). The deduction scale shall be applied sequentially under the following mandatory mechanism:
+                            <ul class="sub-clause-list">
+                                <li><span class="sub-clause-letter">a)</span> A demotion of one (1) position below 10th Place (11th) shall incur a deduction equal to the points awarded for 10th Place.</li>
+                                <li><span class="sub-clause-letter">b)</span> A demotion of two (2) positions below 10th Place (12th) shall incur a deduction equal to the points awarded for 9th Place.</li>
+                                <li><span class="sub-clause-letter">c)</span> This sequential correlation—wherein the <em>n</em>-th position demotion below 10th Place incurs a point deduction mirroring the points awarded for the <em>n</em>-th position counting sequentially upward from 10th Place—shall apply in perpetuity for all subsequent position drops.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="article-block">
+                    <h2 class="article-title">Article 4: License Penalties & Mandatory Sanctions</h2>
+                    
+                    <div class="clause">
+                        <div class="clause-number">4.1</div>
+                        <div class="clause-content"><span class="clause-title">The License Threshold:</span> Any driver who accrues twelve (12) Penalty Points on their Super License during the season shall trigger an immediate suspension of standard racing privileges for the subsequent race weekend.</div>
+                    </div>
+
+                    <div class="clause">
+                        <div class="clause-number">4.2</div>
+                        <div class="clause-content"><span class="clause-title">Mandatory Sanctions:</span> The penalised driver is strictly prohibited from participating in any session of the immediately following race weekend.</div>
+                    </div>
+
+                    <div class="clause">
+                        <div class="clause-number">4.3</div>
+                        <div class="clause-content"><span class="clause-title">License Reset:</span> A driver’s Super License Penalty Points shall only be reset to zero (0) upon the full execution of the sanctions outlined in Article 4.2.</div>
+                    </div>
+                </div>
+
+                <div class="article-block">
+                    <h2 class="article-title">Article 5: Unsportsmanlike Conduct</h2>
+                    
+                    <div class="clause">
+                        <div class="clause-number">5.1</div>
+                        <div class="clause-content"><span class="clause-title">Extraordinary Offenses:</span> The Stewards reserve the absolute right to bypass the standard provisions of Article 2 and Article 3 in instances of grossly unsportsmanlike conduct.</div>
+                    </div>
+
+                    <div class="clause">
+                        <div class="clause-number">5.2</div>
+                        <div class="clause-content"><span class="clause-title">Punitive Action:</span> Intentional collisions, malicious driving, or deliberate attempts to exploit the penalty framework shall result in immediate Disqualification (DSQ) from the race classification and severe discretionary point deductions.</div>
+                    </div>
+                </div>
+
+                <div class="article-block" style="margin-bottom: 0;">
+                    <h2 class="article-title">Article 6: Process & Appeals</h2>
+                    
+                    <div class="clause">
+                        <div class="clause-number">6.1</div>
+                        <div class="clause-content"><span class="clause-title">Incident Referrals:</span> Drivers or Team Principals must submit all incident referrals within twenty-four (24) hours of the commencement of the Race Weekend. Submissions must include a brief description and relevant supporting evidence (e.g., telemetry, video captures).</div>
+                    </div>
+
+                    <div class="clause">
+                        <div class="clause-number">6.2</div>
+                        <div class="clause-content"><span class="clause-title">Hearings:</span> In the interest of efficiency, the Stewards may elect to conduct verbal hearings in lieu of requesting formal written submissions.</div>
+                    </div>
+
+                    <div class="clause">
+                        <div class="clause-number">6.3</div>
+                        <div class="clause-content"><span class="clause-title">Publication of Decisions:</span> The Stewards shall issue concise, definitive rulings. The Stewards are under no obligation to provide extensive written reports for standard racing incidents.</div>
+                    </div>
+
+                    <div class="clause">
+                        <div class="clause-number">6.4</div>
+                        <div class="clause-content"><span class="clause-title">The Appeals Process:</span> Drivers and Constructors are entitled to one (1) appeal per issued decision. The Stewards reserve the right to apply further sporting penalties for vexatious, baseless, or retaliatory appeals.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-note">
+                F1 Lads League Committee | April 2026
+            </div>
         </div>
 
     </div>
 
     <script>
         const guidelinesBtn = document.getElementById('guidelines-btn');
+        const frameworkBtn = document.getElementById('framework-btn');
+        
         const pdfViewer = document.getElementById('pdf-viewer');
+        const frameworkViewer = document.getElementById('framework-viewer');
         const pdfIframe = document.getElementById('pdf-iframe');
 
+        // Helper function to close all tabs
+        function closeAllViewers() {
+            guidelinesBtn.classList.remove('active');
+            frameworkBtn.classList.remove('active');
+
+            pdfViewer.style.opacity = '0';
+            frameworkViewer.style.opacity = '0';
+
+            setTimeout(() => {
+                if (!guidelinesBtn.classList.contains('active')) pdfViewer.style.display = 'none';
+                if (!frameworkBtn.classList.contains('active')) frameworkViewer.style.display = 'none';
+            }, 400); // Wait for transition
+        }
+
         guidelinesBtn.addEventListener('click', function() {
-            // Toggle the active state of the button
-            this.classList.toggle('active');
-
             if (this.classList.contains('active')) {
-                // If it's now active, show the PDF container
-                pdfViewer.style.display = 'block';
+                // If already active, close it
+                closeAllViewers();
+            } else {
+                // Open guidelines, close others
+                closeAllViewers();
+                this.classList.add('active');
                 
-                // A tiny delay ensures the CSS fade-in animation triggers properly
-                setTimeout(() => {
-                    pdfViewer.style.opacity = '1';
-                }, 10);
+                pdfViewer.style.display = 'block';
+                setTimeout(() => { pdfViewer.style.opacity = '1'; }, 10);
 
-                // Load the PDF source ONLY if it hasn't been loaded yet
                 if (!pdfIframe.src || pdfIframe.src === window.location.href) {
                     pdfIframe.src = pdfIframe.getAttribute('data-src');
                 }
+            }
+        });
+
+        frameworkBtn.addEventListener('click', function() {
+            if (this.classList.contains('active')) {
+                // If already active, close it
+                closeAllViewers();
             } else {
-                // If clicked again to close, fade it out first
-                pdfViewer.style.opacity = '0';
+                // Open framework, close others
+                closeAllViewers();
+                this.classList.add('active');
                 
-                // Wait for the fade animation to finish before removing it from the page layout
-                setTimeout(() => {
-                    pdfViewer.style.display = 'none';
-                }, 400); // 400ms matches the CSS transition time
+                frameworkViewer.style.display = 'block';
+                setTimeout(() => { frameworkViewer.style.opacity = '1'; }, 10);
             }
         });
     </script>
