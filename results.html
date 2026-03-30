@@ -323,6 +323,7 @@
                     const winner = race.Drivers.find(d => d.Position === 1);
                     let label = "Feature"; 
                     
+                    // Filter based on Sprint winner getting max 15pts (plus potential fastest lap)
                     if (winner) {
                         const truePoints = winner.DriverPointsRaw / 10;
                         if (truePoints <= 20) label = "Sprint";
@@ -339,7 +340,7 @@
                     });
                 });
 
-                // Sort Ascending: Oldest first. 
+                // Sort Ascending: Oldest first to establish Round logic
                 // Tie-breaker: If dates are identical, force Sprint before Feature.
                 groupedEvents.sort((a, b) => {
                     let dateDiff = new Date(a.date) - new Date(b.date);
@@ -351,13 +352,20 @@
                     return aOrder - bOrder;
                 });
 
+                // Assign Round Numbers (1 to N)
+                groupedEvents.forEach((event, index) => {
+                    event.roundNum = index + 1;
+                });
+
+                // Reverse array so the most recent race is at the top (index 0)
+                groupedEvents.reverse();
+
                 // 3. POPULATE DROPDOWN
                 const selector = document.getElementById('race-selector');
                 groupedEvents.forEach((event, index) => {
                     const option = document.createElement('option');
                     option.value = index;
-                    const dateStr = new Date(event.date).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
-                    option.textContent = `${dateStr} - ${event.trackName} (${event.label})`;
+                    option.textContent = `Round ${event.roundNum} - ${event.trackName} (${event.label})`;
                     selector.appendChild(option);
                 });
 
@@ -397,14 +405,14 @@
             document.getElementById('loader').style.display = "none";
             document.getElementById('results-table').style.display = "table";
 
-            // Add Clickable Track Title & Flag
+            // Add Clickable Track Title, Flag & Round Name
             let cleanTrackName = event.trackName === "Spa-Francorchamps" ? "Spa" : event.trackName;
             let flagUrl = getTrackFlagUrl(cleanTrackName);
             let flagHtml = flagUrl ? `<img src="${flagUrl}" class="track-flag" alt="Flag">` : '';
             
             document.getElementById('race-title-container').innerHTML = `
                 <a href="statistics.html?track=${encodeURIComponent(cleanTrackName)}" class="link-hover" title="View ${cleanTrackName} Statistics">
-                    ${flagHtml} ${event.trackName}
+                    ${flagHtml} Round ${event.roundNum} - ${event.trackName}
                 </a>
             `;
 
