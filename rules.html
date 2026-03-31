@@ -157,7 +157,7 @@
             box-shadow: 0 15px 40px color-mix(in srgb, var(--btn-color) 30%, transparent);
             border-color: var(--btn-color);
         }
-        
+
         .tab-btn.active:hover {
             --btn-color: var(--f1-red); 
         }
@@ -177,7 +177,7 @@
             opacity: 0;
             transition: opacity 0.4s ease;
         }
-        
+
         .pdf-container {
             height: 75vh;
             background: #fff; 
@@ -328,13 +328,13 @@
     <header class="hero">
         <a href="index.html" class="back-btn">&#8592; Back</a>
         <a href="index.html">
-            <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Logo.png" alt="F1 Lads Logo" class="main-logo">
+            <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Logo.png" alt="F1 Lads League" class="main-logo">
         </a>
         <h1>Rules & Regulations</h1>
     </header>
 
     <div class="container">
-        
+
         <div class="action-tabs">
             <div class="tab-btn" id="guidelines-btn" style="--btn-color: #444;">
                 <span>📄</span> Season 5 Guidelines
@@ -343,11 +343,11 @@
             <div class="tab-btn" id="framework-btn" style="--btn-color: #444;">
                 <span>🚨</span> Penalty Framework
             </div>
-            
+
             <a href="https://discord.com/channels/1226575773649997934/1226575774748770305" target="_blank" class="tab-btn" id="discord-btn" style="--btn-color: #444;">
                 <span>⚖️</span> Stewards Decisions
             </a>
-            
+
             <a href="https://trade.f1lads.com" target="_blank" class="tab-btn" style="--btn-color: #444;">
                 <span>🔄</span> Trade Window
             </a>
@@ -367,7 +367,7 @@
             <div class="document-body">
                 <div class="article-block">
                     <h2 class="article-title">Article 1: Core Principles & Jurisdiction</h2>
-                    
+
                     <div class="clause">
                         <div class="clause-number">1.1</div>
                         <div class="clause-content"><span class="clause-title">Regulatory Authority:</span> The Stewards shall retain ultimate jurisdiction over all on-track incidents, driver conduct, and the application of sporting penalties during the Season 5 Championship. Notwithstanding anything contained in these rules, the Stewards have ultimate jurisdiction and discretion to do whatever they want and see fit.</div>
@@ -391,7 +391,7 @@
 
                 <div class="article-block">
                     <h2 class="article-title">Article 2: The Dual-Penalty System</h2>
-                    
+
                     <div class="clause">
                         <div class="clause-number">2.1</div>
                         <div class="clause-content"><span class="clause-title">Application of Sanctions:</span> To ensure immediate sporting fairness and long-term driver accountability, actionable incidents reviewed by the Stewards shall generally incur two concurrent sanctions: a Sporting Penalty and Penalty Points.</div>
@@ -410,7 +410,7 @@
 
                 <div class="article-block">
                     <h2 class="article-title">Article 3: Classification & Points Deductions</h2>
-                    
+
                     <div class="clause">
                         <div class="clause-number">3.1</div>
                         <div class="clause-content"><span class="clause-title">The DNF Baseline:</span> To ensure post-race penalties maintain material impact regardless of a driver's finishing status, any driver who Does Not Finish (DNF) or Retires from the session shall be formally classified in 10th Place exclusively for the purpose of post-race penalty calculations.</div>
@@ -436,7 +436,7 @@
 
                 <div class="article-block">
                     <h2 class="article-title">Article 4: License Penalties & Mandatory Sanctions</h2>
-                    
+
                     <div class="clause">
                         <div class="clause-number">4.1</div>
                         <div class="clause-content"><span class="clause-title">The License Threshold:</span> Any driver who accrues twelve (12) Penalty Points on their Super License during the season shall trigger an immediate suspension of standard racing privileges for the subsequent race weekend.</div>
@@ -455,7 +455,7 @@
 
                 <div class="article-block">
                     <h2 class="article-title">Article 5: Unsportsmanlike Conduct</h2>
-                    
+
                     <div class="clause">
                         <div class="clause-number">5.1</div>
                         <div class="clause-content"><span class="clause-title">Extraordinary Offenses:</span> The Stewards reserve the absolute right to bypass the standard provisions of Article 2 and Article 3 in instances of grossly unsportsmanlike conduct.</div>
@@ -469,10 +469,10 @@
 
                 <div class="article-block" style="margin-bottom: 0;">
                     <h2 class="article-title">Article 6: Process & Appeals</h2>
-                    
+
                     <div class="clause">
                         <div class="clause-number">6.1</div>
-                        <div class="clause-content"><span class="clause-title">Incident Referrals:</span> Drivers or Team Principals must submit all incident referrals within twenty-four (24) hours of the commencement of the Race Weekend. Submissions must include a brief description and relevant supporting evidence (e.g., telemetry, video captures).</div>
+                        <div class="clause-content"><span class="clause-title">Incident Referrals:</span> Drivers or Team Principals must submit all incident referrals within twenty-four (24) hours of the commencement of the Race Weekend. Submissions must include a brief description and clear onboard video footage of the incident. Without onboard footage, the incident will not be assessed by the Stewards. Additional supporting evidence (e.g., telemetry) may also be provided.</div>
                     </div>
 
                     <div class="clause">
@@ -502,7 +502,7 @@
     <script>
         const guidelinesBtn = document.getElementById('guidelines-btn');
         const frameworkBtn = document.getElementById('framework-btn');
-        
+
         const pdfViewer = document.getElementById('pdf-viewer');
         const frameworkViewer = document.getElementById('framework-viewer');
         const pdfIframe = document.getElementById('pdf-iframe');
@@ -529,7 +529,7 @@
                 // Open guidelines, close others
                 closeAllViewers();
                 this.classList.add('active');
-                
+
                 pdfViewer.style.display = 'block';
                 setTimeout(() => { pdfViewer.style.opacity = '1'; }, 10);
 
@@ -547,7 +547,7 @@
                 // Open framework, close others
                 closeAllViewers();
                 this.classList.add('active');
-                
+
                 frameworkViewer.style.display = 'block';
                 setTimeout(() => { frameworkViewer.style.opacity = '1'; }, 10);
             }
