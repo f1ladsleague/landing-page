@@ -310,10 +310,19 @@
                 const files = text.split('\n').map(f => f.trim()).filter(f => f.endsWith('.json'));
                 if (files.length === 0) throw new Error("No race data found");
 
+                // SAFELY FETCH: Checks r.ok and gracefully skips corrupted/missing files instead of crashing
                 const fetchPromises = files.map(file => 
-                    fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/${file}${cacheBuster}`).then(r => r.json())
+                    fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/${encodeURI(file)}${cacheBuster}`)
+                        .then(r => r.ok ? r.json() : null)
+                        .catch(e => null) // Ignore network failures for specific files
                 );
-                const allRaceData = await Promise.all(fetchPromises);
+                
+                const rawRaceData = await Promise.all(fetchPromises);
+                
+                // Filter out any files that failed to load
+                const allRaceData = rawRaceData.filter(d => d !== null);
+
+                if (allRaceData.length === 0) throw new Error("No valid race data could be loaded.");
 
                 const races = allRaceData.filter(d => d.SessionType === "Race");
                 const qualis = allRaceData.filter(d => d.SessionType === "Qualification");
