@@ -109,7 +109,6 @@
             display: flex;
             gap: 15px;
             width: 100%;
-            margin-bottom: 40px;
             justify-content: center;
             flex-wrap: wrap;
         }
@@ -166,7 +165,7 @@
             --btn-color: #5865F2; 
         }
 
-        /* VIEWERS (PDF & Framework) */
+        /* VIEWERS (PDF & Frameworks) */
         .content-viewer {
             width: 100%;
             border-radius: 16px;
@@ -313,7 +312,7 @@
             .main-logo { max-width: 200px; }
             .back-btn { top: 15px; left: 15px; padding: 8px 12px; font-size: 13px; }
             .container { padding: 30px 15px 50px 15px; }
-            .action-tabs { flex-direction: column; gap: 15px; align-items: center; }
+            .action-tabs { flex-direction: column; gap: 15px; align-items: center; margin-bottom: 15px; }
             .tab-btn { width: 100%; padding: 15px; font-size: 16px; box-sizing: border-box; max-width: 100%; }
             .pdf-container { height: 65vh; }
             .document-body { padding: 30px 20px; }
@@ -335,7 +334,8 @@
 
     <div class="container">
 
-        <div class="action-tabs">
+        <!-- ROW 1 TABS -->
+        <div class="action-tabs" style="margin-bottom: 15px;">
             <div class="tab-btn" id="guidelines-btn" style="--btn-color: #444;">
                 <span>📄</span> Season 5 Guidelines
             </div>
@@ -344,6 +344,13 @@
                 <span>🚨</span> Penalty Framework
             </div>
 
+            <div class="tab-btn" id="standards-btn" style="--btn-color: #444;">
+                <span>🏎️</span> Driving Standards
+            </div>
+        </div>
+
+        <!-- ROW 2 TABS -->
+        <div class="action-tabs" style="margin-bottom: 40px;">
             <a href="https://discord.com/channels/1226575773649997934/1226575774748770305" target="_blank" class="tab-btn" id="discord-btn" style="--btn-color: #444;">
                 <span>⚖️</span> Stewards Decisions
             </a>
@@ -353,10 +360,12 @@
             </a>
         </div>
 
+        <!-- VIEWER 1: PDF GUIDELINES -->
         <div class="content-viewer pdf-container" id="pdf-viewer">
             <iframe id="pdf-iframe" data-src="https://docs.google.com/gview?url=https://raw.githubusercontent.com/f1ladsleague/landing-page/main/F1%20Lads%20League%20-%20Guidelines%20(Season%205).pdf&embedded=true"></iframe>
         </div>
 
+        <!-- VIEWER 2: PENALTY FRAMEWORK -->
         <div class="content-viewer framework-container" id="framework-viewer">
             <div class="document-header">
                 <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/e8e0906ff66541f760c63d3aecd2b232ce7ed210/Team_Photos/FIA.png" alt="FIA Lads Logo" class="fia-logo">
@@ -497,36 +506,204 @@
             </div>
         </div>
 
+        <!-- VIEWER 3: DRIVING STANDARDS GUIDELINES -->
+        <div class="content-viewer framework-container" id="standards-viewer">
+            <div class="document-header">
+                <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/e8e0906ff66541f760c63d3aecd2b232ce7ed210/Team_Photos/FIA.png" alt="FIA Lads Logo" class="fia-logo">
+                <h1 class="doc-title">Driving Standards Guidelines</h1>
+                <div class="doc-subtitle">Official Sporting Regulations • Season 5</div>
+            </div>
+
+            <div class="document-body">
+                <div class="article-block">
+                    <h2 class="article-title">Article 1: Status of these Regulations</h2>
+                    
+                    <div class="clause">
+                        <div class="clause-number">1.1</div>
+                        <div class="clause-content">These Regulations adopt the FIA Driving Standards Guidelines as updated for the 2025 Formula 1 World Championship, with such modifications as are necessary to reflect the operation of the F1 Lads League.</div>
+                    </div>
+
+                    <div class="clause">
+                        <div class="clause-number">1.2</div>
+                        <div class="clause-content">These Regulations are guidelines intended to make clear to drivers how the Stewards will judge incidents on track. They are discretionary in nature: the F1 Lads League Penalty & Stewarding Framework, and the Stewards' ultimate discretion under Article 1.1 of that Framework, supersede them.</div>
+                    </div>
+
+                    <div class="clause">
+                        <div class="clause-number">1.3</div>
+                        <div class="clause-content">The Stewards will take into account the physical context of any incident — including whether a driver could reasonably have seen or anticipated a move, dive-bomb incidents, the corner's physical layout, and whether understeer or oversteer played a role.</div>
+                    </div>
+                </div>
+
+                <div class="article-block">
+                    <h2 class="article-title">Article 2: General Principle</h2>
+                    
+                    <div class="clause">
+                        <div class="clause-number">2.1</div>
+                        <div class="clause-content">Where an overtaking driver has priority, it is the responsibility of the defending driver to avoid a collision or forcing-off of the overtaking driver.</div>
+                    </div>
+                </div>
+
+                <div class="article-block">
+                    <h2 class="article-title">Article 3: Overtaking on the Inside of a Corner</h2>
+                    
+                    <div class="clause">
+                        <div class="clause-number">3.1</div>
+                        <div class="clause-content"><span class="clause-title">Definition:</span> Overtaking on the inside of a corner means the attacking driver has positioned their car on the side of the track to which the defending driver needs to turn — i.e., alongside on the right heading into a right-hander, or alongside on the left into a left-hander.</div>
+                    </div>
+
+                    <div class="clause">
+                        <div class="clause-number">3.2</div>
+                        <div class="clause-content">
+                            <span class="clause-title">Entitlement to Racing Room:</span> To be entitled to racing room from the defending car when overtaking on the inside, the attacking driver must:
+                            <ul class="sub-clause-list">
+                                <li><span class="sub-clause-letter">(a)</span> have its front axle at least alongside the mirror of the other car prior to and at the apex of the corner;</li>
+                                <li><span class="sub-clause-letter">(b)</span> be driven in a fully controlled manner, particularly from entry to apex, and not have "dived in"; and</li>
+                                <li><span class="sub-clause-letter">(c)</span> in the Stewards' estimation, have taken a reasonable racing line and been able to complete the move whilst remaining within track limits.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="clause">
+                        <div class="clause-number">3.3</div>
+                        <div class="clause-content"><span class="clause-title">No Longer Required to Give Room on the Exit:</span> When overtaking on the inside, the attacking driver is no longer required to give room to the overtaken car from the apex through to the exit of the corner, provided the attacking driver is in control and within track limits.</div>
+                    </div>
+                </div>
+
+                <div class="article-block">
+                    <h2 class="article-title">Article 4: Overtaking on the Outside of a Corner</h2>
+                    
+                    <div class="clause">
+                        <div class="clause-number">4.1</div>
+                        <div class="clause-content"><span class="clause-title">Definition:</span> Overtaking on the outside of a corner means the attacking driver has positioned their car on the side of the track opposite to that to which the defending driver needs to turn. It typically requires a meaningful pace or grip advantage, as well as some cooperation from the driver being overtaken.</div>
+                    </div>
+
+                    <div class="clause">
+                        <div class="clause-number">4.2</div>
+                        <div class="clause-content">
+                            <span class="clause-title">Entitlement to Racing Room:</span> To be entitled to space through the corner, including the exit, when attempting to overtake on the outside, the attacking driver must:
+                            <ul class="sub-clause-list">
+                                <li><span class="sub-clause-letter">(a)</span> have their front axle at least alongside the front axle of the defending car at the apex of the corner; and</li>
+                                <li><span class="sub-clause-letter">(b)</span> be able to go through the corner, including the exit, within track limits.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="clause">
+                        <div class="clause-number">4.3</div>
+                        <div class="clause-content"><span class="clause-title">Defender Sufficiently Ahead at Apex:</span> If the defending car is sufficiently far ahead at the apex — as a guide, half a car length — the attacking driver is not entitled to be given space through the rest of the corner, including the exit.</div>
+                    </div>
+                </div>
+
+                <div class="article-block">
+                    <h2 class="article-title">Article 5: Chicanes, Esses, and Sequential Corners</h2>
+                    
+                    <div class="clause">
+                        <div class="clause-number">5.1</div>
+                        <div class="clause-content">The same rules apply throughout any corner type, including chicanes and esses. A driver may switch from an outside position to an inside position (or vice versa) very quickly, and the rules applicable to each type of corner will apply for each corner negotiated.</div>
+                    </div>
+
+                    <div class="clause">
+                        <div class="clause-number">5.2</div>
+                        <div class="clause-content">Priority is on the first corner element. The attacking driver must follow the rules for the first corner, failing which they will not be given the benefit at the second.</div>
+                    </div>
+                </div>
+
+                <div class="article-block">
+                    <h2 class="article-title">Article 6: Defending a Position</h2>
+                    
+                    <div class="clause">
+                        <div class="clause-number">6.1</div>
+                        <div class="clause-content"><span class="clause-title">One Direction Change on a Straight:</span> A defending driver is not permitted to change direction more than once along a straight.</div>
+                    </div>
+
+                    <div class="clause">
+                        <div class="clause-number">6.2</div>
+                        <div class="clause-content"><span class="clause-title">Move Back Toward the Racing Line:</span> If a driver moves to defend their position by moving off the racing line, the move back toward the racing line is expected to leave at least one car's width between the edge of their car and the edge of the track on corner approach.</div>
+                    </div>
+
+                    <div class="clause">
+                        <div class="clause-number">6.3</div>
+                        <div class="clause-content"><span class="clause-title">No Direction Change Once Braking Has Commenced:</span> Once the deceleration phase has commenced — i.e., when the defending driver hits the brakes — there must be no change of direction except to follow the racing line.</div>
+                    </div>
+
+                    <div class="clause">
+                        <div class="clause-number">6.4</div>
+                        <div class="clause-content"><span class="clause-title">No Crowding Off the Track:</span> Crowding a car beyond the edge of the track is prohibited.</div>
+                    </div>
+                </div>
+
+                <div class="article-block">
+                    <h2 class="article-title">Article 7: Running Wide and Rejoining</h2>
+                    
+                    <div class="clause">
+                        <div class="clause-number">7.1</div>
+                        <div class="clause-content"><span class="clause-title">Running Wide into Run-Off:</span> Should either driver run wide into the run-off area, maintaining racing speeds is not acceptable. While rejoining, the driver must not force cars on track to have to change speed or their line in order to accommodate them.</div>
+                    </div>
+
+                    <div class="clause">
+                        <div class="clause-number">7.2</div>
+                        <div class="clause-content"><span class="clause-title">Safe Rejoin and No Lasting Advantage:</span> A driver who leaves the track must rejoin safely and must not gain any lasting advantage.</div>
+                    </div>
+
+                    <div class="clause">
+                        <div class="clause-number">7.3</div>
+                        <div class="clause-content"><span class="clause-title">Opportunity to Give Back Advantage:</span> Where an advantage is gained by going off-track, the driver who gained the advantage will be given a short opportunity to give the advantage back. This is at the discretion of the Stewards.</div>
+                    </div>
+                </div>
+
+                <div class="article-block" style="margin-bottom: 0;">
+                    <h2 class="article-title">Article 8: Defender Leaving the Track and Lasting Advantage</h2>
+                    
+                    <div class="clause">
+                        <div class="clause-number">8.1</div>
+                        <div class="clause-content">For a car defending against an attacker, leaving the track or cutting a chicane while rejoining in the same position can be considered as having gained a lasting advantage, and the position should generally be given to the attacker.</div>
+                    </div>
+
+                    <div class="clause">
+                        <div class="clause-number">8.2</div>
+                        <div class="clause-content">It is the sole discretion of the Stewards to determine whether the defending driver was in fact "defending a position" at the time of the incident, or had simply made an error of their own while driving in front of another car.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-note">
+                Season 5 | Date: May 2026
+            </div>
+        </div>
+
     </div>
 
     <script>
         const guidelinesBtn = document.getElementById('guidelines-btn');
         const frameworkBtn = document.getElementById('framework-btn');
+        const standardsBtn = document.getElementById('standards-btn');
 
         const pdfViewer = document.getElementById('pdf-viewer');
         const frameworkViewer = document.getElementById('framework-viewer');
+        const standardsViewer = document.getElementById('standards-viewer');
         const pdfIframe = document.getElementById('pdf-iframe');
 
         // Helper function to close all tabs
         function closeAllViewers() {
             guidelinesBtn.classList.remove('active');
             frameworkBtn.classList.remove('active');
+            standardsBtn.classList.remove('active');
 
             pdfViewer.style.opacity = '0';
             frameworkViewer.style.opacity = '0';
+            standardsViewer.style.opacity = '0';
 
             setTimeout(() => {
                 if (!guidelinesBtn.classList.contains('active')) pdfViewer.style.display = 'none';
                 if (!frameworkBtn.classList.contains('active')) frameworkViewer.style.display = 'none';
+                if (!standardsBtn.classList.contains('active')) standardsViewer.style.display = 'none';
             }, 400); // Wait for transition
         }
 
         guidelinesBtn.addEventListener('click', function() {
             if (this.classList.contains('active')) {
-                // If already active, close it
                 closeAllViewers();
             } else {
-                // Open guidelines, close others
                 closeAllViewers();
                 this.classList.add('active');
 
@@ -541,15 +718,25 @@
 
         frameworkBtn.addEventListener('click', function() {
             if (this.classList.contains('active')) {
-                // If already active, close it
                 closeAllViewers();
             } else {
-                // Open framework, close others
                 closeAllViewers();
                 this.classList.add('active');
 
                 frameworkViewer.style.display = 'block';
                 setTimeout(() => { frameworkViewer.style.opacity = '1'; }, 10);
+            }
+        });
+
+        standardsBtn.addEventListener('click', function() {
+            if (this.classList.contains('active')) {
+                closeAllViewers();
+            } else {
+                closeAllViewers();
+                this.classList.add('active');
+
+                standardsViewer.style.display = 'block';
+                setTimeout(() => { standardsViewer.style.opacity = '1'; }, 10);
             }
         });
     </script>
