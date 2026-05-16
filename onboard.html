@@ -115,6 +115,7 @@
         .badge-pc { color: #00FF41; border-color: rgba(0, 255, 65, 0.3); }
         .badge-xb { color: #107C10; border-color: rgba(16, 124, 16, 0.4); }
         .badge-ps { color: #4781D7; border-color: rgba(71, 129, 215, 0.4); }
+        .badge-broadcast { color: #FF3000; border-color: rgba(204, 39, 0, 0.4); }
 
         .iframe-container {
             position: relative;
@@ -145,6 +146,19 @@
     </div>
 
     <div class="grid-container" id="stream-grid">
+
+        <div class="stream-box" id="box-broadcast" draggable="true" style="--team-color: var(--fer);">
+            <div class="stream-header">
+                <div class="driver-info">
+                    <img src="https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/Logo.png" alt="F1 Lads Logo" class="team-logo">
+                    <h2 class="driver-name">BROADCAST</h2>
+                </div>
+                <span class="badge badge-broadcast">LIVE</span>
+            </div>
+            <div class="iframe-container">
+                <iframe src="https://www.youtube.com/embed/hb4qMNtgBJ4?si=ANk-Uh7U2q4c_DTX" allowfullscreen></iframe>
+            </div>
+        </div>
         
         <div class="stream-box" id="box-mapa" draggable="true" style="--team-color: var(--fer);">
             <div class="stream-header">
