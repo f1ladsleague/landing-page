@@ -425,6 +425,78 @@
                     </span>`;
         }
 
+        // Normalization Adapter: Converts new Racing League Tools format into the classic app format
+        function normalizeData(rawData) {
+            if (!rawData) return null;
+            if (rawData.SessionType) return rawData; // Already in legacy format
+
+            try {
+                const isRace = rawData.session.sessionInfo.sessionType === "Race";
+                const sessionType = isRace ? "Race" : "Qualification";
+                const trackName = rawData.event.track.trackName;
+                const date = rawData.session.sessionInfo.sessionDate || rawData.event.eventDate;
+                const raceType = rawData.session.sessionInfo.raceType || "Feature";
+                
+                let classification = [];
+                if (Array.isArray(rawData.session.classification)) classification = rawData.session.classification;
+                else if (Array.isArray(rawData.classification)) classification = rawData.classification;
+                else if (Array.isArray(rawData.session.drivers)) classification = rawData.session.drivers;
+                else {
+                   for (let key in rawData.session) {
+                      if (Array.isArray(rawData.session[key]) && rawData.session[key].length > 0 && rawData.session[key][0].driverName) {
+                         classification = rawData.session[key];
+                         break;
+                      }
+                   }
+                }
+
+                let fastestLapDriver = null;
+                if (rawData.session.fastestLap && rawData.session.fastestLap.driverName) {
+                    fastestLapDriver = { Name: rawData.session.fastestLap.driverName };
+                } else if (rawData.fastestLap && rawData.fastestLap.driverName) {
+                    fastestLapDriver = { Name: rawData.fastestLap.driverName };
+                }
+                
+                const drivers = classification.map(d => {
+                    let driverName = d.driverName;
+                    let teamName = d.team ? (d.team.name.replace(' Formula 1 Team', '').trim()) : "Unknown";
+                    let position = d.position || d.classificationPosition;
+                    let points = parseInt(d.driverPoints || 0) * 10;
+                    let gridPosition = d.gridPosition || 0;
+                    let pitsCount = d.pitStopsCount || d.pitsCount || 0;
+                    let bestLapMs = 0;
+                    let totalTimeMs = 0;
+
+                    if (d.fastestLapTimeMs) bestLapMs = d.fastestLapTimeMs; 
+                    else if (d.bestLap && d.bestLap.lapTimeMs) bestLapMs = d.bestLap.lapTimeMs;
+                    else if (d.qualDetails && d.qualDetails.bestLap && d.qualDetails.bestLap.lapTimeMs) bestLapMs = d.qualDetails.bestLap.lapTimeMs;
+                    
+                    if (d.totalTimeMs) totalTimeMs = d.totalTimeMs; 
+                    else if (d.raceDetails && d.raceDetails.totalTimeMs) totalTimeMs = d.raceDetails.totalTimeMs;
+
+                    if (d.laps && d.laps.length > 0) {
+                        let validLaps = d.laps.filter(l => l.isValid !== false && l.lapTimeMs > 0);
+                        if (validLaps.length > 0 && bestLapMs === 0) bestLapMs = Math.min(...validLaps.map(l => l.lapTimeMs));
+                        if (isRace && totalTimeMs === 0) totalTimeMs = d.laps.reduce((sum, l) => sum + (l.lapTimeMs || 0), 0);
+                    }
+
+                    let status = "Ok";
+                    if (d.classificationPosition < 0 || d.status === "DNF" || d.status === "DSQ" || (d.lapsCompleted === 0 && bestLapMs === 0)) {
+                        status = d.status === "DSQ" ? "Dsq" : "Dnf";
+                    }
+                    
+                    if (!fastestLapDriver && (d.isSessionFastest || (d.bestLap && d.bestLap.isSessionFastest))) fastestLapDriver = { Name: driverName };
+
+                    return { Position: position, Driver: { Name: driverName }, Team: { Name: teamName }, Status: status, FastestLapTimeInt: bestLapMs, TimeInt: isRace ? totalTimeMs : bestLapMs, GridPosition: gridPosition, PitsCount: pitsCount, DriverPointsRaw: points };
+                });
+                
+                return { SessionType: sessionType, TrackName: trackName, Date: date, RaceType: raceType, FastestLapDriver: fastestLapDriver, Drivers: drivers };
+            } catch (e) {
+                console.error("Error parsing new file format", e);
+                return null;
+            }
+        }
+        
         async function initData() {
             try {
                 staticDriverProfiles.forEach(d => driverProfiles[d.Name] = d);
@@ -437,10 +509,10 @@
                 }
 
                 const allFilePaths = [...archiveFiles, ...liveFiles];
-                const fetchPromises = allFilePaths.map(file => fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/${file}${cacheBuster}`).then(r => r.ok ? r.json().then(data => ({ data, path: file })) : null));
+                const fetchPromises = allFilePaths.map(file => fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/${file}${cacheBuster}`).then(r => r.ok ? r.json().then(data => ({ data: normalizeData(data), path: file })) : null));
                 
                 const results = await Promise.all(fetchPromises);
-                const validFiles = results.filter(r => r !== null);
+                const validFiles = results.filter(r => r !== null && r.data !== null);
                 
                 const qualis = validFiles.filter(f => f.data.SessionType === "Qualification");
                 qualis.forEach(fileObj => {
