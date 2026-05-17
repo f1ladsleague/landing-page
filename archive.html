@@ -306,9 +306,9 @@
             return `+${seconds}`;
         }
 
-        Promise.all(archiveFiles.map(file => fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/${file}${cacheBuster}`).then(r => r.ok ? r.json().then(data => ({ data, path: decodeURIComponent(file) })) : null)))
+        Promise.all(archiveFiles.map(file => fetch(`https://raw.githubusercontent.com/f1ladsleague/standings/main/${file}${cacheBuster}`).then(r => r.ok ? r.json().then(data => ({ data: normalizeData(data), path: decodeURIComponent(file) })) : null)))
         .then(results => {
-            results.filter(r => r !== null).forEach(fileObj => {
+            results.filter(r => r !== null && r.data !== null).forEach(fileObj => {
                 const race = fileObj.data; const path = fileObj.path;
                 if (race.SessionType !== "Race") return;
                 
