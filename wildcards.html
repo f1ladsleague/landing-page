@@ -5,24 +5,186 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>F1 Lads | Wildcard Terminal</title>
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Share+Tech+Mono&family=Titillium+Web:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-            background-color: #09090c; /* Matches your dark theme */
-        }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
+        :root { --f1-dark: #09090c; --f1-card: #111118; --f1-border: #22222d; --theme-red: #e10600; }
+        body { font-family: 'Titillium Web', sans-serif; background: var(--f1-dark); color: white; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .dashboard { width: 100%; max-width: 600px; background: var(--f1-card); padding: 30px; border-radius: 8px; border: 1px solid var(--f1-border); border-top: 4px solid var(--theme-red); box-shadow: 0 10px 40px rgba(0,0,0,0.9); }
+        .logo { max-width: 150px; margin-bottom: 20px; display: block; margin-left: auto; margin-right: auto; }
+        
+        .sys-header { font-family: 'Share Tech Mono', monospace; color: #888; text-align: center; margin-bottom: 30px; letter-spacing: 2px; }
+        
+        /* Auth Section */
+        #auth-section { display: flex; flex-direction: column; gap: 15px; }
+        select, input { padding: 15px; font-family: 'Share Tech Mono', monospace; background: #000; color: white; border: 1px solid #444; border-radius: 4px; font-size: 16px; text-align: center; }
+        button { padding: 15px; background: var(--theme-red); color: white; font-weight: 900; text-transform: uppercase; border: none; border-radius: 4px; cursor: pointer; transition: 0.2s; font-size: 18px; }
+        button:hover:not(:disabled) { background: #ff1a1a; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        /* Race Cards */
+        #portal-section { display: none; }
+        .race-card { background: #050508; border: 1px solid #333; border-left: 4px solid #444; margin-bottom: 20px; padding: 20px; border-radius: 6px; }
+        .race-card.unlocked { border-left-color: #00D7B6; box-shadow: inset 0 0 20px rgba(0, 215, 182, 0.05); }
+        .race-card.locked { border-left-color: #F47600; }
+        
+        .round-title { font-size: 20px; font-weight: 900; margin: 0 0 5px 0; color: #fff; text-transform: uppercase; }
+        .date-sub { font-family: 'Share Tech Mono', monospace; color: #888; font-size: 13px; margin-bottom: 15px; }
+        
+        .track-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #222; padding: 10px 0; }
+        .track-row:last-child { border-bottom: none; }
+        .track-label { color: #888; font-size: 12px; letter-spacing: 1px; }
+        .track-value { font-family: 'Chakra Petch', sans-serif; font-weight: 700; color: #fff; text-align: right; }
+        .text-red { color: var(--theme-red); }
+        .text-green { color: #00D7B6; }
+
+        .countdown { font-family: 'Share Tech Mono', monospace; font-size: 24px; color: #F47600; text-align: center; margin-top: 15px; }
+        .blinking-dot { display: inline-block; width: 10px; height: 10px; background-color: #ff0000; border-radius: 50%; animation: flash 0.8s infinite alternate; margin-right: 8px; }
+        @keyframes flash { from { opacity: 1; } to { opacity: 0.2; } }
     </style>
 </head>
 <body>
 
-    <iframe src="https://script.google.com/macros/s/AKfycbzaLPfFPFVFATznJh5LJ2mhfhMOYtb0zxL-2JvjRDjjEKCXKFXoPwusGLKzo1sVbH8_/exec"></iframe>
+    <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Logo.png" class="logo">
+    
+    <div class="dashboard">
+        <div class="sys-header">/// FIA WILDCARD TERMINAL ///</div>
+        
+        <div id="auth-section">
+            <select id="driver-select">
+                <option value="">-- SELECT DRIVER ID --</option>
+                <option value="Sameera">Sameera</option>
+                <option value="Mapa">Mapa</option>
+                <option value="Shahan">Shahan</option>
+                <option value="Nuwie G">Nuwie G</option>
+                <option value="Kalpa">Kalpa</option>
+                <option value="Shiyan">Shiyan</option>
+                <option value="Sahan">Sahan</option>
+                <option value="Rodda">Rodda</option>
+                <option value="Eranga">Eranga</option>
+                <option value="Nippa E">Nippa E</option>
+            </select>
+            <input type="password" id="pin-input" placeholder="4-DIGIT PIN" maxlength="4">
+            <button onclick="authenticate()" id="login-btn">Authenticate</button>
+            <div id="error-msg" style="color: #ff4444; text-align: center; font-family: monospace; margin-top: 10px;"></div>
+        </div>
 
+        <div id="portal-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div><span class="blinking-dot"></span><span style="font-family: monospace; color: #888;">LIVE FEED</span></div>
+                <div style="font-weight: 900;" id="user-display"></div>
+            </div>
+            <div id="races-container"></div>
+        </div>
+    </div>
+
+    <script>
+        // --- PASTE YOUR GOOGLE APP URL HERE ---
+        const API_URL = "https://script.google.com/macros/s/AKfycbzaLPfFPFVFATznJh5LJ2mhfhMOYtb0zxL-2JvjRDjjEKCXKFXoPwusGLKzo1sVbH8_/exec"; 
+        
+        let timers = [];
+
+        async function authenticate() {
+            const driver = document.getElementById('driver-select').value;
+            const pin = document.getElementById('pin-input').value;
+            const btn = document.getElementById('login-btn');
+            const errorMsg = document.getElementById('error-msg');
+            
+            if(!driver || !pin) return;
+            
+            btn.innerText = "VERIFYING...";
+            btn.disabled = true;
+            errorMsg.innerText = "";
+
+            try {
+                // Fetch directly from the Google API
+                const response = await fetch(`${API_URL}?driver=${encodeURIComponent(driver)}&pin=${encodeURIComponent(pin)}`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    btn.innerText = "AUTHENTICATE";
+                    btn.disabled = false;
+                    errorMsg.innerText = data.error;
+                } else {
+                    renderDashboard(data, driver);
+                }
+            } catch (err) {
+                btn.innerText = "AUTHENTICATE";
+                btn.disabled = false;
+                errorMsg.innerText = "NETWORK ERROR: Could not connect to FIA database.";
+            }
+        }
+
+        function renderDashboard(data, driverName) {
+            document.getElementById('auth-section').style.display = 'none';
+            document.getElementById('portal-section').style.display = 'block';
+            document.getElementById('user-display').innerText = driverName.toUpperCase() + ` (P${data.rank})`;
+
+            const container = document.getElementById('races-container');
+            container.innerHTML = "";
+            timers.forEach(t => clearInterval(t)); 
+
+            data.races.forEach((race, index) => {
+                const dateStr = new Date(race.raceDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+                
+                let html = `<div class="race-card ${race.isUnlocked ? 'unlocked' : 'locked'}">
+                                <h3 class="round-title">ROUND ${race.round} // ${race.eventName}</h3>
+                                <div class="date-sub">RACE DATE: ${dateStr}</div>`;
+                
+                if (race.isUnlocked) {
+                    if (race.sprint.includes('|')) {
+                        const sprints = race.sprint.split('|');
+                        sprints.forEach((sTrack, idx) => {
+                            html += `<div class="track-row">
+                                        <span class="track-label">SPRINT DOC 0${idx + 1}</span>
+                                        <span class="track-value text-green">${sTrack.trim()}</span>
+                                    </div>`;
+                        });
+                    } else {
+                        html += `<div class="track-row">
+                                    <span class="track-label">SPRINT DOC</span>
+                                    <span class="track-value text-green">${race.sprint}</span>
+                                </div>`;
+                    }
+                    html += `   <div class="track-row">
+                                    <span class="track-label">FEATURE DOC</span>
+                                    <span class="track-value text-green">${race.feature}</span>
+                                </div>`;
+                } else {
+                    html += `   <div class="track-row">
+                                    <span class="track-label">STATUS</span>
+                                    <span class="track-value text-red">[ ENCRYPTED ]</span>
+                                </div>
+                                <div class="countdown" id="timer-${index}">--:--:--:--</div>`;
+                                
+                    startCountdown(`timer-${index}`, race.unlockDate);
+                }
+                
+                html += `</div>`;
+                container.innerHTML += html;
+            });
+        }
+
+        function startCountdown(elementId, targetTimestamp) {
+            const timer = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = targetTimestamp - now;
+
+                if (distance < 0) {
+                    clearInterval(timer);
+                    document.getElementById(elementId).innerText = "REFRESH TO DECRYPT";
+                    document.getElementById(elementId).style.color = "#00D7B6";
+                    return;
+                }
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
+
+                document.getElementById(elementId).innerText = `${days}D ${hours}H ${minutes}M ${seconds}S`;
+            }, 1000);
+            timers.push(timer);
+        }
+    </script>
 </body>
 </html>
