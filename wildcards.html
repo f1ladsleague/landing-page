@@ -34,11 +34,11 @@
         .round-title { font-size: 22px; font-weight: 900; margin: 0 0 5px 0; text-transform: uppercase; }
         .date-sub { font-family: 'Share Tech Mono', monospace; font-size: 16px; font-weight: bold; color: #ffcc00; margin-bottom: 15px; letter-spacing: 1px; }
         
-        .track-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #222; padding: 15px 0; gap: 15px; }
+        /* Alignment Fixes */
+        .track-row { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px dashed #222; padding: 15px 0; gap: 15px; }
         .track-row:last-child { border-bottom: none; }
-        .track-label { color: #888; font-size: 12px; letter-spacing: 1px; flex-shrink: 0; }
+        .track-label { color: #888; font-size: 12px; letter-spacing: 1px; flex-shrink: 0; padding-top: 6px; } /* Pushed slightly down to perfectly align with text line */
         
-        /* NEW IMAGE & TEXT LAYOUT */
         .track-details { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; text-align: right; width: 100%; }
         .track-name-wrap { display: flex; align-items: center; gap: 10px; justify-content: flex-end; }
         .track-value { font-family: 'Chakra Petch', sans-serif; font-weight: 700; color: #fff; text-align: right; }
@@ -53,9 +53,9 @@
         .back-btn { background: #333; color: #fff; width: 100%; margin-top: 10px; font-size: 14px; }
         .back-btn:hover { background: #555; }
 
-        /* MOBILE OPTIMIZATION */
         @media (max-width: 500px) {
             .track-row { flex-direction: column; align-items: center; text-align: center; }
+            .track-label { padding-top: 0; margin-bottom: 5px; }
             .track-details { align-items: center; text-align: center; }
             .track-name-wrap { justify-content: center; }
         }
@@ -90,7 +90,7 @@
         </div>
 
         <div id="portal-section">
-            <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px;">
+            <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px;">
                 <div style="font-weight: 900; font-size: 18px;" id="user-display"></div>
             </div>
             <div id="races-container"></div>
@@ -109,7 +109,6 @@
             if (e.key === 'Enter') authenticate();
         });
 
-        // MEDIA MAPPING LOGIC
         function getTrackMedia(trackStr) {
             let flag = "", layout = "";
             const t = trackStr.toLowerCase();
@@ -189,8 +188,9 @@
                 const dateStr = new Date(race.raceDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
                 const themeIdx = index % 2; 
                 
+                // Event name only, Round prefix removed
                 let html = `<div class="race-card color-theme-${themeIdx}">
-                                <h3 class="round-title title-theme-${themeIdx}">ROUND ${race.round} // ${race.eventName}</h3>
+                                <h3 class="round-title title-theme-${themeIdx}">${race.eventName}</h3>
                                 <div class="date-sub">RACE DATE: ${dateStr}</div>`;
                 
                 if (race.isUnlocked) {
@@ -227,21 +227,20 @@
                                 </div>`;
                 } else {
                     if (data.rank === 1) {
-                        html += `   <div class="track-row" style="flex-direction: row;">
-                                        <span class="track-label">STATUS</span>
+                        html += `   <div class="track-row" style="flex-direction: row; align-items: center;">
+                                        <span class="track-label" style="padding-top: 0;">STATUS</span>
                                         <span class="track-value text-red">[ ACCESS DENIED ]</span>
                                     </div>
                                     <div style="color: #ff4444; text-align: center; margin-top: 15px; font-family: 'Share Tech Mono', monospace; font-size: 14px;">
                                         YOU ARE NOT ELIGIBLE TO VIEW THE WILDCARD TRACKS AS YOU ARE P1
                                     </div>`;
                     } else {
-                        // Updated Time & Date Format
                         const unlockDateObj = new Date(race.unlockDate);
                         const options = { timeZone: 'Australia/Melbourne', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: '2-digit' };
                         const unlockDateString = new Intl.DateTimeFormat('en-AU', options).format(unlockDateObj).toUpperCase();
                         
-                        html += `   <div class="track-row" style="flex-direction: row;">
-                                        <span class="track-label">STATUS</span>
+                        html += `   <div class="track-row" style="flex-direction: row; align-items: center;">
+                                        <span class="track-label" style="padding-top: 0;">STATUS</span>
                                         <span class="track-value text-red">[ ENCRYPTED ]</span>
                                     </div>
                                     <div style="text-align: center; margin-top: 15px; background: #050508; border: 1px solid #222; padding: 15px; border-radius: 4px;">
