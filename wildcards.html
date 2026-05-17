@@ -88,7 +88,13 @@
             btn.innerText = "VERIFYING...";
             document.getElementById('error-msg').innerText = "";
 
-            google.script.run.withSuccessHandler(renderDashboard).getWildcardData(driver, pin);
+            google.script.run
+                .withSuccessHandler(renderDashboard)
+                .withFailureHandler(function(err) {
+                    btn.innerText = "AUTHENTICATE";
+                    document.getElementById('error-msg').innerText = "SYSTEM ERROR: " + err.message;
+                })
+                .getWildcardData(driver, pin);
         }
 
         function renderDashboard(response) {
