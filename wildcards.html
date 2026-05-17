@@ -34,10 +34,17 @@
         .round-title { font-size: 22px; font-weight: 900; margin: 0 0 5px 0; text-transform: uppercase; }
         .date-sub { font-family: 'Share Tech Mono', monospace; font-size: 16px; font-weight: bold; color: #ffcc00; margin-bottom: 15px; letter-spacing: 1px; }
         
-        .track-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #222; padding: 10px 0; }
+        .track-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #222; padding: 15px 0; gap: 15px; }
         .track-row:last-child { border-bottom: none; }
-        .track-label { color: #888; font-size: 12px; letter-spacing: 1px; }
+        .track-label { color: #888; font-size: 12px; letter-spacing: 1px; flex-shrink: 0; }
+        
+        /* NEW IMAGE & TEXT LAYOUT */
+        .track-details { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; text-align: right; width: 100%; }
+        .track-name-wrap { display: flex; align-items: center; gap: 10px; justify-content: flex-end; }
         .track-value { font-family: 'Chakra Petch', sans-serif; font-weight: 700; color: #fff; text-align: right; }
+        .inline-flag { width: 24px; border-radius: 3px; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .inline-layout { max-height: 55px; max-width: 150px; opacity: 0.85; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5)); object-fit: contain; }
+        
         .text-red { color: var(--theme-red); }
         .text-green { color: #fff; text-shadow: 0 0 8px rgba(255,255,255,0.4); }
 
@@ -45,6 +52,13 @@
 
         .back-btn { background: #333; color: #fff; width: 100%; margin-top: 10px; font-size: 14px; }
         .back-btn:hover { background: #555; }
+
+        /* MOBILE OPTIMIZATION */
+        @media (max-width: 500px) {
+            .track-row { flex-direction: column; align-items: center; text-align: center; }
+            .track-details { align-items: center; text-align: center; }
+            .track-name-wrap { justify-content: center; }
+        }
     </style>
 </head>
 <body>
@@ -87,12 +101,50 @@
     <script>
         // --- PASTE YOUR GOOGLE APP URL HERE ---
         const API_URL = "https://script.google.com/macros/s/AKfycbzaLPfFPFVFATznJh5LJ2mhfhMOYtb0zxL-2JvjRDjjEKCXKFXoPwusGLKzo1sVbH8_/exec"; 
+        const PHOTO_BASE = "https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/";
         
         let timers = [];
 
         document.getElementById('pin-input').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') authenticate();
         });
+
+        // MEDIA MAPPING LOGIC
+        function getTrackMedia(trackStr) {
+            let flag = "", layout = "";
+            const t = trackStr.toLowerCase();
+            
+            if(t.includes("bahrain")) { flag = "bahrain"; layout = "bahrain"; }
+            else if(t.includes("jeddah") || t.includes("saudi")) { flag = "saudi_arabia"; layout = "jeddah"; }
+            else if(t.includes("melbourne") || t.includes("australia")) { flag = "australia"; layout = "melbourne"; }
+            else if(t.includes("baku") || t.includes("azerbaijan")) { flag = "azerbaijan"; layout = "baku"; }
+            else if(t.includes("miami")) { flag = "united_states_of_america"; layout = "miami"; }
+            else if(t.includes("imola") || t.includes("emilia")) { flag = "italy"; layout = "imola"; }
+            else if(t.includes("monaco")) { flag = "monaco"; layout = "monaco"; }
+            else if(t.includes("barcelona") || t.includes("spain")) { flag = "spain"; layout = "barcelona"; }
+            else if(t.includes("spielberg") || t.includes("austria")) { flag = "austria"; layout = "austria"; }
+            else if(t.includes("silverstone") || t.includes("britain")) { flag = "great_britain"; layout = "silverstone"; }
+            else if(t.includes("hungaroring") || t.includes("hungary")) { flag = "hungary"; layout = "hungaroring"; }
+            else if(t.includes("spa") || t.includes("belgium")) { flag = "belgium"; layout = "spa"; }
+            else if(t.includes("zandvoort") || t.includes("netherlands")) { flag = "netherlands"; layout = "zandvoort"; }
+            else if(t.includes("monza") || t.includes("italy")) { flag = "italy"; layout = "monza"; }
+            else if(t.includes("singapore")) { flag = "singapore"; layout = "singapore"; }
+            else if(t.includes("suzuka") || t.includes("japan")) { flag = "japan"; layout = "japan"; }
+            else if(t.includes("losail") || t.includes("qatar")) { flag = "qatar"; layout = "losail"; }
+            else if(t.includes("austin") || t.includes("usa") || t.includes("united states")) { flag = "united_states_of_america"; layout = "austin"; }
+            else if(t.includes("mexico")) { flag = "mexico"; layout = "mexico"; }
+            else if(t.includes("interlagos") || t.includes("brazil")) { flag = "brazil"; layout = "brazil"; }
+            else if(t.includes("las vegas")) { flag = "united_states_of_america"; layout = "lasvegas"; }
+            else if(t.includes("yas marina") || t.includes("abu dhabi")) { flag = "united_arab_emirates"; layout = "abudhabi"; }
+            else if(t.includes("shanghai") || t.includes("china")) { flag = "china"; layout = "china"; }
+            else if(t.includes("montreal") || t.includes("canada")) { flag = "canada"; layout = "canada"; }
+            else if(t.includes("portimão") || t.includes("portugal")) { flag = "portugal"; layout = "portugal"; }
+            else if(t.includes("paul ricard") || t.includes("france")) { flag = "france"; layout = "france"; }
+
+            let flagHtml = flag ? `<img src="${PHOTO_BASE}${flag}.png" class="inline-flag" alt="Flag">` : '';
+            let layoutHtml = layout ? `<img src="${PHOTO_BASE}Track%20Layouts/${layout}-track-layout.png" class="inline-layout" alt="Layout">` : '';
+            return { flagHtml, layoutHtml };
+        }
 
         async function authenticate() {
             const driver = document.getElementById('driver-select').value;
@@ -145,24 +197,37 @@
                     if (race.sprint.includes('|')) {
                         const sprints = race.sprint.split('|');
                         sprints.forEach((sTrack, idx) => {
+                            const media = getTrackMedia(sTrack);
                             html += `<div class="track-row">
                                         <span class="track-label">SPRINT RACE 0${idx + 1}</span>
-                                        <span class="track-value text-green">${sTrack.trim()}</span>
+                                        <div class="track-details">
+                                            <div class="track-name-wrap">${media.flagHtml} <span class="track-value text-green">${sTrack.trim()}</span></div>
+                                            ${media.layoutHtml}
+                                        </div>
                                     </div>`;
                         });
                     } else {
+                        const sMedia = getTrackMedia(race.sprint);
                         html += `<div class="track-row">
                                     <span class="track-label">SPRINT RACE</span>
-                                    <span class="track-value text-green">${race.sprint}</span>
+                                    <div class="track-details">
+                                        <div class="track-name-wrap">${sMedia.flagHtml} <span class="track-value text-green">${race.sprint}</span></div>
+                                        ${sMedia.layoutHtml}
+                                    </div>
                                 </div>`;
                     }
+                    
+                    const fMedia = getTrackMedia(race.feature);
                     html += `   <div class="track-row">
                                     <span class="track-label">FEATURE RACE</span>
-                                    <span class="track-value text-green">${race.feature}</span>
+                                    <div class="track-details">
+                                        <div class="track-name-wrap">${fMedia.flagHtml} <span class="track-value text-green">${race.feature}</span></div>
+                                        ${fMedia.layoutHtml}
+                                    </div>
                                 </div>`;
                 } else {
                     if (data.rank === 1) {
-                        html += `   <div class="track-row">
+                        html += `   <div class="track-row" style="flex-direction: row;">
                                         <span class="track-label">STATUS</span>
                                         <span class="track-value text-red">[ ACCESS DENIED ]</span>
                                     </div>
@@ -170,18 +235,18 @@
                                         YOU ARE NOT ELIGIBLE TO VIEW THE WILDCARD TRACKS AS YOU ARE P1
                                     </div>`;
                     } else {
-                        // Format the unlock date string explicitly for Melbourne Time
+                        // Updated Time & Date Format
                         const unlockDateObj = new Date(race.unlockDate);
                         const options = { timeZone: 'Australia/Melbourne', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: '2-digit' };
-                        const unlockDateString = new Intl.DateTimeFormat('en-AU', options).format(unlockDateObj).toUpperCase() + " (MELBOURNE TIME)";
+                        const unlockDateString = new Intl.DateTimeFormat('en-AU', options).format(unlockDateObj).toUpperCase();
                         
-                        html += `   <div class="track-row">
+                        html += `   <div class="track-row" style="flex-direction: row;">
                                         <span class="track-label">STATUS</span>
                                         <span class="track-value text-red">[ ENCRYPTED ]</span>
                                     </div>
                                     <div style="text-align: center; margin-top: 15px; background: #050508; border: 1px solid #222; padding: 15px; border-radius: 4px;">
                                         <div style="color: #888; font-size: 11px; letter-spacing: 2px;">DECRYPTS EXACTLY ON:</div>
-                                        <div style="color: #00D7B6; font-size: 14px; font-weight: bold; margin-top: 5px;">${unlockDateString}</div>
+                                        <div style="color: #9ab3d5; font-size: 13px; font-weight: normal; margin-top: 5px;">${unlockDateString}</div>
                                         <div class="countdown" id="timer-${index}">--:--:--:--</div>
                                     </div>`;
                                     
