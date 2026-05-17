@@ -330,10 +330,11 @@
                         const date = rawData.session.sessionInfo.sessionDate || rawData.event.eventDate;
                         const raceType = rawData.session.sessionInfo.raceType || "Feature";
                         
-                        // Dynamically find classification array (handles different JSON structures)
+                        // Dynamically find classification array (added fallback for "drivers" array)
                         let classification = [];
                         if (Array.isArray(rawData.session.classification)) classification = rawData.session.classification;
                         else if (Array.isArray(rawData.classification)) classification = rawData.classification;
+                        else if (Array.isArray(rawData.session.drivers)) classification = rawData.session.drivers;
                         else {
                            for (let key in rawData.session) {
                               if (Array.isArray(rawData.session[key]) && rawData.session[key].length > 0 && rawData.session[key][0].driverName) {
@@ -343,7 +344,13 @@
                            }
                         }
 
+                        // NEW: Global Fastest Lap Extraction
                         let fastestLapDriver = null;
+                        if (rawData.session.fastestLap && rawData.session.fastestLap.driverName) {
+                            fastestLapDriver = { Name: rawData.session.fastestLap.driverName };
+                        } else if (rawData.fastestLap && rawData.fastestLap.driverName) {
+                            fastestLapDriver = { Name: rawData.fastestLap.driverName };
+                        }
                         
                         const drivers = classification.map(d => {
                             let driverName = d.driverName;
@@ -362,12 +369,13 @@
                             let bestLapMs = 0;
                             let totalTimeMs = 0;
 
-                            // Time Extractor Layer
-                            if (d.bestLap && d.bestLap.lapTimeMs) bestLapMs = d.bestLap.lapTimeMs;
+                            // Time Extractor Layer (UPDATED with new JSON keys)
+                            if (d.fastestLapTimeMs) bestLapMs = d.fastestLapTimeMs; 
+                            else if (d.bestLap && d.bestLap.lapTimeMs) bestLapMs = d.bestLap.lapTimeMs;
                             else if (d.qualDetails && d.qualDetails.bestLap && d.qualDetails.bestLap.lapTimeMs) bestLapMs = d.qualDetails.bestLap.lapTimeMs;
                             
-                            if (d.raceDetails && d.raceDetails.totalTimeMs) totalTimeMs = d.raceDetails.totalTimeMs;
-                            else if (d.totalTimeMs) totalTimeMs = d.totalTimeMs;
+                            if (d.totalTimeMs) totalTimeMs = d.totalTimeMs; 
+                            else if (d.raceDetails && d.raceDetails.totalTimeMs) totalTimeMs = d.raceDetails.totalTimeMs;
 
                             // Fallback Time Calculation layer (Iterates over raw telemetry laps if base stats are blank)
                             if (d.laps && d.laps.length > 0) {
@@ -380,8 +388,8 @@
                                 }
                             }
                             
-                            // Fastest Lap logic extraction
-                            if (d.isSessionFastest || (d.bestLap && d.bestLap.isSessionFastest)) {
+                            // Fallback driver-level fastest lap check if global wasn't found
+                            if (!fastestLapDriver && (d.isSessionFastest || (d.bestLap && d.bestLap.isSessionFastest))) {
                                 fastestLapDriver = { Name: driverName };
                             }
 
