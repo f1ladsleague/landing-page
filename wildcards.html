@@ -10,7 +10,8 @@
         :root { --f1-dark: #09090c; --f1-card: #111118; --f1-border: #22222d; --theme-red: #e10600; }
         body { font-family: 'Titillium Web', sans-serif; background: var(--f1-dark); color: white; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         .dashboard { width: 100%; max-width: 600px; background: var(--f1-card); padding: 30px; border-radius: 8px; border: 1px solid var(--f1-border); border-top: 4px solid var(--theme-red); box-shadow: 0 10px 40px rgba(0,0,0,0.9); }
-        .logo { max-width: 150px; margin-bottom: 20px; display: block; margin-left: auto; margin-right: auto; }
+        .logo { max-width: 150px; margin-bottom: 20px; display: block; margin-left: auto; margin-right: auto; cursor: pointer; transition: 0.2s; }
+        .logo:hover { transform: scale(1.05); }
         
         .sys-header { font-family: 'Share Tech Mono', monospace; color: #888; text-align: center; margin-bottom: 30px; letter-spacing: 2px; }
         
@@ -23,31 +24,40 @@
         
         /* Race Cards */
         #portal-section { display: none; }
-        .race-card { background: #050508; border: 1px solid #333; border-left: 4px solid #444; margin-bottom: 20px; padding: 20px; border-radius: 6px; }
-        .race-card.unlocked { border-left-color: #00D7B6; box-shadow: inset 0 0 20px rgba(0, 215, 182, 0.05); }
-        .race-card.locked { border-left-color: #F47600; }
+        .race-card { background: #050508; border: 1px solid #333; margin-bottom: 20px; padding: 20px; border-radius: 6px; }
         
-        .round-title { font-size: 20px; font-weight: 900; margin: 0 0 5px 0; color: #fff; text-transform: uppercase; }
-        .date-sub { font-family: 'Share Tech Mono', monospace; color: #888; font-size: 13px; margin-bottom: 15px; }
+        /* Color distinct rounds */
+        .color-theme-0 { border-top: 4px solid #00D7B6; } /* Cyan */
+        .color-theme-1 { border-top: 4px solid #ae37de; } /* Purple */
+        .title-theme-0 { color: #00D7B6; }
+        .title-theme-1 { color: #ae37de; }
+        
+        .round-title { font-size: 22px; font-weight: 900; margin: 0 0 5px 0; text-transform: uppercase; }
+        
+        /* Prominent Date */
+        .date-sub { font-family: 'Share Tech Mono', monospace; font-size: 16px; font-weight: bold; color: #ffcc00; margin-bottom: 15px; letter-spacing: 1px; }
         
         .track-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #222; padding: 10px 0; }
         .track-row:last-child { border-bottom: none; }
         .track-label { color: #888; font-size: 12px; letter-spacing: 1px; }
         .track-value { font-family: 'Chakra Petch', sans-serif; font-weight: 700; color: #fff; text-align: right; }
         .text-red { color: var(--theme-red); }
-        .text-green { color: #00D7B6; }
+        .text-green { color: #fff; text-shadow: 0 0 8px rgba(255,255,255,0.4); }
 
         .countdown { font-family: 'Share Tech Mono', monospace; font-size: 24px; color: #F47600; text-align: center; margin-top: 15px; }
-        .blinking-dot { display: inline-block; width: 10px; height: 10px; background-color: #ff0000; border-radius: 50%; animation: flash 0.8s infinite alternate; margin-right: 8px; }
-        @keyframes flash { from { opacity: 1; } to { opacity: 0.2; } }
+
+        .back-btn { background: #333; color: #fff; width: 100%; margin-top: 10px; font-size: 14px; }
+        .back-btn:hover { background: #555; }
     </style>
 </head>
 <body>
 
-    <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Logo.png" class="logo">
+    <a href="https://f1lads.com">
+        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Logo.png" class="logo" alt="Home">
+    </a>
     
     <div class="dashboard">
-        <div class="sys-header">/// FIA WILDCARD TERMINAL ///</div>
+        <div class="sys-header">/// WILDCARD TRACKS ///</div>
         
         <div id="auth-section">
             <select id="driver-select">
@@ -69,11 +79,12 @@
         </div>
 
         <div id="portal-section">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <div><span class="blinking-dot"></span><span style="font-family: monospace; color: #888;">LIVE FEED</span></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px;">
+                <span style="font-family: monospace; color: #888;">STATUS: CONNECTED</span>
                 <div style="font-weight: 900;" id="user-display"></div>
             </div>
             <div id="races-container"></div>
+            <button class="back-btn" onclick="logout()">LOGOUT / RETURN</button>
         </div>
     </div>
 
@@ -82,6 +93,13 @@
         const API_URL = "https://script.google.com/macros/s/AKfycbzaLPfFPFVFATznJh5LJ2mhfhMOYtb0zxL-2JvjRDjjEKCXKFXoPwusGLKzo1sVbH8_/exec"; 
         
         let timers = [];
+
+        // Allow 'Enter' key to trigger authentication
+        document.getElementById('pin-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                authenticate();
+            }
+        });
 
         async function authenticate() {
             const driver = document.getElementById('driver-select').value;
@@ -96,7 +114,6 @@
             errorMsg.innerText = "";
 
             try {
-                // Fetch directly from the Google API
                 const response = await fetch(`${API_URL}?driver=${encodeURIComponent(driver)}&pin=${encodeURIComponent(pin)}`);
                 const data = await response.json();
                 
@@ -126,8 +143,11 @@
             data.races.forEach((race, index) => {
                 const dateStr = new Date(race.raceDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
                 
-                let html = `<div class="race-card ${race.isUnlocked ? 'unlocked' : 'locked'}">
-                                <h3 class="round-title">ROUND ${race.round} // ${race.eventName}</h3>
+                // Assign alternate themes (0 or 1) based on index
+                const themeIdx = index % 2; 
+                
+                let html = `<div class="race-card color-theme-${themeIdx}">
+                                <h3 class="round-title title-theme-${themeIdx}">ROUND ${race.round} // ${race.eventName}</h3>
                                 <div class="date-sub">RACE DATE: ${dateStr}</div>`;
                 
                 if (race.isUnlocked) {
@@ -135,18 +155,18 @@
                         const sprints = race.sprint.split('|');
                         sprints.forEach((sTrack, idx) => {
                             html += `<div class="track-row">
-                                        <span class="track-label">SPRINT DOC 0${idx + 1}</span>
+                                        <span class="track-label">SPRINT RACE 0${idx + 1}</span>
                                         <span class="track-value text-green">${sTrack.trim()}</span>
                                     </div>`;
                         });
                     } else {
                         html += `<div class="track-row">
-                                    <span class="track-label">SPRINT DOC</span>
+                                    <span class="track-label">SPRINT RACE</span>
                                     <span class="track-value text-green">${race.sprint}</span>
                                 </div>`;
                     }
                     html += `   <div class="track-row">
-                                    <span class="track-label">FEATURE DOC</span>
+                                    <span class="track-label">FEATURE RACE</span>
                                     <span class="track-value text-green">${race.feature}</span>
                                 </div>`;
                 } else {
@@ -162,6 +182,10 @@
                 html += `</div>`;
                 container.innerHTML += html;
             });
+            
+            // Re-enable auth button in background in case they log out
+            document.getElementById('login-btn').innerText = "AUTHENTICATE";
+            document.getElementById('login-btn').disabled = false;
         }
 
         function startCountdown(elementId, targetTimestamp) {
@@ -184,6 +208,13 @@
                 document.getElementById(elementId).innerText = `${days}D ${hours}H ${minutes}M ${seconds}S`;
             }, 1000);
             timers.push(timer);
+        }
+
+        function logout() {
+            document.getElementById('portal-section').style.display = 'none';
+            document.getElementById('auth-section').style.display = 'flex';
+            document.getElementById('pin-input').value = "";
+            timers.forEach(t => clearInterval(t)); 
         }
     </script>
 </body>
