@@ -26,15 +26,12 @@
         #portal-section { display: none; }
         .race-card { background: #050508; border: 1px solid #333; margin-bottom: 20px; padding: 20px; border-radius: 6px; }
         
-        /* Color distinct rounds */
-        .color-theme-0 { border-top: 4px solid #00D7B6; } /* Cyan */
-        .color-theme-1 { border-top: 4px solid #ae37de; } /* Purple */
+        .color-theme-0 { border-top: 4px solid #00D7B6; } 
+        .color-theme-1 { border-top: 4px solid #ae37de; } 
         .title-theme-0 { color: #00D7B6; }
         .title-theme-1 { color: #ae37de; }
         
         .round-title { font-size: 22px; font-weight: 900; margin: 0 0 5px 0; text-transform: uppercase; }
-        
-        /* Prominent Date */
         .date-sub { font-family: 'Share Tech Mono', monospace; font-size: 16px; font-weight: bold; color: #ffcc00; margin-bottom: 15px; letter-spacing: 1px; }
         
         .track-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #222; padding: 10px 0; }
@@ -44,7 +41,7 @@
         .text-red { color: var(--theme-red); }
         .text-green { color: #fff; text-shadow: 0 0 8px rgba(255,255,255,0.4); }
 
-        .countdown { font-family: 'Share Tech Mono', monospace; font-size: 24px; color: #F47600; text-align: center; margin-top: 15px; }
+        .countdown { font-family: 'Share Tech Mono', monospace; font-size: 24px; color: #F47600; margin-top: 5px; }
 
         .back-btn { background: #333; color: #fff; width: 100%; margin-top: 10px; font-size: 14px; }
         .back-btn:hover { background: #555; }
@@ -79,9 +76,8 @@
         </div>
 
         <div id="portal-section">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px;">
-                <span style="font-family: monospace; color: #888;">STATUS: CONNECTED</span>
-                <div style="font-weight: 900;" id="user-display"></div>
+            <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px;">
+                <div style="font-weight: 900; font-size: 18px;" id="user-display"></div>
             </div>
             <div id="races-container"></div>
             <button class="back-btn" onclick="logout()">LOGOUT / RETURN</button>
@@ -94,11 +90,8 @@
         
         let timers = [];
 
-        // Allow 'Enter' key to trigger authentication
         document.getElementById('pin-input').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                authenticate();
-            }
+            if (e.key === 'Enter') authenticate();
         });
 
         async function authenticate() {
@@ -142,8 +135,6 @@
 
             data.races.forEach((race, index) => {
                 const dateStr = new Date(race.raceDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-                
-                // Assign alternate themes (0 or 1) based on index
                 const themeIdx = index % 2; 
                 
                 let html = `<div class="race-card color-theme-${themeIdx}">
@@ -170,20 +161,38 @@
                                     <span class="track-value text-green">${race.feature}</span>
                                 </div>`;
                 } else {
-                    html += `   <div class="track-row">
-                                    <span class="track-label">STATUS</span>
-                                    <span class="track-value text-red">[ ENCRYPTED ]</span>
-                                </div>
-                                <div class="countdown" id="timer-${index}">--:--:--:--</div>`;
-                                
-                    startCountdown(`timer-${index}`, race.unlockDate);
+                    if (data.rank === 1) {
+                        html += `   <div class="track-row">
+                                        <span class="track-label">STATUS</span>
+                                        <span class="track-value text-red">[ ACCESS DENIED ]</span>
+                                    </div>
+                                    <div style="color: #ff4444; text-align: center; margin-top: 15px; font-family: 'Share Tech Mono', monospace; font-size: 14px;">
+                                        YOU ARE NOT ELIGIBLE TO VIEW THE WILDCARD TRACKS AS YOU ARE P1
+                                    </div>`;
+                    } else {
+                        // Format the unlock date string explicitly for Melbourne Time
+                        const unlockDateObj = new Date(race.unlockDate);
+                        const options = { timeZone: 'Australia/Melbourne', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: '2-digit' };
+                        const unlockDateString = new Intl.DateTimeFormat('en-AU', options).format(unlockDateObj).toUpperCase() + " (MELBOURNE TIME)";
+                        
+                        html += `   <div class="track-row">
+                                        <span class="track-label">STATUS</span>
+                                        <span class="track-value text-red">[ ENCRYPTED ]</span>
+                                    </div>
+                                    <div style="text-align: center; margin-top: 15px; background: #050508; border: 1px solid #222; padding: 15px; border-radius: 4px;">
+                                        <div style="color: #888; font-size: 11px; letter-spacing: 2px;">DECRYPTS EXACTLY ON:</div>
+                                        <div style="color: #00D7B6; font-size: 14px; font-weight: bold; margin-top: 5px;">${unlockDateString}</div>
+                                        <div class="countdown" id="timer-${index}">--:--:--:--</div>
+                                    </div>`;
+                                    
+                        startCountdown(`timer-${index}`, race.unlockDate);
+                    }
                 }
                 
                 html += `</div>`;
                 container.innerHTML += html;
             });
             
-            // Re-enable auth button in background in case they log out
             document.getElementById('login-btn').innerText = "AUTHENTICATE";
             document.getElementById('login-btn').disabled = false;
         }
