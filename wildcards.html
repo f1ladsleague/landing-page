@@ -33,7 +33,46 @@
         .custom-option:hover { background: #1a1a24; color: #fff; }
         .optgroup-label { padding: 12px 15px; font-size: 12px; color: #555; background: #050508; font-weight: bold; letter-spacing: 2px; position: sticky; top: 0; z-index: 2; border-bottom: 1px solid #222; border-top: 1px solid #222; }
         .optgroup-label:first-child { border-top: none; }
-        .opt-img { width: 32px; height: 32px; object-fit: contain; border-radius: 4px; background: #fff; padding: 2px; }
+        
+        /* IMAGE STYLING: Black backgrounds and Face Zooming */
+        .opt-img { 
+            width: 44px; 
+            height: 44px; 
+            border-radius: 6px; 
+            background: #000; 
+            padding: 4px; 
+            box-sizing: border-box;
+            object-fit: contain;
+        }
+        
+        /* Specific zoom logic only for Driver Headshots */
+        .opt-driver .opt-img {
+            padding: 0; /* Remove padding to maximize image area */
+            object-fit: cover; /* Fill the square entirely */
+            object-position: center 10%; /* Pin focus to the head/face area */
+            transform: scale(1.25); /* Aggressively zoom into the face */
+            clip-path: inset(0 round 5px); /* Ensure scaled image retains rounded corners */
+        }
+
+        /* Styling for the actively selected item */
+        .selected-img {
+            width: 34px; 
+            height: 34px; 
+            border-radius: 4px; 
+            background: #000;
+            box-sizing: border-box;
+        }
+        .selected-driver {
+            padding: 0;
+            object-fit: cover;
+            object-position: center 10%;
+            transform: scale(1.25);
+            clip-path: inset(0 round 3px);
+        }
+        .selected-team {
+            padding: 3px;
+            object-fit: contain;
+        }
         
         /* Constructor Theme Accents */
         .opt-ferrari:hover { background: rgba(237, 17, 49, 0.15); border-left: 4px solid #ED1131; }
@@ -107,7 +146,7 @@
                         <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Shahan.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"> Shahan
                     </div>
                     <div class="custom-option opt-driver" onclick="selectUser('Nuwie G', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Nuwie%20G.png')">
-                        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/NuwieG.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"> Nuwie G
+                        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Nuwie%20G.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"> Nuwie G
                     </div>
                     <div class="custom-option opt-driver" onclick="selectUser('Kalpa', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Kalpa.png')">
                         <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Kalpa.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"> Kalpa
@@ -125,7 +164,7 @@
                         <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Eranga.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"> Eranga
                     </div>
                     <div class="custom-option opt-driver" onclick="selectUser('Nippa E', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Nippa%20E.png')">
-                        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/NippaE.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"> Nippa E
+                        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Nippa%20E.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"> Nippa E
                     </div>
 
                     <div class="optgroup-label">/// CONSTRUCTORS</div>
@@ -178,9 +217,14 @@
 
         function selectUser(name, imgSrc) {
             document.getElementById("selected-user-val").value = name;
+            
+            // Check if it's a driver or constructor to apply the correct zoom styling to the active selection
+            const isDriver = !imgSrc.includes('Team_Logos');
+            const imgClass = isDriver ? 'selected-img selected-driver' : 'selected-img selected-team';
+
             document.getElementById("selected-user-display").innerHTML = `
                 <div style="display:flex; align-items:center; gap:12px; color:#fff; font-weight:bold;">
-                    <img src="${imgSrc}" class="opt-img" style="width:24px; height:24px; background:transparent; padding:0;"> 
+                    <img src="${imgSrc}" class="${imgClass}"> 
                     ${name}
                 </div>
                 <span style="font-size:12px; color:#555;">▼</span>
@@ -244,7 +288,6 @@
         }
 
         async function authenticate() {
-            // Retrieve value from the hidden input instead of standard select
             const user = document.getElementById('selected-user-val').value;
             const pass = document.getElementById('pin-input').value;
             const btn = document.getElementById('login-btn');
