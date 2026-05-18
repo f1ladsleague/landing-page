@@ -34,44 +34,44 @@
         .optgroup-label { padding: 12px 15px; font-size: 12px; color: #555; background: #050508; font-weight: bold; letter-spacing: 2px; position: sticky; top: 0; z-index: 2; border-bottom: 1px solid #222; border-top: 1px solid #222; }
         .optgroup-label:first-child { border-top: none; }
         
-        /* IMAGE STYLING: Black backgrounds and Face Zooming */
+        /* IMAGE STYLING: Transparent backgrounds, precise bounding boxes, and Face Zooming */
+        .img-wrap {
+            width: 44px;
+            height: 44px;
+            border-radius: 6px;
+            overflow: hidden;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
         .opt-img { 
-            width: 44px; 
-            height: 44px; 
-            border-radius: 6px; 
-            background: #000; 
-            padding: 4px; 
-            box-sizing: border-box;
-            object-fit: contain;
+            width: 100%; 
+            height: 100%; 
+            background: transparent; 
+            object-fit: contain; 
         }
         
         /* Specific zoom logic only for Driver Headshots */
         .opt-driver .opt-img {
-            padding: 0; /* Remove padding to maximize image area */
-            object-fit: cover; /* Fill the square entirely */
-            object-position: center 10%; /* Pin focus to the head/face area */
-            transform: scale(1.25); /* Aggressively zoom into the face */
-            clip-path: inset(0 round 5px); /* Ensure scaled image retains rounded corners */
+            object-fit: cover; 
+            transform-origin: center 15%; /* Anchor zoom to the top of the photo/face */
+            transform: scale(2.5); /* Increase scale to 2.5 */
         }
 
         /* Styling for the actively selected item */
-        .selected-img {
+        .selected-img-wrap {
             width: 34px; 
             height: 34px; 
             border-radius: 4px; 
-            background: #000;
-            box-sizing: border-box;
-        }
-        .selected-driver {
-            padding: 0;
-            object-fit: cover;
-            object-position: center 10%;
-            transform: scale(1.25);
-            clip-path: inset(0 round 3px);
-        }
-        .selected-team {
-            padding: 3px;
-            object-fit: contain;
+            overflow: hidden;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
         }
         
         /* Constructor Theme Accents */
@@ -137,51 +137,51 @@
                 <div class="select-items select-hide" id="custom-dropdown-list">
                     <div class="optgroup-label">/// DRIVERS</div>
                     <div class="custom-option opt-driver" onclick="selectUser('Sameera', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Sameera.png')">
-                        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Sameera.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"> Sameera
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Sameera.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"></div> Sameera
                     </div>
                     <div class="custom-option opt-driver" onclick="selectUser('Mapa', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Mapa.png')">
-                        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Mapa.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"> Mapa
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Mapa.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"></div> Mapa
                     </div>
                     <div class="custom-option opt-driver" onclick="selectUser('Shahan', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Shahan.png')">
-                        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Shahan.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"> Shahan
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Shahan.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"></div> Shahan
                     </div>
                     <div class="custom-option opt-driver" onclick="selectUser('Nuwie G', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Nuwie%20G.png')">
-                        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Nuwie%20G.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"> Nuwie G
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/NuwieG.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"></div> Nuwie G
                     </div>
                     <div class="custom-option opt-driver" onclick="selectUser('Kalpa', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Kalpa.png')">
-                        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Kalpa.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"> Kalpa
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Kalpa.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"></div> Kalpa
                     </div>
                     <div class="custom-option opt-driver" onclick="selectUser('Shiyan', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Shiyan.png')">
-                        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Shiyan.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"> Shiyan
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Shiyan.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"></div> Shiyan
                     </div>
                     <div class="custom-option opt-driver" onclick="selectUser('Sahan', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Sahan.png')">
-                        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Sahan.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"> Sahan
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Sahan.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"></div> Sahan
                     </div>
                     <div class="custom-option opt-driver" onclick="selectUser('Rodda', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Rodda.png')">
-                        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Rodda.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"> Rodda
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Rodda.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"></div> Rodda
                     </div>
                     <div class="custom-option opt-driver" onclick="selectUser('Eranga', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Eranga.png')">
-                        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Eranga.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"> Eranga
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Eranga.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"></div> Eranga
                     </div>
                     <div class="custom-option opt-driver" onclick="selectUser('Nippa E', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Nippa%20E.png')">
-                        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Nippa%20E.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"> Nippa E
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/NippaE.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"></div> Nippa E
                     </div>
 
                     <div class="optgroup-label">/// CONSTRUCTORS</div>
                     <div class="custom-option opt-ferrari" onclick="selectUser('Ferrari', 'https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/FER.png')">
-                        <img src="https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/FER.png" class="opt-img"> Ferrari
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/FER.png" class="opt-img"></div> Ferrari
                     </div>
                     <div class="custom-option opt-aston" onclick="selectUser('Aston Martin', 'https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/AM.png')">
-                        <img src="https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/AM.png" class="opt-img"> Aston Martin
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/AM.png" class="opt-img"></div> Aston Martin
                     </div>
                     <div class="custom-option opt-mclaren" onclick="selectUser('McLaren', 'https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/MCL.png')">
-                        <img src="https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/MCL.png" class="opt-img"> McLaren
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/MCL.png" class="opt-img"></div> McLaren
                     </div>
                     <div class="custom-option opt-mercedes" onclick="selectUser('Mercedes', 'https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/MER.png')">
-                        <img src="https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/MER.png" class="opt-img"> Mercedes
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/MER.png" class="opt-img"></div> Mercedes
                     </div>
                     <div class="custom-option opt-redbull" onclick="selectUser('Red Bull', 'https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/RB.png')">
-                        <img src="https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/RB.png" class="opt-img"> Red Bull
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/RB.png" class="opt-img"></div> Red Bull
                     </div>
                 </div>
             </div>
@@ -218,14 +218,16 @@
         function selectUser(name, imgSrc) {
             document.getElementById("selected-user-val").value = name;
             
-            // Check if it's a driver or constructor to apply the correct zoom styling to the active selection
+            // Check if it's a driver or constructor to apply the correct zoom styling
             const isDriver = !imgSrc.includes('Team_Logos');
-            const imgClass = isDriver ? 'selected-img selected-driver' : 'selected-img selected-team';
+            const imgStyle = isDriver ? 'object-fit:cover; transform-origin:center 15%; transform:scale(2.5);' : 'object-fit:contain;';
 
             document.getElementById("selected-user-display").innerHTML = `
                 <div style="display:flex; align-items:center; gap:12px; color:#fff; font-weight:bold;">
-                    <img src="${imgSrc}" class="${imgClass}"> 
-                    ${name}
+                    <div class="selected-img-wrap">
+                        <img src="${imgSrc}" style="width:100%; height:100%; background:transparent; ${imgStyle}"> 
+                    </div>
+                    <span style="display:flex; align-items:center; height:100%;">${name}</span>
                 </div>
                 <span style="font-size:12px; color:#555;">▼</span>
             `;
