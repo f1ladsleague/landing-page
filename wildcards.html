@@ -17,15 +17,35 @@
         
         /* Auth Section */
         #auth-section { display: flex; flex-direction: column; gap: 15px; }
-        select, input { padding: 15px; font-family: 'Share Tech Mono', monospace; background: #000; color: white; border: 1px solid #444; border-radius: 4px; font-size: 16px; text-align: center; }
+        input[type="password"] { padding: 15px; font-family: 'Share Tech Mono', monospace; background: #000; color: white; border: 1px solid #444; border-radius: 4px; font-size: 16px; text-align: center; }
         button { padding: 15px; background: var(--theme-red); color: white; font-weight: 900; text-transform: uppercase; border: none; border-radius: 4px; cursor: pointer; transition: 0.2s; font-size: 18px; }
         button:hover:not(:disabled) { background: #ff1a1a; }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* --- CUSTOM DROPDOWN UI --- */
+        .custom-select { position: relative; width: 100%; font-family: 'Share Tech Mono', monospace; text-align: left; user-select: none; }
+        .select-selected { background: #000; color: white; padding: 15px; border: 1px solid #444; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; font-size: 16px; transition: border-color 0.2s; }
+        .select-selected:hover { border-color: #888; }
+        .select-items { position: absolute; background: #0a0a0f; top: 100%; left: 0; right: 0; z-index: 99; border: 1px solid #444; border-radius: 4px; margin-top: 5px; max-height: 350px; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.9); }
+        .select-hide { display: none; }
+        .custom-option { padding: 10px 15px; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #ccc; transition: all 0.2s; border-bottom: 1px solid #1a1a24; border-left: 4px solid transparent; }
+        .custom-option:last-child { border-bottom: none; }
+        .custom-option:hover { background: #1a1a24; color: #fff; }
+        .optgroup-label { padding: 12px 15px; font-size: 12px; color: #555; background: #050508; font-weight: bold; letter-spacing: 2px; position: sticky; top: 0; z-index: 2; border-bottom: 1px solid #222; border-top: 1px solid #222; }
+        .optgroup-label:first-child { border-top: none; }
+        .opt-img { width: 32px; height: 32px; object-fit: contain; border-radius: 4px; background: #fff; padding: 2px; }
+        
+        /* Constructor Theme Accents */
+        .opt-ferrari:hover { background: rgba(237, 17, 49, 0.15); border-left: 4px solid #ED1131; }
+        .opt-aston:hover { background: rgba(34, 153, 113, 0.15); border-left: 4px solid #229971; }
+        .opt-mclaren:hover { background: rgba(244, 118, 0, 0.15); border-left: 4px solid #F47600; }
+        .opt-mercedes:hover { background: rgba(0, 215, 182, 0.15); border-left: 4px solid #00D7B6; }
+        .opt-redbull:hover { background: rgba(71, 129, 215, 0.15); border-left: 4px solid #4781D7; }
+        .opt-driver:hover { background: rgba(225, 6, 0, 0.15); border-left: 4px solid var(--theme-red); }
         
         /* Race Cards */
         #portal-section { display: none; }
         .race-card { background: #050508; border: 1px solid #333; margin-bottom: 20px; padding: 20px; border-radius: 6px; }
-        
         .color-theme-0 { border-top: 4px solid #00D7B6; } 
         .color-theme-1 { border-top: 4px solid #ae37de; } 
         .title-theme-0 { color: #00D7B6; }
@@ -34,11 +54,9 @@
         .round-title { font-size: 22px; font-weight: 900; margin: 0 0 5px 0; text-transform: uppercase; }
         .date-sub { font-family: 'Share Tech Mono', monospace; font-size: 16px; font-weight: bold; color: #ffcc00; margin-bottom: 15px; letter-spacing: 1px; }
         
-        /* Alignment Fixes */
         .track-row { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px dashed #222; padding: 15px 0; gap: 15px; }
         .track-row:last-child { border-bottom: none; }
         .track-label { color: #888; font-size: 12px; letter-spacing: 1px; flex-shrink: 0; padding-top: 6px; } 
-        
         .track-details { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; text-align: right; width: 100%; }
         .track-name-wrap { display: flex; align-items: center; gap: 10px; justify-content: flex-end; }
         .track-value { font-family: 'Chakra Petch', sans-serif; font-weight: 700; color: #fff; text-align: right; }
@@ -47,7 +65,6 @@
         
         .text-red { color: var(--theme-red); }
         .text-green { color: #fff; text-shadow: 0 0 8px rgba(255,255,255,0.4); }
-
         .countdown { font-family: 'Share Tech Mono', monospace; font-size: 24px; color: #F47600; margin-top: 5px; }
 
         .back-btn { background: #333; color: #fff; width: 100%; margin-top: 10px; font-size: 14px; }
@@ -71,28 +88,66 @@
         <div class="sys-header">/// WILDCARD TRACKS ///</div>
         
         <div id="auth-section">
-            <select id="driver-select">
-                <option value="">-- SELECT USER --</option>
-                <optgroup label="Constructors">
-                    <option value="Ferrari">Ferrari</option>
-                    <option value="Aston Martin">Aston Martin</option>
-                    <option value="McLaren">McLaren</option>
-                    <option value="Mercedes">Mercedes</option>
-                    <option value="Red Bull">Red Bull</option>
-                </optgroup>
-                <optgroup label="Drivers">
-                    <option value="Sameera">Sameera</option>
-                    <option value="Mapa">Mapa</option>
-                    <option value="Shahan">Shahan</option>
-                    <option value="Nuwie G">Nuwie G</option>
-                    <option value="Kalpa">Kalpa</option>
-                    <option value="Shiyan">Shiyan</option>
-                    <option value="Sahan">Sahan</option>
-                    <option value="Rodda">Rodda</option>
-                    <option value="Eranga">Eranga</option>
-                    <option value="Nippa E">Nippa E</option>
-                </optgroup>
-            </select>
+            
+            <div class="custom-select">
+                <div class="select-selected" id="selected-user-display" onclick="toggleDropdown()">
+                    <span style="color: #888;">-- SELECT USER --</span>
+                    <span style="font-size:12px; color:#555;">▼</span>
+                </div>
+                
+                <div class="select-items select-hide" id="custom-dropdown-list">
+                    <div class="optgroup-label">/// DRIVERS</div>
+                    <div class="custom-option opt-driver" onclick="selectUser('Sameera', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Sameera.png')">
+                        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Sameera.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"> Sameera
+                    </div>
+                    <div class="custom-option opt-driver" onclick="selectUser('Mapa', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Mapa.png')">
+                        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Mapa.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"> Mapa
+                    </div>
+                    <div class="custom-option opt-driver" onclick="selectUser('Shahan', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Shahan.png')">
+                        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Shahan.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"> Shahan
+                    </div>
+                    <div class="custom-option opt-driver" onclick="selectUser('Nuwie G', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Nuwie%20G.png')">
+                        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Nuwie%20G.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"> Nuwie G
+                    </div>
+                    <div class="custom-option opt-driver" onclick="selectUser('Kalpa', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Kalpa.png')">
+                        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Kalpa.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"> Kalpa
+                    </div>
+                    <div class="custom-option opt-driver" onclick="selectUser('Shiyan', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Shiyan.png')">
+                        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Shiyan.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"> Shiyan
+                    </div>
+                    <div class="custom-option opt-driver" onclick="selectUser('Sahan', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Sahan.png')">
+                        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Sahan.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"> Sahan
+                    </div>
+                    <div class="custom-option opt-driver" onclick="selectUser('Rodda', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Rodda.png')">
+                        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Rodda.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"> Rodda
+                    </div>
+                    <div class="custom-option opt-driver" onclick="selectUser('Eranga', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Eranga.png')">
+                        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Eranga.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"> Eranga
+                    </div>
+                    <div class="custom-option opt-driver" onclick="selectUser('Nippa E', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Nippa%20E.png')">
+                        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Nippa%20E.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"> Nippa E
+                    </div>
+
+                    <div class="optgroup-label">/// CONSTRUCTORS</div>
+                    <div class="custom-option opt-ferrari" onclick="selectUser('Ferrari', 'https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/FER.png')">
+                        <img src="https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/FER.png" class="opt-img"> Ferrari
+                    </div>
+                    <div class="custom-option opt-aston" onclick="selectUser('Aston Martin', 'https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/AM.png')">
+                        <img src="https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/AM.png" class="opt-img"> Aston Martin
+                    </div>
+                    <div class="custom-option opt-mclaren" onclick="selectUser('McLaren', 'https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/MCL.png')">
+                        <img src="https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/MCL.png" class="opt-img"> McLaren
+                    </div>
+                    <div class="custom-option opt-mercedes" onclick="selectUser('Mercedes', 'https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/MER.png')">
+                        <img src="https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/MER.png" class="opt-img"> Mercedes
+                    </div>
+                    <div class="custom-option opt-redbull" onclick="selectUser('Red Bull', 'https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/RB.png')">
+                        <img src="https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/RB.png" class="opt-img"> Red Bull
+                    </div>
+                </div>
+            </div>
+            
+            <input type="hidden" id="selected-user-val" value="">
             <input type="password" id="pin-input" placeholder="PIN / PASSWORD">
             <button onclick="authenticate()" id="login-btn">Authenticate</button>
             <div id="error-msg" style="color: #ff4444; text-align: center; font-family: monospace; margin-top: 10px;"></div>
@@ -111,17 +166,40 @@
         const API_URL = "https://script.google.com/macros/s/AKfycbzaLPfFPFVFATznJh5LJ2mhfhMOYtb0zxL-2JvjRDjjEKCXKFXoPwusGLKzo1sVbH8_/exec"; 
         const PHOTO_BASE = "https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/";
         
-        // CSV CONSTANTS FOR CONSTRUCTORS
         const SETTINGS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZKLukYpw5VzMfRbfXh80lj1B0gbUiVx_CoinOMVb-b2iFEMiWg_nW3KcMp88qKL3UfctvzYgEN_Lg/pub?gid=2057582908&single=true&output=csv";
         const CONSTRUCTORS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZKLukYpw5VzMfRbfXh80lj1B0gbUiVx_CoinOMVb-b2iFEMiWg_nW3KcMp88qKL3UfctvzYgEN_Lg/pub?gid=1589744882&single=true&output=csv";
         
         let timers = [];
 
+        /* --- CUSTOM DROPDOWN LOGIC --- */
+        function toggleDropdown() {
+            document.getElementById("custom-dropdown-list").classList.toggle("select-hide");
+        }
+
+        function selectUser(name, imgSrc) {
+            document.getElementById("selected-user-val").value = name;
+            document.getElementById("selected-user-display").innerHTML = `
+                <div style="display:flex; align-items:center; gap:12px; color:#fff; font-weight:bold;">
+                    <img src="${imgSrc}" class="opt-img" style="width:24px; height:24px; background:transparent; padding:0;"> 
+                    ${name}
+                </div>
+                <span style="font-size:12px; color:#555;">▼</span>
+            `;
+            toggleDropdown();
+        }
+
+        document.addEventListener("click", function(e) {
+            const selectContainer = document.querySelector(".custom-select");
+            if (!selectContainer.contains(e.target)) {
+                document.getElementById("custom-dropdown-list").classList.add("select-hide");
+            }
+        });
+        /* ----------------------------- */
+
         document.getElementById('pin-input').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') authenticate();
         });
 
-        // Helper to fetch CSV Data
         async function fetchCSV(url) {
             const cacheBusterUrl = url + (url.includes('?') ? '&' : '?') + "nocache=" + new Date().getTime();
             const response = await fetch(cacheBusterUrl, { cache: "no-store" });
@@ -166,25 +244,28 @@
         }
 
         async function authenticate() {
-            const user = document.getElementById('driver-select').value;
+            // Retrieve value from the hidden input instead of standard select
+            const user = document.getElementById('selected-user-val').value;
             const pass = document.getElementById('pin-input').value;
             const btn = document.getElementById('login-btn');
             const errorMsg = document.getElementById('error-msg');
             
-            if(!user || !pass) return;
+            if(!user) {
+                errorMsg.innerText = "PLEASE SELECT A USER";
+                return;
+            }
+            if(!pass) return;
             
             btn.innerText = "VERIFYING...";
             btn.disabled = true;
             errorMsg.innerText = "";
 
-            // Check if selected user is a constructor
             const constructors = ["Ferrari", "Aston Martin", "McLaren", "Mercedes", "Red Bull"];
             if (constructors.includes(user)) {
                 await authenticateConstructor(user, pass, btn, errorMsg);
                 return;
             }
 
-            // Existing Driver Logic
             try {
                 const response = await fetch(`${API_URL}?driver=${encodeURIComponent(user)}&pin=${encodeURIComponent(pass)}`);
                 const data = await response.json();
@@ -365,6 +446,8 @@
             document.getElementById('portal-section').style.display = 'none';
             document.getElementById('auth-section').style.display = 'flex';
             document.getElementById('pin-input').value = "";
+            document.getElementById('selected-user-val').value = "";
+            document.getElementById('selected-user-display').innerHTML = '<span style="color: #888;">-- SELECT USER --</span><span style="font-size:12px; color:#555;">▼</span>';
             timers.forEach(t => clearInterval(t)); 
         }
     </script>
