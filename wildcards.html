@@ -37,7 +37,7 @@
         /* Alignment Fixes */
         .track-row { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px dashed #222; padding: 15px 0; gap: 15px; }
         .track-row:last-child { border-bottom: none; }
-        .track-label { color: #888; font-size: 12px; letter-spacing: 1px; flex-shrink: 0; padding-top: 6px; } /* Pushed slightly down to perfectly align with text line */
+        .track-label { color: #888; font-size: 12px; letter-spacing: 1px; flex-shrink: 0; padding-top: 6px; } 
         
         .track-details { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; text-align: right; width: 100%; }
         .track-name-wrap { display: flex; align-items: center; gap: 10px; justify-content: flex-end; }
@@ -72,19 +72,28 @@
         
         <div id="auth-section">
             <select id="driver-select">
-                <option value="">-- SELECT DRIVER ID --</option>
-                <option value="Sameera">Sameera</option>
-                <option value="Mapa">Mapa</option>
-                <option value="Shahan">Shahan</option>
-                <option value="Nuwie G">Nuwie G</option>
-                <option value="Kalpa">Kalpa</option>
-                <option value="Shiyan">Shiyan</option>
-                <option value="Sahan">Sahan</option>
-                <option value="Rodda">Rodda</option>
-                <option value="Eranga">Eranga</option>
-                <option value="Nippa E">Nippa E</option>
+                <option value="">-- SELECT USER --</option>
+                <optgroup label="Constructors">
+                    <option value="Ferrari">Ferrari</option>
+                    <option value="Aston Martin">Aston Martin</option>
+                    <option value="McLaren">McLaren</option>
+                    <option value="Mercedes">Mercedes</option>
+                    <option value="Red Bull">Red Bull</option>
+                </optgroup>
+                <optgroup label="Drivers">
+                    <option value="Sameera">Sameera</option>
+                    <option value="Mapa">Mapa</option>
+                    <option value="Shahan">Shahan</option>
+                    <option value="Nuwie G">Nuwie G</option>
+                    <option value="Kalpa">Kalpa</option>
+                    <option value="Shiyan">Shiyan</option>
+                    <option value="Sahan">Sahan</option>
+                    <option value="Rodda">Rodda</option>
+                    <option value="Eranga">Eranga</option>
+                    <option value="Nippa E">Nippa E</option>
+                </optgroup>
             </select>
-            <input type="password" id="pin-input" placeholder="4-DIGIT PIN" maxlength="4">
+            <input type="password" id="pin-input" placeholder="PIN / PASSWORD">
             <button onclick="authenticate()" id="login-btn">Authenticate</button>
             <div id="error-msg" style="color: #ff4444; text-align: center; font-family: monospace; margin-top: 10px;"></div>
         </div>
@@ -99,15 +108,26 @@
     </div>
 
     <script>
-        // --- PASTE YOUR GOOGLE APP URL HERE ---
         const API_URL = "https://script.google.com/macros/s/AKfycbzaLPfFPFVFATznJh5LJ2mhfhMOYtb0zxL-2JvjRDjjEKCXKFXoPwusGLKzo1sVbH8_/exec"; 
         const PHOTO_BASE = "https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/";
+        
+        // CSV CONSTANTS FOR CONSTRUCTORS
+        const SETTINGS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZKLukYpw5VzMfRbfXh80lj1B0gbUiVx_CoinOMVb-b2iFEMiWg_nW3KcMp88qKL3UfctvzYgEN_Lg/pub?gid=2057582908&single=true&output=csv";
+        const CONSTRUCTORS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZKLukYpw5VzMfRbfXh80lj1B0gbUiVx_CoinOMVb-b2iFEMiWg_nW3KcMp88qKL3UfctvzYgEN_Lg/pub?gid=1589744882&single=true&output=csv";
         
         let timers = [];
 
         document.getElementById('pin-input').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') authenticate();
         });
+
+        // Helper to fetch CSV Data
+        async function fetchCSV(url) {
+            const cacheBusterUrl = url + (url.includes('?') ? '&' : '?') + "nocache=" + new Date().getTime();
+            const response = await fetch(cacheBusterUrl, { cache: "no-store" });
+            const text = await response.text();
+            return text.replace(/\r/g, '').split('\n').map(row => row.split(',').map(item => item.trim())).slice(1);
+        }
 
         function getTrackMedia(trackStr) {
             let flag = "", layout = "";
@@ -146,19 +166,27 @@
         }
 
         async function authenticate() {
-            const driver = document.getElementById('driver-select').value;
-            const pin = document.getElementById('pin-input').value;
+            const user = document.getElementById('driver-select').value;
+            const pass = document.getElementById('pin-input').value;
             const btn = document.getElementById('login-btn');
             const errorMsg = document.getElementById('error-msg');
             
-            if(!driver || !pin) return;
+            if(!user || !pass) return;
             
             btn.innerText = "VERIFYING...";
             btn.disabled = true;
             errorMsg.innerText = "";
 
+            // Check if selected user is a constructor
+            const constructors = ["Ferrari", "Aston Martin", "McLaren", "Mercedes", "Red Bull"];
+            if (constructors.includes(user)) {
+                await authenticateConstructor(user, pass, btn, errorMsg);
+                return;
+            }
+
+            // Existing Driver Logic
             try {
-                const response = await fetch(`${API_URL}?driver=${encodeURIComponent(driver)}&pin=${encodeURIComponent(pin)}`);
+                const response = await fetch(`${API_URL}?driver=${encodeURIComponent(user)}&pin=${encodeURIComponent(pass)}`);
                 const data = await response.json();
                 
                 if (data.error) {
@@ -166,13 +194,64 @@
                     btn.disabled = false;
                     errorMsg.innerText = data.error;
                 } else {
-                    renderDashboard(data, driver);
+                    renderDashboard(data, user);
                 }
             } catch (err) {
                 btn.innerText = "AUTHENTICATE";
                 btn.disabled = false;
                 errorMsg.innerText = "NETWORK ERROR: Could not connect to FIA database.";
             }
+        }
+
+        async function authenticateConstructor(team, pass, btn, errorMsg) {
+            try {
+                const constructorsData = await fetchCSV(CONSTRUCTORS_CSV_URL);
+                const teamRow = constructorsData.find(c => String(c[0]).trim() === team);
+                
+                if (teamRow && String(teamRow[1]).trim() === pass) {
+                    const settingsData = await fetchCSV(SETTINGS_CSV_URL);
+                    const currentRoundNum = parseInt(String(settingsData[0][0]).trim(), 10);
+                    
+                    let trackDocUrl = "";
+                    if (!isNaN(currentRoundNum)) {
+                        trackDocUrl = (currentRoundNum % 2 !== 0) 
+                            ? "https://docs.google.com/document/d/12Bj7ceGn1uj3XQit8vOUUdDp23J2zmeULKpa-4EGkI0/edit?usp=sharing" 
+                            : "https://docs.google.com/document/d/1W9aMxoiOvGMOXHmDKnWMpE9Kh7fKKpuV8-HWw61111o/edit?usp=drive_link";
+                    }
+
+                    renderConstructorDashboard(team, currentRoundNum, trackDocUrl);
+                } else {
+                    btn.innerText = "AUTHENTICATE";
+                    btn.disabled = false;
+                    errorMsg.innerText = "INCORRECT CONSTRUCTOR PASSWORD";
+                }
+            } catch (err) {
+                btn.innerText = "AUTHENTICATE";
+                btn.disabled = false;
+                errorMsg.innerText = "NETWORK ERROR: Could not fetch constructor data.";
+            }
+        }
+
+        function renderConstructorDashboard(team, round, url) {
+            document.getElementById('auth-section').style.display = 'none';
+            document.getElementById('portal-section').style.display = 'block';
+            document.getElementById('user-display').innerText = team.toUpperCase() + ` DASHBOARD`;
+
+            const container = document.getElementById('races-container');
+            timers.forEach(t => clearInterval(t)); 
+
+            container.innerHTML = `
+                <div class="race-card color-theme-0">
+                    <h3 class="round-title title-theme-0">ROUND ${round} WILDCARD</h3>
+                    <div style="text-align: center; margin-top: 15px; background: #050508; border: 1px solid #222; padding: 25px; border-radius: 4px;">
+                        <div style="color: #ff4444; font-size: 14px; font-weight: bold; margin-bottom: 20px; font-family: 'Share Tech Mono', monospace;">⚠️ STRICTLY CONFIDENTIAL ⚠️</div>
+                        <a href="${url}" target="_blank" style="display: inline-block; background: #fff; color: #000; text-decoration: none; padding: 15px 25px; border-radius: 4px; font-weight: 900; font-size: 16px;">VIEW TRACK DOCUMENT</a>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('login-btn').innerText = "AUTHENTICATE";
+            document.getElementById('login-btn').disabled = false;
         }
 
         function renderDashboard(data, driverName) {
@@ -188,7 +267,6 @@
                 const dateStr = new Date(race.raceDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
                 const themeIdx = index % 2; 
                 
-                // Event name only, Round prefix removed
                 let html = `<div class="race-card color-theme-${themeIdx}">
                                 <h3 class="round-title title-theme-${themeIdx}">${race.eventName}</h3>
                                 <div class="date-sub">RACE DATE: ${dateStr}</div>`;
