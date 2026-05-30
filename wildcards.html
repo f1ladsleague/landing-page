@@ -390,7 +390,7 @@
             timers.forEach(t => clearInterval(t)); 
 
             data.races.forEach((race, index) => {
-                const dateStr = new Date(race.raceDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+                const dateStr = new Date(race.raceDate).toLocaleDateString('en-GB', { timeZone: 'Australia/Melbourne', day: 'numeric', month: 'long', year: 'numeric' });
                 const themeIdx = index % 2; 
                 
                 let html = `<div class="race-card color-theme-${themeIdx}">
