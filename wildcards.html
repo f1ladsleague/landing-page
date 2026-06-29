@@ -1,341 +1,444 @@
-function onOpen() {
-  var ui = SpreadsheetApp.getUi();
-  ui.createMenu('🏁 F1 Lads Wildcards')
-      .addItem('🔄 Sync Leaderboard from GitHub', 'menuSyncLeaderboard')
-      .addItem('🎲 Generate Missing Rounds', 'generateSeason')
-      .addItem('✉️ Send Daily Emails (Manual Trigger)', 'checkAndSendDailyEmails')
-      .addToUi();
-}
-
-// ==========================================
-// BULLETPROOF API ENDPOINT
-// ==========================================
-function doGet(e) {
-  if (e && e.parameter && e.parameter.action === "sync") {
-    var syncResult = executeLeaderboardSync();
-    return ContentService.createTextOutput(JSON.stringify(syncResult)).setMimeType(ContentService.MimeType.JSON);
-  }
-
-  if (!e || !e.parameter || !e.parameter.driver) {
-    return ContentService.createTextOutput("F1 Lads API is active.").setMimeType(ContentService.MimeType.TEXT);
-  }
-  var result = getWildcardData(e.parameter.driver, e.parameter.pin);
-  return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
-}
-
-// ==========================================
-// SECURE DATA FETCH LOGIC (STAGGERED CURVE)
-// ==========================================
-function getWildcardData(driverName, pin) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var lbData = ss.getSheetByName("Leaderboard").getDataRange().getValues();
-    var scheduleData = ss.getSheetByName("Race Schedule").getDataRange().getValues();
-    var generatedData = ss.getSheetByName("Generated Tracks").getDataRange().getValues();
-    
-    var rank = null;
-    var isConstructor = false;
-    var inputDriver = String(driverName || "").trim().toLowerCase();
-    var inputPin = String(pin || "").trim();
-    
-    // 1. Check if the login belongs to a Driver (Local Sheet)
-    for (var i = 1; i < lbData.length; i++) {
-      var sheetDriver = String(lbData[i][1] || "").trim().toLowerCase();
-      var sheetPin = String(lbData[i][4] || "").trim();
-      
-      if (sheetDriver === inputDriver && sheetPin === inputPin) {
-        rank = parseInt(lbData[i][0]);
-        break;
-      }
-    }
-    
-    // 2. If not a driver, check if the login belongs to a Constructor (Master Spreadsheet)
-    if (!rank) {
-      try {
-        var CONSTRUCTORS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZKLukYpw5VzMfRbfXh80lj1B0gbUiVx_CoinOMVb-b2iFEMiWg_nW3KcMp88qKL3UfctvzYgEN_Lg/pub?gid=1589744882&single=true&output=csv";
-        var res = UrlFetchApp.fetch(CONSTRUCTORS_CSV_URL + "&nocache=" + new Date().getTime());
-        var constrData = Utilities.parseCsv(res.getContentText());
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Lads | Wildcard Tracks</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Share+Tech+Mono&family=Titillium+Web:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --f1-dark: #09090c; --f1-card: #111118; --f1-border: #22222d; --theme-red: #e10600; }
+        body { font-family: 'Titillium Web', sans-serif; background: var(--f1-dark); color: white; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .dashboard { width: 100%; max-width: 600px; background: var(--f1-card); padding: 30px; border-radius: 8px; border: 1px solid var(--f1-border); border-top: 4px solid var(--theme-red); box-shadow: 0 10px 40px rgba(0,0,0,0.9); }
+        .logo { max-width: 150px; margin-bottom: 20px; display: block; margin-left: auto; margin-right: auto; cursor: pointer; transition: 0.2s; }
+        .logo:hover { transform: scale(1.05); }
         
-        for (var c = 1; c < constrData.length; c++) {
-          var cName = String(constrData[c][0] || "").trim().toLowerCase();
-          var cPin = String(constrData[c][1] || "").trim();
-          if (cName === inputDriver && cPin === inputPin) {
-            isConstructor = true;
-            rank = 10; // Constructors inherit the Rank 10 unlock calculation
-            break;
-          }
-        }
-      } catch (fetchErr) {
-        // Silently pass to returning invalid user if the CSV fetch fails
-      }
-    }
-    
-    if (!rank && !isConstructor) return { error: "ACCESS DENIED: Invalid User/PIN combination." };
-    
-    var today = new Date();
-    today.setHours(0,0,0,0);
-    
-    var upcomingRaces = [];
-    for (var r = 1; r < scheduleData.length; r++) {
-      var rDate = new Date(scheduleData[r][2]);
-      rDate.setHours(0,0,0,0);
-      
-      // If the race date is today or in the future, it's upcoming
-      if (rDate >= today) {
-        upcomingRaces.push({ round: scheduleData[r][0], name: scheduleData[r][1], date: rDate });
+        .sys-header { font-family: 'Share Tech Mono', monospace; color: #888; text-align: center; margin-bottom: 30px; letter-spacing: 2px; }
         
-        // CONSTRUCTOR LOGIC: Only show 1 immediate race. DRIVER: Show 2.
-        if (isConstructor) {
-          break; 
-        } else if (upcomingRaces.length === 2) {
-          break;
+        /* Auth Section */
+        #auth-section { display: flex; flex-direction: column; gap: 15px; }
+        input[type="password"] { padding: 15px; font-family: 'Share Tech Mono', monospace; background: #000; color: white; border: 1px solid #444; border-radius: 4px; font-size: 16px; text-align: center; }
+        button { padding: 15px; background: var(--theme-red); color: white; font-weight: 900; text-transform: uppercase; border: none; border-radius: 4px; cursor: pointer; transition: 0.2s; font-size: 18px; }
+        button:hover:not(:disabled) { background: #ff1a1a; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* --- CUSTOM DROPDOWN UI --- */
+        .custom-select { position: relative; width: 100%; font-family: 'Share Tech Mono', monospace; text-align: left; user-select: none; }
+        .select-selected { background: #000; color: white; padding: 15px; border: 1px solid #444; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; font-size: 16px; transition: border-color 0.2s; }
+        .select-selected:hover { border-color: #888; }
+        .select-items { position: absolute; background: #0a0a0f; top: 100%; left: 0; right: 0; z-index: 99; border: 1px solid #444; border-radius: 4px; margin-top: 5px; max-height: 350px; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.9); }
+        .select-hide { display: none; }
+        .custom-option { padding: 10px 15px; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #ccc; transition: all 0.2s; border-bottom: 1px solid #1a1a24; border-left: 4px solid transparent; }
+        .custom-option:last-child { border-bottom: none; }
+        .custom-option:hover { background: #1a1a24; color: #fff; }
+        .optgroup-label { padding: 12px 15px; font-size: 12px; color: #555; background: #050508; font-weight: bold; letter-spacing: 2px; position: sticky; top: 0; z-index: 2; border-bottom: 1px solid #222; border-top: 1px solid #222; }
+        .optgroup-label:first-child { border-top: none; }
+        
+        /* IMAGE STYLING: Transparent backgrounds, precise bounding boxes, and Face Zooming */
+        .img-wrap {
+            width: 44px;
+            height: 44px;
+            border-radius: 6px;
+            overflow: hidden;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
         }
-      }
-    }
+        
+        .opt-img { 
+            width: 100%; 
+            height: 100%; 
+            background: transparent; 
+            object-fit: contain; 
+        }
+        
+        /* Specific zoom logic only for Driver Headshots */
+        .opt-driver .opt-img {
+            object-fit: cover; 
+            transform-origin: center 15%; /* Anchor zoom to the top of the photo/face */
+            transform: scale(2.5); /* Increase scale to 2.5 */
+        }
+
+        /* Styling for the actively selected item */
+        .selected-img-wrap {
+            width: 34px; 
+            height: 34px; 
+            border-radius: 4px; 
+            overflow: hidden;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        /* Constructor Theme Accents */
+        .opt-ferrari:hover { background: rgba(237, 17, 49, 0.15); border-left: 4px solid #ED1131; }
+        .opt-aston:hover { background: rgba(34, 153, 113, 0.15); border-left: 4px solid #229971; }
+        .opt-mclaren:hover { background: rgba(244, 118, 0, 0.15); border-left: 4px solid #F47600; }
+        .opt-mercedes:hover { background: rgba(0, 215, 182, 0.15); border-left: 4px solid #00D7B6; }
+        .opt-redbull:hover { background: rgba(71, 129, 215, 0.15); border-left: 4px solid #4781D7; }
+        .opt-driver:hover { background: rgba(225, 6, 0, 0.15); border-left: 4px solid var(--theme-red); }
+        
+        /* Race Cards */
+        #portal-section { display: none; }
+        .race-card { background: #050508; border: 1px solid #333; margin-bottom: 20px; padding: 20px; border-radius: 6px; }
+        .color-theme-0 { border-top: 4px solid #00D7B6; } 
+        .color-theme-1 { border-top: 4px solid #ae37de; } 
+        .title-theme-0 { color: #00D7B6; }
+        .title-theme-1 { color: #ae37de; }
+        
+        .round-title { font-size: 22px; font-weight: 900; margin: 0 0 5px 0; text-transform: uppercase; }
+        .date-sub { font-family: 'Share Tech Mono', monospace; font-size: 16px; font-weight: bold; color: #ffcc00; margin-bottom: 15px; letter-spacing: 1px; }
+        
+        .track-row { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px dashed #222; padding: 15px 0; gap: 15px; }
+        .track-row:last-child { border-bottom: none; }
+        .track-label { color: #888; font-size: 12px; letter-spacing: 1px; flex-shrink: 0; padding-top: 6px; } 
+        .track-details { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; text-align: right; width: 100%; }
+        .track-name-wrap { display: flex; align-items: center; gap: 10px; justify-content: flex-end; }
+        .track-value { font-family: 'Chakra Petch', sans-serif; font-weight: 700; color: #fff; text-align: right; }
+        .inline-flag { width: 24px; border-radius: 3px; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .inline-layout { max-height: 55px; max-width: 150px; opacity: 0.85; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5)); object-fit: contain; }
+        
+        .text-red { color: var(--theme-red); }
+        .text-green { color: #fff; text-shadow: 0 0 8px rgba(255,255,255,0.4); }
+        .countdown { font-family: 'Share Tech Mono', monospace; font-size: 24px; color: #F47600; margin-top: 5px; }
+
+        .back-btn { background: #333; color: #fff; width: 100%; margin-top: 10px; font-size: 14px; }
+        .back-btn:hover { background: #555; }
+
+        @media (max-width: 500px) {
+            .track-row { flex-direction: column; align-items: center; text-align: center; }
+            .track-label { padding-top: 0; margin-bottom: 5px; }
+            .track-details { align-items: center; text-align: center; }
+            .track-name-wrap { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="https://f1lads.com">
+        <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Logo.png" class="logo" alt="Home">
+    </a>
     
-    var curve = [0, 0.15, 0.30, 0.45, 0.60, 0.75, 0.85, 0.93, 1.0];
-    var payload = [];
-    
-    upcomingRaces.forEach(function(race) {
-      var unlockDate = new Date(race.date);
-      
-      if (rank === 1 && !isConstructor) {
-        unlockDate.setDate(unlockDate.getDate() + 999); 
-      } else {
-        var gapDays = 7; 
-        for (var s = 1; s < scheduleData.length; s++) {
-          if (scheduleData[s][0] == race.round) {
-            if (s > 1) {
-              var prevDate = new Date(scheduleData[s - 1][2]);
-              prevDate.setHours(0,0,0,0);
-              gapDays = Math.round((race.date - prevDate) / (1000 * 60 * 60 * 24));
-            } else { gapDays = 14; }
-            break;
-          }
+    <div class="dashboard">
+        <div class="sys-header">/// WILDCARD TRACKS ///</div>
+        
+        <div id="auth-section">
+            
+            <div class="custom-select">
+                <div class="select-selected" id="selected-user-display" onclick="toggleDropdown()">
+                    <span style="color: #888;">-- SELECT USER --</span>
+                    <span style="font-size:12px; color:#555;">▼</span>
+                </div>
+                
+                <div class="select-items select-hide" id="custom-dropdown-list">
+                    <div class="optgroup-label">/// DRIVERS</div>
+                    <div class="custom-option opt-driver" onclick="selectUser('Sameera', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Sameera.png')">
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Sameera.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"></div> Sameera
+                    </div>
+                    <div class="custom-option opt-driver" onclick="selectUser('Mapa', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Mapa.png')">
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Mapa.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"></div> Mapa
+                    </div>
+                    <div class="custom-option opt-driver" onclick="selectUser('Shahan', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Shahan.png')">
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Shahan.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"></div> Shahan
+                    </div>
+                    <div class="custom-option opt-driver" onclick="selectUser('Nuwie G', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Nuwie%20G.png')">
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/NuwieG.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"></div> Nuwie G
+                    </div>
+                    <div class="custom-option opt-driver" onclick="selectUser('Kalpa', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Kalpa.png')">
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Kalpa.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"></div> Kalpa
+                    </div>
+                    <div class="custom-option opt-driver" onclick="selectUser('Shiyan', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Shiyan.png')">
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Shiyan.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"></div> Shiyan
+                    </div>
+                    <div class="custom-option opt-driver" onclick="selectUser('Sahan', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Sahan.png')">
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Sahan.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"></div> Sahan
+                    </div>
+                    <div class="custom-option opt-driver" onclick="selectUser('Rodda', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Rodda.png')">
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Rodda.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"></div> Rodda
+                    </div>
+                    <div class="custom-option opt-driver" onclick="selectUser('Eranga', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Eranga.png')">
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Eranga.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"></div> Eranga
+                    </div>
+                    <div class="custom-option opt-driver" onclick="selectUser('Nippa E', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Nippa%20E.png')">
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/NippaE.png" class="opt-img" onerror="this.src='https://raw.githubusercontent.com/f1ladsleague/sidebetting/9e649c454badbe13d3d17c100f0f535a7555a058/favicon.png'"></div> Nippa E
+                    </div>
+
+                    <div class="optgroup-label">/// CONSTRUCTORS</div>
+                    <div class="custom-option opt-ferrari" onclick="selectUser('Ferrari', 'https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/FER.png')">
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/FER.png" class="opt-img"></div> Ferrari
+                    </div>
+                    <div class="custom-option opt-aston" onclick="selectUser('Aston Martin', 'https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/AM.png')">
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/AM.png" class="opt-img"></div> Aston Martin
+                    </div>
+                    <div class="custom-option opt-mclaren" onclick="selectUser('McLaren', 'https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/MCL.png')">
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/MCL.png" class="opt-img"></div> McLaren
+                    </div>
+                    <div class="custom-option opt-mercedes" onclick="selectUser('Mercedes', 'https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/MER.png')">
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/MER.png" class="opt-img"></div> Mercedes
+                    </div>
+                    <div class="custom-option opt-redbull" onclick="selectUser('Red Bull', 'https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/RB.png')">
+                        <div class="img-wrap"><img src="https://raw.githubusercontent.com/f1ladsleague/sidebetting/3bea2638655c2cd16aaf69b2541dd0f535f80c7f/Team_Logos/RB.png" class="opt-img"></div> Red Bull
+                    </div>
+                </div>
+            </div>
+            
+            <input type="hidden" id="selected-user-val" value="">
+            <input type="password" id="pin-input" placeholder="PIN / PASSWORD">
+            <button onclick="authenticate()" id="login-btn">Authenticate</button>
+            <div id="error-msg" style="color: #ff4444; text-align: center; font-family: monospace; margin-top: 10px;"></div>
+        </div>
+
+        <div id="portal-section">
+            <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px;">
+                <div style="font-weight: 900; font-size: 18px;" id="user-display"></div>
+            </div>
+            <div id="races-container"></div>
+            <button class="back-btn" onclick="logout()">LOGOUT / RETURN</button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbzaLPfFPFVFATznJh5LJ2mhfhMOYtb0zxL-2JvjRDjjEKCXKFXoPwusGLKzo1sVbH8_/exec"; 
+        const PHOTO_BASE = "https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/";
+        
+        let timers = [];
+
+        /* --- CUSTOM DROPDOWN LOGIC --- */
+        function toggleDropdown() {
+            document.getElementById("custom-dropdown-list").classList.toggle("select-hide");
         }
-        var curveIndex = Math.max(0, Math.min(8, rank - 2));
-        var maxDaysPrior = Math.max(0, gapDays - 1);
-        var daysPrior = Math.round(curve[curveIndex] * maxDaysPrior);
-        unlockDate.setDate(unlockDate.getDate() - daysPrior);
-      }
-      
-      var isUnlocked = today >= unlockDate;
-      var sprint = "CLASSIFIED";
-      var feature = "CLASSIFIED";
-      
-      if (isUnlocked && (isConstructor || rank !== 1)) {
-        for (var g = 1; g < generatedData.length; g++) {
-          if (generatedData[g][0] == race.round) {
-            sprint = generatedData[g][1];
-            feature = generatedData[g][2];
-            break;
-          }
+
+        function selectUser(name, imgSrc) {
+            document.getElementById("selected-user-val").value = name;
+            
+            // Check if it's a driver or constructor to apply the correct zoom styling
+            const isDriver = !imgSrc.includes('Team_Logos');
+            const imgStyle = isDriver ? 'object-fit:cover; transform-origin:center 15%; transform:scale(2.5);' : 'object-fit:contain;';
+
+            document.getElementById("selected-user-display").innerHTML = `
+                <div style="display:flex; align-items:center; gap:12px; color:#fff; font-weight:bold;">
+                    <div class="selected-img-wrap">
+                        <img src="${imgSrc}" style="width:100%; height:100%; background:transparent; ${imgStyle}"> 
+                    </div>
+                    <span style="display:flex; align-items:center; height:100%;">${name}</span>
+                </div>
+                <span style="font-size:12px; color:#555;">▼</span>
+            `;
+            toggleDropdown();
         }
-      }
-      
-      payload.push({
-        round: race.round,
-        eventName: race.name,
-        raceDate: race.date.getTime(),
-        unlockDate: unlockDate.getTime(),
-        isUnlocked: isUnlocked,
-        sprint: sprint,
-        feature: feature
-      });
-    });
-    
-    return { success: true, rank: rank, isConstructor: isConstructor, races: payload };
-  } catch (e) { return { error: "SYSTEM ERROR: " + e.message }; }
-}
 
-// ==========================================
-// DAILY EMAILS
-// ==========================================
-function checkAndSendDailyEmails() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var lbData = ss.getSheetByName("Leaderboard").getDataRange().getValues();
-  var scheduleData = ss.getSheetByName("Race Schedule").getDataRange().getValues();
-  
-  var today = new Date();
-  today.setHours(0,0,0,0);
-  
-  var upcomingRaces = [];
-  for (var i = 1; i < scheduleData.length; i++) {
-    var rDate = new Date(scheduleData[i][2]);
-    rDate.setHours(0,0,0,0);
-    if (rDate >= today) {
-      upcomingRaces.push({ round: scheduleData[i][0], name: scheduleData[i][1], date: rDate });
-      if (upcomingRaces.length === 2) break; 
-    }
-  }
+        document.addEventListener("click", function(e) {
+            const selectContainer = document.querySelector(".custom-select");
+            if (!selectContainer.contains(e.target)) {
+                document.getElementById("custom-dropdown-list").classList.add("select-hide");
+            }
+        });
+        /* ----------------------------- */
 
-  var curve = [0, 0.15, 0.30, 0.45, 0.60, 0.75, 0.85, 0.93, 1.0];
+        document.getElementById('pin-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') authenticate();
+        });
 
-  for (var d = 1; d < lbData.length; d++) {
-    var rank = parseInt(lbData[d][0]);
-    var driver = lbData[d][1];
-    var email = lbData[d][3];
-    
-    if (!email || !rank || rank === 1) continue;
+        function getTrackMedia(trackStr) {
+            let flag = "", layout = "";
+            const t = trackStr.toLowerCase();
+            
+            if(t.includes("bahrain")) { flag = "bahrain"; layout = "bahrain"; }
+            else if(t.includes("jeddah") || t.includes("saudi")) { flag = "saudi_arabia"; layout = "jeddah"; }
+            else if(t.includes("melbourne") || t.includes("australia")) { flag = "australia"; layout = "melbourne"; }
+            else if(t.includes("baku") || t.includes("azerbaijan")) { flag = "azerbaijan"; layout = "baku"; }
+            else if(t.includes("miami")) { flag = "united_states_of_america"; layout = "miami"; }
+            else if(t.includes("imola") || t.includes("emilia")) { flag = "italy"; layout = "imola"; }
+            else if(t.includes("monaco")) { flag = "monaco"; layout = "monaco"; }
+            else if(t.includes("barcelona") || t.includes("spain")) { flag = "spain"; layout = "barcelona"; }
+            else if(t.includes("spielberg") || t.includes("austria")) { flag = "austria"; layout = "austria"; }
+            else if(t.includes("silverstone") || t.includes("britain")) { flag = "great_britain"; layout = "silverstone"; }
+            else if(t.includes("hungaroring") || t.includes("hungary")) { flag = "hungary"; layout = "hungaroring"; }
+            else if(t.includes("spa") || t.includes("belgium")) { flag = "belgium"; layout = "spa"; }
+            else if(t.includes("zandvoort") || t.includes("netherlands")) { flag = "netherlands"; layout = "zandvoort"; }
+            else if(t.includes("monza") || t.includes("italy")) { flag = "italy"; layout = "monza"; }
+            else if(t.includes("singapore")) { flag = "singapore"; layout = "singapore"; }
+            else if(t.includes("suzuka") || t.includes("japan")) { flag = "japan"; layout = "japan"; }
+            else if(t.includes("losail") || t.includes("qatar")) { flag = "qatar"; layout = "losail"; }
+            else if(t.includes("austin") || t.includes("usa") || t.includes("united states")) { flag = "united_states_of_america"; layout = "austin"; }
+            else if(t.includes("mexico")) { flag = "mexico"; layout = "mexico"; }
+            else if(t.includes("interlagos") || t.includes("brazil")) { flag = "brazil"; layout = "brazil"; }
+            else if(t.includes("las vegas")) { flag = "united_states_of_america"; layout = "lasvegas"; }
+            else if(t.includes("yas marina") || t.includes("abu dhabi")) { flag = "united_arab_emirates"; layout = "abudhabi"; }
+            else if(t.includes("shanghai") || t.includes("china")) { flag = "china"; layout = "china"; }
+            else if(t.includes("montreal") || t.includes("canada")) { flag = "canada"; layout = "canada"; }
+            else if(t.includes("portimão") || t.includes("portugal")) { flag = "portugal"; layout = "portugal"; }
+            else if(t.includes("paul ricard") || t.includes("france")) { flag = "france"; layout = "france"; }
 
-    upcomingRaces.forEach(function(race) {
-      var unlockDate = new Date(race.date);
-      var gapDays = 7; 
-      
-      for (var s = 1; s < scheduleData.length; s++) {
-        if (scheduleData[s][0] == race.round) {
-          if (s > 1) {
-            var prevDate = new Date(scheduleData[s - 1][2]);
-            prevDate.setHours(0,0,0,0);
-            gapDays = Math.round((race.date - prevDate) / (1000 * 60 * 60 * 24));
-          } else { gapDays = 14; }
-          break;
+            let flagHtml = flag ? `<img src="${PHOTO_BASE}${flag}.png" class="inline-flag" alt="Flag">` : '';
+            let layoutHtml = layout ? `<img src="${PHOTO_BASE}Track%20Layouts/${layout}-track-layout.png" class="inline-layout" alt="Layout">` : '';
+            return { flagHtml, layoutHtml };
         }
-      }
-      
-      var curveIndex = Math.max(0, Math.min(8, rank - 2));
-      var maxDaysPrior = Math.max(0, gapDays - 1);
-      var daysPrior = Math.round(curve[curveIndex] * maxDaysPrior);
-      unlockDate.setDate(unlockDate.getDate() - daysPrior);
-      
-      if (unlockDate.getTime() === today.getTime()) {
-        var subject = `Wildcard Tracks (${race.name})`;
-        var body = `Hi ${driver},\n\n` +
-                   `You are entitled to view the upcoming Wildcard Tracks. Please note, sharing this information with anyone, including your team members, is strictly forbidden. Violations will result in severe penalties (including DSQ).\n\n` +
-                   `https://f1lads.com/wildcards\n\n` + 
-                   `F1 Lads League`;
-        MailApp.sendEmail(email, subject, body);
-      }
-    });
-  }
-}
 
-// ==========================================
-// SEASON GENERATOR
-// ==========================================
-function generateSeason() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var trackVotes = ss.getSheetByName("Track Votes").getDataRange().getValues();
-  var schedule = ss.getSheetByName("Race Schedule").getDataRange().getValues();
-  var genSheet = ss.getSheetByName("Generated Tracks");
-  
-  var pastRounds = [
-    [1, "Suzuka (Japan)", "Circuit de Spa-Francorchamps (Belgium)"],
-    [2, "Monte Carlo Grand Prix Circuit (Monaco)", "Bahrain International Circuit (Bahrain)"],
-    [3, "Red Bull Ring (Austria)", "Las Vegas Strip Street Circuit (USA)"],
-    [4, "Autódromo José Carlos Pace Interlagos (Brazil)", "Hungaroring (Hungary)"],
-    [5, "Lusail International Circuit (Qatar)", "Jeddah Corniche Circuit (Saudi Arabia)"]
-  ];
-  
-  if (genSheet.getLastRow() <= 1) genSheet.getRange(2, 1, pastRounds.length, 3).setValues(pastRounds);
-  
-  var existingGen = genSheet.getDataRange().getValues();
-  var pool = [];
-  var usedSprint = [];
-  var usedFeature = [];
-  
-  for (var i = 1; i < trackVotes.length; i++) {
-    var tName = trackVotes[i][0].toString().trim();
-    var votes = parseInt(trackVotes[i][1]) || 0;
-    if (tName === "" || tName.toLowerCase().indexOf("abu dhabi") !== -1) continue;
-    for (var t = 0; t < (votes + 1); t++) { pool.push(tName); }
-  }
-  
-  var sprintPool = pool.slice();
-  var featurePool = pool.slice();
+        async function authenticate() {
+            const user = document.getElementById('selected-user-val').value;
+            const pass = document.getElementById('pin-input').value;
+            const btn = document.getElementById('login-btn');
+            const errorMsg = document.getElementById('error-msg');
+            
+            if(!user) {
+                errorMsg.innerText = "PLEASE SELECT A USER";
+                return;
+            }
+            if(!pass) return;
+            
+            btn.innerText = "VERIFYING...";
+            btn.disabled = true;
+            errorMsg.innerText = "";
 
-  for (var j = 1; j < existingGen.length; j++) {
-    if (existingGen[j][1]) {
-      var sheetSprints = existingGen[j][1].toString().split("|");
-      sheetSprints.forEach(s => usedSprint.push(s.trim()));
-    }
-    if (existingGen[j][2]) usedFeature.push(existingGen[j][2].toString().trim());
-  }
-  
-  sprintPool = sprintPool.filter(t => usedSprint.indexOf(t) === -1);
-  featurePool = featurePool.filter(t => usedFeature.indexOf(t) === -1);
-  var newGenerations = [];
-  
-  for (var s = 1; s < schedule.length; s++) {
-    var roundNum = schedule[s][0];
-    var isAlreadyGenerated = existingGen.some(row => row[0] == roundNum);
-    
-    if (!isAlreadyGenerated && roundNum) {
-      var sprintChoice = "";
-      var featureChoice = "";
-      var tempFeaturePool = featurePool.slice(); 
-      
-      if (roundNum == 13) {
-        var r13Sprints = [];
-        for (var x = 0; x < 3; x++) {
-          if (sprintPool.length > 0) {
-            var pick = sprintPool[Math.floor(Math.random() * sprintPool.length)];
-            r13Sprints.push(pick);
-            sprintPool = sprintPool.filter(t => t !== pick); 
-          }
+            try {
+                // ALL users (Constructors and Drivers) route through the exact same secure FIA API fetch
+                const response = await fetch(`${API_URL}?driver=${encodeURIComponent(user)}&pin=${encodeURIComponent(pass)}`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    btn.innerText = "AUTHENTICATE";
+                    btn.disabled = false;
+                    errorMsg.innerText = data.error;
+                } else {
+                    renderDashboard(data, user);
+                }
+            } catch (err) {
+                btn.innerText = "AUTHENTICATE";
+                btn.disabled = false;
+                errorMsg.innerText = "NETWORK ERROR: Could not connect to FIA database.";
+            }
         }
-        sprintChoice = r13Sprints.join(" | ");
-        featureChoice = "Yas Marina Circuit (Abu Dhabi)";
-      } else {
-        if (sprintPool.length > 0) {
-          sprintChoice = sprintPool[Math.floor(Math.random() * sprintPool.length)];
-          sprintPool = sprintPool.filter(t => t !== sprintChoice); 
-        }
-        tempFeaturePool = featurePool.filter(t => t !== sprintChoice);
-        if (tempFeaturePool.length > 0) {
-          featureChoice = tempFeaturePool[Math.floor(Math.random() * tempFeaturePool.length)];
-          featurePool = featurePool.filter(t => t !== featureChoice);
-        }
-      }
-      genSheet.appendRow([roundNum, sprintChoice, featureChoice]);
-      newGenerations.push(roundNum);
-    }
-  }
-  if (newGenerations.length > 0) SpreadsheetApp.getUi().alert("✅ Tracks generated for Rounds: " + newGenerations.join(", "));
-}
 
-// ==========================================
-// GITHUB LEADERBOARD SYNC (API COMPATIBLE)
-// ==========================================
-function menuSyncLeaderboard() {
-  var result = executeLeaderboardSync();
-  SpreadsheetApp.getUi().alert(result.success ? "✅ " + result.message : "❌ " + result.message);
-}
+        function renderDashboard(data, driverName) {
+            document.getElementById('auth-section').style.display = 'none';
+            document.getElementById('portal-section').style.display = 'block';
+            
+            // Adjust title based on whether the logged-in user is a Constructor or a Driver
+            const title = data.isConstructor 
+                ? `${driverName.toUpperCase()} DASHBOARD` 
+                : `${driverName.toUpperCase()} (P${data.rank})`;
+            document.getElementById('user-display').innerText = title;
 
-function executeLeaderboardSync() {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Leaderboard");
-  try {
-    var listRes = UrlFetchApp.fetch("https://raw.githubusercontent.com/f1ladsleague/standings/main/race_list.txt?v=" + new Date().getTime());
-    var files = listRes.getContentText().split('\n').map(f => f.trim()).filter(f => f.endsWith('.json'));
-    var latestDate = 0, finalStandings = null;
-    
-    files.forEach(function(file) {
-      try {
-        var res = UrlFetchApp.fetch("https://raw.githubusercontent.com/f1ladsleague/standings/main/" + encodeURI(file) + "?v=" + new Date().getTime());
-        var data = JSON.parse(res.getContentText());
-        if (data.metadata && data.metadata.exportType === "SeasonStatistics") {
-           var exportedDate = new Date(data.metadata.exportedAt).getTime();
-           if (exportedDate > latestDate) { latestDate = exportedDate; finalStandings = data.seasonStatistics.driverStandings; }
+            const container = document.getElementById('races-container');
+            container.innerHTML = "";
+            timers.forEach(t => clearInterval(t)); 
+
+            data.races.forEach((race, index) => {
+                const dateStr = new Date(race.raceDate).toLocaleDateString('en-GB', { timeZone: 'Australia/Melbourne', day: 'numeric', month: 'long', year: 'numeric' });
+                const themeIdx = index % 2; 
+                
+                let html = `<div class="race-card color-theme-${themeIdx}">
+                                <h3 class="round-title title-theme-${themeIdx}">${race.eventName}</h3>
+                                <div class="date-sub">RACE DATE: ${dateStr}</div>`;
+                
+                if (race.isUnlocked) {
+                    if (race.sprint.includes('|')) {
+                        const sprints = race.sprint.split('|');
+                        sprints.forEach((sTrack, idx) => {
+                            const media = getTrackMedia(sTrack);
+                            html += `<div class="track-row">
+                                        <span class="track-label">SPRINT RACE 0${idx + 1}</span>
+                                        <div class="track-details">
+                                            <div class="track-name-wrap">${media.flagHtml} <span class="track-value text-green">${sTrack.trim()}</span></div>
+                                            ${media.layoutHtml}
+                                        </div>
+                                    </div>`;
+                        });
+                    } else {
+                        const sMedia = getTrackMedia(race.sprint);
+                        html += `<div class="track-row">
+                                    <span class="track-label">SPRINT RACE</span>
+                                    <div class="track-details">
+                                        <div class="track-name-wrap">${sMedia.flagHtml} <span class="track-value text-green">${race.sprint}</span></div>
+                                        ${sMedia.layoutHtml}
+                                    </div>
+                                </div>`;
+                    }
+                    
+                    const fMedia = getTrackMedia(race.feature);
+                    html += `   <div class="track-row">
+                                    <span class="track-label">FEATURE RACE</span>
+                                    <div class="track-details">
+                                        <div class="track-name-wrap">${fMedia.flagHtml} <span class="track-value text-green">${race.feature}</span></div>
+                                        ${fMedia.layoutHtml}
+                                    </div>
+                                </div>`;
+                } else {
+                    // Lockout screen handling
+                    if (data.rank === 1 && !data.isConstructor) {
+                        html += `   <div class="track-row" style="flex-direction: row; align-items: center;">
+                                        <span class="track-label" style="padding-top: 0;">STATUS</span>
+                                        <span class="track-value text-red">[ ACCESS DENIED ]</span>
+                                    </div>
+                                    <div style="color: #ff4444; text-align: center; margin-top: 15px; font-family: 'Share Tech Mono', monospace; font-size: 14px;">
+                                        YOU ARE NOT ELIGIBLE TO VIEW THE WILDCARD TRACKS AS YOU ARE P1
+                                    </div>`;
+                    } else {
+                        const unlockDateObj = new Date(race.unlockDate);
+                        const options = { timeZone: 'Australia/Melbourne', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: '2-digit' };
+                        const unlockDateString = new Intl.DateTimeFormat('en-AU', options).format(unlockDateObj).toUpperCase();
+                        
+                        html += `   <div class="track-row" style="flex-direction: row; align-items: center;">
+                                        <span class="track-label" style="padding-top: 0;">STATUS</span>
+                                        <span class="track-value text-red">[ ENCRYPTED ]</span>
+                                    </div>
+                                    <div style="text-align: center; margin-top: 15px; background: #050508; border: 1px solid #222; padding: 15px; border-radius: 4px;">
+                                        <div style="color: #888; font-size: 11px; letter-spacing: 2px;">DECRYPTS EXACTLY ON:</div>
+                                        <div style="color: #9ab3d5; font-size: 13px; font-weight: normal; margin-top: 5px;">${unlockDateString}</div>
+                                        <div class="countdown" id="timer-${index}">--:--:--:--</div>
+                                    </div>`;
+                                    
+                        startCountdown(`timer-${index}`, race.unlockDate);
+                    }
+                }
+                
+                html += `</div>`;
+                container.innerHTML += html;
+            });
+            
+            document.getElementById('login-btn').innerText = "AUTHENTICATE";
+            document.getElementById('login-btn').disabled = false;
         }
-      } catch (e) {}
-    });
-    
-    if (!finalStandings) return { success: false, message: "Could not find 'SeasonStatistics' data on GitHub." };
 
-    var lastRow = sheet.getLastRow();
-    var dataRange = lastRow > 1 ? sheet.getRange(2, 1, lastRow - 1, 5).getValues() : [];
-    finalStandings.forEach(function(d) {
-      var existingRowIndex = dataRange.findIndex(r => r[1].toString().trim().toLowerCase() === d.driverName.trim().toLowerCase());
-      if (existingRowIndex > -1) {
-        sheet.getRange(existingRowIndex + 2, 1).setValue(d.position);
-        sheet.getRange(existingRowIndex + 2, 3).setValue(d.points);
-      } else {
-        sheet.appendRow([d.position, d.driverName, d.points, "", ""]);
-      }
-    });
-    if (sheet.getLastRow() > 1) sheet.getRange(2, 1, sheet.getLastRow() - 1, 5).sort({column: 1, ascending: true});
-    return { success: true, message: "Leaderboard successfully synced with GitHub!" };
-  } catch (e) { 
-    return { success: false, message: e.message }; 
-  }
-}
+        function startCountdown(elementId, targetTimestamp) {
+            const timer = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = targetTimestamp - now;
+
+                if (distance < 0) {
+                    clearInterval(timer);
+                    const el = document.getElementById(elementId);
+                    if(el) {
+                        el.innerText = "REFRESH TO DECRYPT";
+                        el.style.color = "#00D7B6";
+                    }
+                    return;
+                }
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
+
+                const el = document.getElementById(elementId);
+                if(el) el.innerText = `${days}D ${hours}H ${minutes}M ${seconds}S`;
+            }, 1000);
+            timers.push(timer);
+        }
+
+        function logout() {
+            document.getElementById('portal-section').style.display = 'none';
+            document.getElementById('auth-section').style.display = 'flex';
+            document.getElementById('pin-input').value = "";
+            document.getElementById('selected-user-val').value = "";
+            document.getElementById('selected-user-display').innerHTML = '<span style="color: #888;">-- SELECT USER --</span><span style="font-size:12px; color:#555;">▼</span>';
+            timers.forEach(t => clearInterval(t)); 
+        }
+    </script>
+</body>
+</html>
