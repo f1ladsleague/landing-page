@@ -12,9 +12,9 @@
         .dashboard { width: 100%; max-width: 600px; background: var(--f1-card); padding: 30px; border-radius: 8px; border: 1px solid var(--f1-border); border-top: 4px solid var(--theme-red); box-shadow: 0 10px 40px rgba(0,0,0,0.9); }
         .logo { max-width: 150px; margin-bottom: 20px; display: block; margin-left: auto; margin-right: auto; cursor: pointer; transition: 0.2s; }
         .logo:hover { transform: scale(1.05); }
-        
+
         .sys-header { font-family: 'Share Tech Mono', monospace; color: #888; text-align: center; margin-bottom: 30px; letter-spacing: 2px; }
-        
+
         /* Auth Section */
         #auth-section { display: flex; flex-direction: column; gap: 15px; }
         input[type="password"] { padding: 15px; font-family: 'Share Tech Mono', monospace; background: #000; color: white; border: 1px solid #444; border-radius: 4px; font-size: 16px; text-align: center; }
@@ -33,7 +33,7 @@
         .custom-option:hover { background: #1a1a24; color: #fff; }
         .optgroup-label { padding: 12px 15px; font-size: 12px; color: #555; background: #050508; font-weight: bold; letter-spacing: 2px; position: sticky; top: 0; z-index: 2; border-bottom: 1px solid #222; border-top: 1px solid #222; }
         .optgroup-label:first-child { border-top: none; }
-        
+
         /* IMAGE STYLING: Transparent backgrounds, precise bounding boxes, and Face Zooming */
         .img-wrap {
             width: 44px;
@@ -46,26 +46,26 @@
             justify-content: center;
             flex-shrink: 0;
         }
-        
-        .opt-img { 
-            width: 100%; 
-            height: 100%; 
-            background: transparent; 
-            object-fit: contain; 
+
+        .opt-img {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            object-fit: contain;
         }
-        
+
         /* Specific zoom logic only for Driver Headshots */
         .opt-driver .opt-img {
-            object-fit: cover; 
+            object-fit: cover;
             transform-origin: center 15%; /* Anchor zoom to the top of the photo/face */
             transform: scale(2.5); /* Increase scale to 2.5 */
         }
 
         /* Styling for the actively selected item */
         .selected-img-wrap {
-            width: 34px; 
-            height: 34px; 
-            border-radius: 4px; 
+            width: 34px;
+            height: 34px;
+            border-radius: 4px;
             overflow: hidden;
             background: transparent;
             display: flex;
@@ -73,7 +73,7 @@
             justify-content: center;
             flex-shrink: 0;
         }
-        
+
         /* Constructor Theme Accents */
         .opt-ferrari:hover { background: rgba(237, 17, 49, 0.15); border-left: 4px solid #ED1131; }
         .opt-aston:hover { background: rgba(34, 153, 113, 0.15); border-left: 4px solid #229971; }
@@ -81,27 +81,27 @@
         .opt-mercedes:hover { background: rgba(0, 215, 182, 0.15); border-left: 4px solid #00D7B6; }
         .opt-redbull:hover { background: rgba(71, 129, 215, 0.15); border-left: 4px solid #4781D7; }
         .opt-driver:hover { background: rgba(225, 6, 0, 0.15); border-left: 4px solid var(--theme-red); }
-        
+
         /* Race Cards */
         #portal-section { display: none; }
         .race-card { background: #050508; border: 1px solid #333; margin-bottom: 20px; padding: 20px; border-radius: 6px; }
-        .color-theme-0 { border-top: 4px solid #00D7B6; } 
-        .color-theme-1 { border-top: 4px solid #ae37de; } 
+        .color-theme-0 { border-top: 4px solid #00D7B6; }
+        .color-theme-1 { border-top: 4px solid #ae37de; }
         .title-theme-0 { color: #00D7B6; }
         .title-theme-1 { color: #ae37de; }
-        
+
         .round-title { font-size: 22px; font-weight: 900; margin: 0 0 5px 0; text-transform: uppercase; }
         .date-sub { font-family: 'Share Tech Mono', monospace; font-size: 16px; font-weight: bold; color: #ffcc00; margin-bottom: 15px; letter-spacing: 1px; }
-        
+
         .track-row { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px dashed #222; padding: 15px 0; gap: 15px; }
         .track-row:last-child { border-bottom: none; }
-        .track-label { color: #888; font-size: 12px; letter-spacing: 1px; flex-shrink: 0; padding-top: 6px; } 
+        .track-label { color: #888; font-size: 12px; letter-spacing: 1px; flex-shrink: 0; padding-top: 6px; }
         .track-details { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; text-align: right; width: 100%; }
         .track-name-wrap { display: flex; align-items: center; gap: 10px; justify-content: flex-end; }
         .track-value { font-family: 'Chakra Petch', sans-serif; font-weight: 700; color: #fff; text-align: right; }
         .inline-flag { width: 24px; border-radius: 3px; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .inline-layout { max-height: 55px; max-width: 150px; opacity: 0.85; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5)); object-fit: contain; }
-        
+
         .text-red { color: var(--theme-red); }
         .text-green { color: #fff; text-shadow: 0 0 8px rgba(255,255,255,0.4); }
         .countdown { font-family: 'Share Tech Mono', monospace; font-size: 24px; color: #F47600; margin-top: 5px; }
@@ -122,18 +122,18 @@
     <a href="https://f1lads.com">
         <img src="https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Logo.png" class="logo" alt="Home">
     </a>
-    
+
     <div class="dashboard">
         <div class="sys-header">/// WILDCARD TRACKS ///</div>
-        
+
         <div id="auth-section">
-            
+
             <div class="custom-select">
                 <div class="select-selected" id="selected-user-display" onclick="toggleDropdown()">
-                    <span style="color: #888;">-- SELECT USER --</span>
-                    <span style="font-size:12px; color:#555;">▼</span>
+                    <span>-- SELECT USER --</span>
+                    <span>▼</span>
                 </div>
-                
+
                 <div class="select-items select-hide" id="custom-dropdown-list">
                     <div class="optgroup-label">/// DRIVERS</div>
                     <div class="custom-option opt-driver" onclick="selectUser('Sameera', 'https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/Sameera.png')">
@@ -185,16 +185,16 @@
                     </div>
                 </div>
             </div>
-            
+
             <input type="hidden" id="selected-user-val" value="">
             <input type="password" id="pin-input" placeholder="PIN / PASSWORD">
             <button onclick="authenticate()" id="login-btn">Authenticate</button>
-            <div id="error-msg" style="color: #ff4444; text-align: center; font-family: monospace; margin-top: 10px;"></div>
+            <div id="error-msg"></div>
         </div>
 
         <div id="portal-section">
-            <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px;">
-                <div style="font-weight: 900; font-size: 18px;" id="user-display"></div>
+            <div>
+                <div id="user-display"></div>
             </div>
             <div id="races-container"></div>
             <button class="back-btn" onclick="logout()">LOGOUT / RETURN</button>
@@ -202,12 +202,9 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzaLPfFPFVFATznJh5LJ2mhfhMOYtb0zxL-2JvjRDjjEKCXKFXoPwusGLKzo1sVbH8_/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbzaLPfFPFVFATznJh5LJ2mhfhMOYtb0zxL-2JvjRDjjEKCXKFXoPwusGLKzo1sVbH8_/exec";
         const PHOTO_BASE = "https://raw.githubusercontent.com/f1ladsleague/landing-page/main/Team_Photos/";
-        
-        const SETTINGS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZKLukYpw5VzMfRbfXh80lj1B0gbUiVx_CoinOMVb-b2iFEMiWg_nW3KcMp88qKL3UfctvzYgEN_Lg/pub?gid=2057582908&single=true&output=csv";
-        const CONSTRUCTORS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZKLukYpw5VzMfRbfXh80lj1B0gbUiVx_CoinOMVb-b2iFEMiWg_nW3KcMp88qKL3UfctvzYgEN_Lg/pub?gid=1589744882&single=true&output=csv";
-        
+
         let timers = [];
 
         /* --- CUSTOM DROPDOWN LOGIC --- */
@@ -217,19 +214,19 @@
 
         function selectUser(name, imgSrc) {
             document.getElementById("selected-user-val").value = name;
-            
+
             // Check if it's a driver or constructor to apply the correct zoom styling
             const isDriver = !imgSrc.includes('Team_Logos');
             const imgStyle = isDriver ? 'object-fit:cover; transform-origin:center 15%; transform:scale(2.5);' : 'object-fit:contain;';
 
             document.getElementById("selected-user-display").innerHTML = `
-                <div style="display:flex; align-items:center; gap:12px; color:#fff; font-weight:bold;">
+                <div>
                     <div class="selected-img-wrap">
-                        <img src="${imgSrc}" style="width:100%; height:100%; background:transparent; ${imgStyle}"> 
+                        <img src="${imgSrc}">
                     </div>
-                    <span style="display:flex; align-items:center; height:100%;">${name}</span>
+                    <span>${name}</span>
                 </div>
-                <span style="font-size:12px; color:#555;">▼</span>
+                <span>▼</span>
             `;
             toggleDropdown();
         }
@@ -246,17 +243,10 @@
             if (e.key === 'Enter') authenticate();
         });
 
-        async function fetchCSV(url) {
-            const cacheBusterUrl = url + (url.includes('?') ? '&' : '?') + "nocache=" + new Date().getTime();
-            const response = await fetch(cacheBusterUrl, { cache: "no-store" });
-            const text = await response.text();
-            return text.replace(/\r/g, '').split('\n').map(row => row.split(',').map(item => item.trim())).slice(1);
-        }
-
         function getTrackMedia(trackStr) {
             let flag = "", layout = "";
             const t = trackStr.toLowerCase();
-            
+
             if(t.includes("bahrain")) { flag = "bahrain"; layout = "bahrain"; }
             else if(t.includes("jeddah") || t.includes("saudi")) { flag = "saudi_arabia"; layout = "jeddah"; }
             else if(t.includes("melbourne") || t.includes("australia")) { flag = "australia"; layout = "melbourne"; }
@@ -294,27 +284,21 @@
             const pass = document.getElementById('pin-input').value;
             const btn = document.getElementById('login-btn');
             const errorMsg = document.getElementById('error-msg');
-            
+
             if(!user) {
                 errorMsg.innerText = "PLEASE SELECT A USER";
                 return;
             }
             if(!pass) return;
-            
+
             btn.innerText = "VERIFYING...";
             btn.disabled = true;
             errorMsg.innerText = "";
 
-            const constructors = ["Ferrari", "Aston Martin", "McLaren", "Mercedes", "Red Bull"];
-            if (constructors.includes(user)) {
-                await authenticateConstructor(user, pass, btn, errorMsg);
-                return;
-            }
-
             try {
                 const response = await fetch(`${API_URL}?driver=${encodeURIComponent(user)}&pin=${encodeURIComponent(pass)}`);
                 const data = await response.json();
-                
+
                 if (data.error) {
                     btn.innerText = "AUTHENTICATE";
                     btn.disabled = false;
@@ -329,74 +313,27 @@
             }
         }
 
-        async function authenticateConstructor(team, pass, btn, errorMsg) {
-            try {
-                const constructorsData = await fetchCSV(CONSTRUCTORS_CSV_URL);
-                const teamRow = constructorsData.find(c => String(c[0]).trim() === team);
-                
-                if (teamRow && String(teamRow[1]).trim() === pass) {
-                    const settingsData = await fetchCSV(SETTINGS_CSV_URL);
-                    const currentRoundNum = parseInt(String(settingsData[0][0]).trim(), 10);
-                    
-                    let trackDocUrl = "";
-                    if (!isNaN(currentRoundNum)) {
-                        trackDocUrl = (currentRoundNum % 2 !== 0) 
-                            ? "https://docs.google.com/document/d/12Bj7ceGn1uj3XQit8vOUUdDp23J2zmeULKpa-4EGkI0/edit?usp=sharing" 
-                            : "https://docs.google.com/document/d/1W9aMxoiOvGMOXHmDKnWMpE9Kh7fKKpuV8-HWw61111o/edit?usp=drive_link";
-                    }
-
-                    renderConstructorDashboard(team, currentRoundNum, trackDocUrl);
-                } else {
-                    btn.innerText = "AUTHENTICATE";
-                    btn.disabled = false;
-                    errorMsg.innerText = "INCORRECT CONSTRUCTOR PASSWORD";
-                }
-            } catch (err) {
-                btn.innerText = "AUTHENTICATE";
-                btn.disabled = false;
-                errorMsg.innerText = "NETWORK ERROR: Could not fetch constructor data.";
-            }
-        }
-
-        function renderConstructorDashboard(team, round, url) {
-            document.getElementById('auth-section').style.display = 'none';
-            document.getElementById('portal-section').style.display = 'block';
-            document.getElementById('user-display').innerText = team.toUpperCase() + ` DASHBOARD`;
-
-            const container = document.getElementById('races-container');
-            timers.forEach(t => clearInterval(t)); 
-
-            container.innerHTML = `
-                <div class="race-card color-theme-0">
-                    <h3 class="round-title title-theme-0">ROUND ${round} WILDCARD</h3>
-                    <div style="text-align: center; margin-top: 15px; background: #050508; border: 1px solid #222; padding: 25px; border-radius: 4px;">
-                        <div style="color: #ff4444; font-size: 14px; font-weight: bold; margin-bottom: 20px; font-family: 'Share Tech Mono', monospace;">⚠️ STRICTLY CONFIDENTIAL ⚠️</div>
-                        <a href="${url}" target="_blank" style="display: inline-block; background: #fff; color: #000; text-decoration: none; padding: 15px 25px; border-radius: 4px; font-weight: 900; font-size: 16px;">VIEW TRACK DOCUMENT</a>
-                    </div>
-                </div>
-            `;
-            
-            document.getElementById('login-btn').innerText = "AUTHENTICATE";
-            document.getElementById('login-btn').disabled = false;
-        }
-
         function renderDashboard(data, driverName) {
             document.getElementById('auth-section').style.display = 'none';
             document.getElementById('portal-section').style.display = 'block';
-            document.getElementById('user-display').innerText = driverName.toUpperCase() + ` (P${data.rank})`;
+
+            // Constructors: no rank shown. Drivers: keep (Pn).
+            document.getElementById('user-display').innerText = data.isConstructor
+                ? driverName.toUpperCase() + ' DASHBOARD'
+                : driverName.toUpperCase() + ` (P${data.rank})`;
 
             const container = document.getElementById('races-container');
             container.innerHTML = "";
-            timers.forEach(t => clearInterval(t)); 
+            timers.forEach(t => clearInterval(t));
 
             data.races.forEach((race, index) => {
                 const dateStr = new Date(race.raceDate).toLocaleDateString('en-GB', { timeZone: 'Australia/Melbourne', day: 'numeric', month: 'long', year: 'numeric' });
-                const themeIdx = index % 2; 
-                
+                const themeIdx = index % 2;
+
                 let html = `<div class="race-card color-theme-${themeIdx}">
                                 <h3 class="round-title title-theme-${themeIdx}">${race.eventName}</h3>
                                 <div class="date-sub">RACE DATE: ${dateStr}</div>`;
-                
+
                 if (race.isUnlocked) {
                     if (race.sprint.includes('|')) {
                         const sprints = race.sprint.split('|');
@@ -420,7 +357,7 @@
                                     </div>
                                 </div>`;
                     }
-                    
+
                     const fMedia = getTrackMedia(race.feature);
                     html += `   <div class="track-row">
                                     <span class="track-label">FEATURE RACE</span>
@@ -431,36 +368,36 @@
                                 </div>`;
                 } else {
                     if (data.rank === 1) {
-                        html += `   <div class="track-row" style="flex-direction: row; align-items: center;">
-                                        <span class="track-label" style="padding-top: 0;">STATUS</span>
+                        html += `   <div class="track-row">
+                                        <span class="track-label">STATUS</span>
                                         <span class="track-value text-red">[ ACCESS DENIED ]</span>
                                     </div>
-                                    <div style="color: #ff4444; text-align: center; margin-top: 15px; font-family: 'Share Tech Mono', monospace; font-size: 14px;">
+                                    <div>
                                         YOU ARE NOT ELIGIBLE TO VIEW THE WILDCARD TRACKS AS YOU ARE P1
                                     </div>`;
                     } else {
                         const unlockDateObj = new Date(race.unlockDate);
                         const options = { timeZone: 'Australia/Melbourne', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: '2-digit' };
                         const unlockDateString = new Intl.DateTimeFormat('en-AU', options).format(unlockDateObj).toUpperCase();
-                        
-                        html += `   <div class="track-row" style="flex-direction: row; align-items: center;">
-                                        <span class="track-label" style="padding-top: 0;">STATUS</span>
+
+                        html += `   <div class="track-row">
+                                        <span class="track-label">STATUS</span>
                                         <span class="track-value text-red">[ ENCRYPTED ]</span>
                                     </div>
-                                    <div style="text-align: center; margin-top: 15px; background: #050508; border: 1px solid #222; padding: 15px; border-radius: 4px;">
-                                        <div style="color: #888; font-size: 11px; letter-spacing: 2px;">DECRYPTS EXACTLY ON:</div>
-                                        <div style="color: #9ab3d5; font-size: 13px; font-weight: normal; margin-top: 5px;">${unlockDateString}</div>
+                                    <div>
+                                        <div>DECRYPTS EXACTLY ON:</div>
+                                        <div>${unlockDateString}</div>
                                         <div class="countdown" id="timer-${index}">--:--:--:--</div>
                                     </div>`;
-                                    
+
                         startCountdown(`timer-${index}`, race.unlockDate);
                     }
                 }
-                
+
                 html += `</div>`;
                 container.innerHTML += html;
             });
-            
+
             document.getElementById('login-btn').innerText = "AUTHENTICATE";
             document.getElementById('login-btn').disabled = false;
         }
@@ -492,8 +429,8 @@
             document.getElementById('auth-section').style.display = 'flex';
             document.getElementById('pin-input').value = "";
             document.getElementById('selected-user-val').value = "";
-            document.getElementById('selected-user-display').innerHTML = '<span style="color: #888;">-- SELECT USER --</span><span style="font-size:12px; color:#555;">▼</span>';
-            timers.forEach(t => clearInterval(t)); 
+            document.getElementById('selected-user-display').innerHTML = '<span>-- SELECT USER --</span><span>▼</span>';
+            timers.forEach(t => clearInterval(t));
         }
     </script>
 </body>
