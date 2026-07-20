@@ -318,81 +318,105 @@
                 
                 const rawRaceData = await Promise.all(fetchPromises);
                 
-                // Normalization Adapter: Converts new Racing League Tools format into the classic app format
+                // Normalization Adapter: Converts both legacy & updated Racing League Tools formats seamlessly
                 function normalizeData(rawData) {
                     if (!rawData) return null;
                     if (rawData.SessionType) return rawData; // Already in legacy format
-
+                
                     try {
-                        const isRace = rawData.session.sessionInfo.sessionType === "Race";
+                        // Safe Root Resolvers (handles session vs Session, event vs Event)
+                        const session = rawData.session || rawData.Session || {};
+                        const sessionInfo = session.sessionInfo || session.SessionInfo || {};
+                        const event = rawData.event || rawData.Event || {};
+                        const track = event.track || event.Track || {};
+                
+                        const sType = sessionInfo.sessionType || sessionInfo.SessionType || "";
+                        const isRace = sType.toLowerCase().includes("race");
                         const sessionType = isRace ? "Race" : "Qualification";
-                        const trackName = rawData.event.track.trackName;
-                        const date = rawData.session.sessionInfo.sessionDate || rawData.event.eventDate;
-                        const raceType = rawData.session.sessionInfo.raceType || "Feature";
-                        
-                        // Dynamically find classification array (added fallback for "drivers" array)
+                        const trackName = track.trackName || track.TrackName || "Unknown Track";
+                        const date = sessionInfo.sessionDate || sessionInfo.SessionDate || event.eventDate || event.EventDate || new Date().toISOString();
+                        const raceType = sessionInfo.raceType || sessionInfo.RaceType || "Feature";
+                
+                        // Dynamic Classification Finder
                         let classification = [];
-                        if (Array.isArray(rawData.session.classification)) classification = rawData.session.classification;
+                        if (Array.isArray(session.classification)) classification = session.classification;
+                        else if (Array.isArray(session.Classification)) classification = session.Classification;
                         else if (Array.isArray(rawData.classification)) classification = rawData.classification;
-                        else if (Array.isArray(rawData.session.drivers)) classification = rawData.session.drivers;
+                        else if (Array.isArray(session.drivers)) classification = session.drivers;
+                        else if (Array.isArray(session.Drivers)) classification = session.Drivers;
                         else {
-                           for (let key in rawData.session) {
-                              if (Array.isArray(rawData.session[key]) && rawData.session[key].length > 0 && rawData.session[key][0].driverName) {
-                                 classification = rawData.session[key];
-                                 break;
-                              }
-                           }
-                        }
-
-                        // NEW: Global Fastest Lap Extraction
-                        let fastestLapDriver = null;
-                        if (rawData.session.fastestLap && rawData.session.fastestLap.driverName) {
-                            fastestLapDriver = { Name: rawData.session.fastestLap.driverName };
-                        } else if (rawData.fastestLap && rawData.fastestLap.driverName) {
-                            fastestLapDriver = { Name: rawData.fastestLap.driverName };
-                        }
-                        
-                        const drivers = classification.map(d => {
-                            let driverName = d.driverName;
-                            let teamName = d.team ? (d.team.name.replace(' Formula 1 Team', '').trim()) : "Unknown";
-                            let position = d.position || d.classificationPosition;
-                            let points = parseInt(d.driverPoints || 0) * 10;
-                            
-                            let gridPosition = d.gridPosition || 0;
-                            let pitsCount = d.pitStopsCount || d.pitsCount || 0;
-                            
-                            let status = "Ok";
-                            if (d.classificationPosition < 0 || d.lapsCompleted === 0 || d.status === "DNF" || d.status === "DSQ") {
-                                status = d.status === "DSQ" ? "Dsq" : "Dnf";
+                            for (let key in session) {
+                                if (Array.isArray(session[key]) && session[key].length > 0) {
+                                    let first = session[key][0];
+                                    if (first && (first.driverName || first.DriverName)) {
+                                        classification = session[key];
+                                        break;
+                                    }
+                                }
                             }
-
-                            let bestLapMs = 0;
-                            let totalTimeMs = 0;
-
-                            // Time Extractor Layer (UPDATED with new JSON keys)
-                            if (d.fastestLapTimeMs) bestLapMs = d.fastestLapTimeMs; 
-                            else if (d.bestLap && d.bestLap.lapTimeMs) bestLapMs = d.bestLap.lapTimeMs;
-                            else if (d.qualDetails && d.qualDetails.bestLap && d.qualDetails.bestLap.lapTimeMs) bestLapMs = d.qualDetails.bestLap.lapTimeMs;
+                        }
+                
+                        // Global Fastest Lap Extraction
+                        let fastestLapDriver = null;
+                        const flObj = session.fastestLap || session.FastestLap || rawData.fastestLap || rawData.FastestLap;
+                        if (flObj) {
+                            const flName = flObj.driverName || flObj.DriverName;
+                            if (flName) fastestLapDriver = { Name: flName };
+                        }
+                
+                        const drivers = classification.map(d => {
+                            let driverName = d.driverName || d.DriverName || "Unknown Driver";
                             
-                            if (d.totalTimeMs) totalTimeMs = d.totalTimeMs; 
-                            else if (d.raceDetails && d.raceDetails.totalTimeMs) totalTimeMs = d.raceDetails.totalTimeMs;
-
-                            // Fallback Time Calculation layer (Iterates over raw telemetry laps if base stats are blank)
-                            if (d.laps && d.laps.length > 0) {
-                                let validLaps = d.laps.filter(l => l.isValid !== false && l.lapTimeMs > 0);
+                            // Safe Team Name Resolver (handles object or string)
+                            let rawTeam = d.team || d.Team;
+                            let teamName = "Unknown";
+                            if (typeof rawTeam === "string") {
+                                teamName = rawTeam;
+                            } else if (rawTeam && (rawTeam.name || rawTeam.Name)) {
+                                teamName = rawTeam.name || rawTeam.Name;
+                            }
+                            teamName = teamName.replace(/ Formula 1 Team| F1 Team| Racing/gi, '').trim();
+                
+                            let position = d.position || d.Position || d.classificationPosition || d.ClassificationPosition || 0;
+                            let points = parseInt(d.driverPoints || d.DriverPoints || d.points || d.Points || 0) * 10;
+                            let gridPosition = d.gridPosition || d.GridPosition || 0;
+                            let pitsCount = d.pitStopsCount || d.PitStopsCount || d.pitsCount || d.PitsCount || 0;
+                
+                            let status = "Ok";
+                            if (position < 0 || d.lapsCompleted === 0 || d.status === "DNF" || d.status === "DSQ") {
+                                status = (d.status === "DSQ" || d.Status === "DSQ") ? "Dsq" : "Dnf";
+                            }
+                
+                            let bestLapMs = d.fastestLapTimeMs || d.FastestLapTimeMs || 0;
+                            let totalTimeMs = d.totalTimeMs || d.TotalTimeMs || 0;
+                
+                            const bestLapObj = d.bestLap || d.BestLap || (d.qualDetails ? d.qualDetails.bestLap : null);
+                            if (bestLapObj && (bestLapObj.lapTimeMs || bestLapObj.LapTimeMs)) {
+                                bestLapMs = bestLapObj.lapTimeMs || bestLapObj.LapTimeMs;
+                            }
+                
+                            const raceDetailsObj = d.raceDetails || d.RaceDetails;
+                            if (raceDetailsObj && (raceDetailsObj.totalTimeMs || raceDetailsObj.TotalTimeMs)) {
+                                totalTimeMs = raceDetailsObj.totalTimeMs || raceDetailsObj.TotalTimeMs;
+                            }
+                
+                            // Fallback Lap Telemetry Loop
+                            const laps = d.laps || d.Laps;
+                            if (Array.isArray(laps) && laps.length > 0) {
+                                let validLaps = laps.filter(l => l.isValid !== false && (l.lapTimeMs || l.LapTimeMs) > 0);
                                 if (validLaps.length > 0 && bestLapMs === 0) {
-                                    bestLapMs = Math.min(...validLaps.map(l => l.lapTimeMs));
+                                    bestLapMs = Math.min(...validLaps.map(l => l.lapTimeMs || l.LapTimeMs));
                                 }
                                 if (isRace && totalTimeMs === 0) {
-                                    totalTimeMs = d.laps.reduce((sum, l) => sum + (l.lapTimeMs || 0), 0);
+                                    totalTimeMs = laps.reduce((sum, l) => sum + (l.lapTimeMs || l.LapTimeMs || 0), 0);
                                 }
                             }
-                            
-                            // Fallback driver-level fastest lap check if global wasn't found
-                            if (!fastestLapDriver && (d.isSessionFastest || (d.bestLap && d.bestLap.isSessionFastest))) {
+                
+                            // Fastest Lap Driver Fallback
+                            if (!fastestLapDriver && (d.isSessionFastest || d.IsSessionFastest || (bestLapObj && bestLapObj.isSessionFastest))) {
                                 fastestLapDriver = { Name: driverName };
                             }
-
+                
                             return {
                                 Position: position,
                                 Driver: { Name: driverName },
@@ -405,7 +429,7 @@
                                 DriverPointsRaw: points
                             };
                         });
-                        
+                
                         return {
                             SessionType: sessionType,
                             TrackName: trackName,
@@ -415,7 +439,7 @@
                             Drivers: drivers
                         };
                     } catch (e) {
-                        console.error("Error parsing new file format", e);
+                        console.error("Error parsing race file format:", e);
                         return null;
                     }
                 }
